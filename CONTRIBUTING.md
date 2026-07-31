@@ -1,72 +1,68 @@
-# Hướng dẫn làm việc nhóm trên GitHub (Dành cho người mới)
+# LUẬT CHƠI GIT & GITHUB CỦA TEAM SENTRIX (DÀNH CHO NGƯỜI MỚI TỪ CON SỐ 0)
 
-Chào mừng team Sentrix! Vì chúng ta làm việc theo nhóm 3 người, việc tuân thủ quy trình Git là **BẮT BUỘC** để tránh mất code hoặc xung đột (conflict).
+Để làm việc nhóm không bị "giẫm chân" lên nhau, mất code của nhau hay lỗi tùm lum, cả team **BẮT BUỘC** phải tuân thủ nghiêm ngặt quy trình dưới đây. Không có ngoại lệ!
 
-## 1. Quy tắc bắt buộc
-- **KHÔNG BAO GIỜ** code và push trực tiếp lên nhánh `main`.
-- Mỗi tính năng/công việc phải làm trên một nhánh riêng.
-- Code xong phải mở Pull Request (PR) để Trưởng nhóm (Việt) review và merge.
+## 🔴 3 NGUYÊN TẮC TỬ TỬ QUYẾT 🔴
+1. **CẤM ĐỤNG VÀO NHÁNH `main`**: Nhánh `main` là code "sạch" và "chạy được". Cấm tuyệt đối việc bạn code trực tiếp và push thẳng lên `main`.
+2. **MỖI VIỆC MỘT NHÁNH**: Khi bắt đầu làm một tính năng mới (ví dụ: làm trang đăng nhập), BẮT BUỘC phải tạo một nhánh (branch) mới để làm.
+3. **REVIEW QUA PULL REQUEST (PR)**: Code xong ở nhánh của mình, phải đẩy lên GitHub và bấm nút "Tạo Pull Request". Việt (Trưởng nhóm) sẽ xem code, nếu OK mới được gộp (Merge) vào `main`.
 
-## 2. Quy ước đặt tên nhánh
-Tên nhánh phải viết thường, không dấu, dùng dấu gạch ngang `-`, theo cấu trúc:
-`feature/<ten-nguoi>-<mo-ta-ngan>`
+---
 
-**Ví dụ:**
-- `feature/tuyen-absa-pipeline`
-- `feature/tuan-uiux-mockup`
-- `feature/viet-dashboard-ui`
+## 🛠️ HƯỚNG DẪN TỪNG BƯỚC (CỨ LÀM THEO LÀ SỐNG)
 
-## 3. Quy trình chuẩn từng bước (Cực kỳ quan trọng)
+Mỗi ngày mở máy tính lên làm việc, hãy làm ĐÚNG thứ tự sau:
 
-Mỗi khi bắt đầu một việc mới, hãy làm theo đúng thứ tự này:
-
-**Bước 1: Lấy code mới nhất từ nhánh main về máy**
+### Bước 1: Cập nhật code mới nhất từ team về máy
+Trước khi làm gì, phải chắc chắn máy bạn đang có bản code mới nhất từ nhánh `main`.
 ```bash
 git checkout main
 git pull origin main
 ```
+*Giải thích: Đứng ở nhánh main, kéo (pull) toàn bộ code mới nhất từ trên mạng (origin) về máy.*
 
-**Bước 2: Tạo nhánh mới cho công việc của bạn**
+### Bước 2: Tạo nhánh riêng cho công việc của bạn
+**QUY TẮC ĐẶT TÊN NHÁNH:** `feature/<tên-bạn>-<việc-đang-làm>` (Viết thường, không dấu, dùng gạch ngang).
+*Ví dụ: `feature/tuyen-viet-api-login`, `feature/viet-giao-dien-home`, `feature/tuan-tai-lieu-ui`*
 ```bash
-git checkout -b feature/ten-cua-ban-ten-cong-viec
+git checkout -b feature/ten-cua-ban-viec-se-lam
 ```
-*(Lưu ý: Bạn chỉ làm việc trong thư mục mà mình phụ trách)*
+*Giải thích: Lệnh này giúp bạn tạo ra một nhánh mới từ `main` và nhảy sang đó luôn. Từ giờ bạn sửa code thì chỉ ảnh hưởng trên nhánh này, `main` vẫn an toàn.*
 
-**Bước 3: Code và Lưu lại (Commit)**
-Ghi lại những thay đổi thường xuyên. Message phải rõ ràng:
+### Bước 3: Làm việc trong LÃNH ĐỊA của bạn
+Hãy nhớ: Tuyền chỉ code trong `backend/`, Việt chỉ code trong `apps/`, Tuấn làm trong `design/`. 
+Code xong một đoạn nhỏ (ví dụ: xong cái nút bấm, xong 1 hàm API), hãy lưu lại (Commit).
 ```bash
 git add .
-git commit -m "feat: viet giao dien dang nhap"
+git commit -m "feat: <mô tả bạn vừa làm gì>"
 ```
+**Quy tắc viết Message Commit:** Rõ ràng, dễ hiểu. Ví dụ: `git commit -m "feat: tao giao dien quet QR"` hoặc `git commit -m "fix: sua loi api dang nhap"`. Đừng viết "update", "asdasd" - Việt sẽ không duyệt!
 
-**Bước 4: Đẩy nhánh của bạn lên GitHub**
+### Bước 4: Đẩy code của bạn lên GitHub
+Xong việc của ngày hôm đó, hãy đẩy nhánh của bạn lên GitHub.
 ```bash
-git push origin feature/ten-cua-ban-ten-cong-viec
+git push origin feature/ten-cua-ban-viec-se-lam
 ```
 
-**Bước 5: Tạo Pull Request (PR)**
-Lên trang GitHub.com, bạn sẽ thấy nút "Compare & pull request". Bấm vào đó, viết mô tả những gì bạn đã làm, và yêu cầu **Việt** vào review. 
+### Bước 5: Yêu cầu gộp code (Pull Request - PR)
+1. Lên trang GitHub `Sentrix`.
+2. Bạn sẽ thấy một thông báo màu vàng hiện ra ghi là "Compare & pull request". Bấm vào đó!
+3. Ở phần mô tả, viết ngắn gọn: "Tôi đã làm tính năng X, nhờ Việt review". 
+4. Bấm **Create pull request**.
+5. Nhắn tin vào Zalo nhóm: "Việt ơi, duyệt PR cho tui nha!".
 
-**Bước 6: Gộp code (Merge)**
-Việt sẽ xem code, nếu OK sẽ bấm "Merge pull request" để đưa code vào nhánh `main`.
+### Bước 6: Review & Merge (Chỉ dành cho Việt)
+Việt vào xem PR. Nếu code tốt, Việt bấm **Merge pull request**. Lúc này code của bạn chính thức được đưa vào `main`! Sau đó xóa cái nhánh `feature/...` đó đi cho sạch.
 
-## 4. Xử lý Xung đột (Merge Conflict) cơ bản
-Conflict xảy ra khi **2 người cùng sửa 1 dòng code trong cùng 1 file**. Git không biết nên lấy của ai.
+---
 
-**Ví dụ:**
-Việt và Tuyền cùng sửa file `README.md` ở dòng số 5. Khi tạo PR, GitHub sẽ báo "Can't automatically merge".
+## 💥 NẾU BỊ CONFLICT (XUNG ĐỘT) THÌ SAO?
+Conflict xảy ra khi **2 người cùng sửa 1 dòng code trong cùng 1 file**. 
+*Nếu mọi người tuân thủ đúng luật "Lãnh địa" thì tỉ lệ bị conflict là 0%.*
 
-**Cách xử lý:**
-1. Việt (người duyệt PR) sẽ mở file bị conflict trên GitHub hoặc trên máy.
-2. File sẽ trông như thế này:
-   ```text
-   <<<<<<< HEAD
-   Dòng code của Việt viết
-   =======
-   Dòng code của Tuyền viết
-   >>>>>>> feature/tuyen-lam-gi-do
-   ```
-3. Việt quyết định giữ dòng nào (hoặc gộp cả 2), xóa các dấu `<<<<`, `====`, `>>>>` đi.
-4. Lưu lại, commit và merge.
-
-*Lời khuyên: Để hạn chế conflict, hãy **chỉ làm việc trong thư mục của mình**.*
+Nhưng nếu lỡ bị, Git sẽ báo lỗi `Can't automatically merge` khi tạo PR.
+**Cách giải quyết cực nhanh:**
+1. Hú lên trong Zalo: "Ê tao với mày bị conflict file README kìa!".
+2. Gọi Việt vào xem. Trên GitHub nó sẽ bôi đỏ bôi xanh chỗ khác nhau.
+3. Cả 3 cùng thống nhất xem lấy code của ai (hoặc gộp cả 2). Việt sẽ nhấn nút Resolve Conflict trên GitHub, sửa lại cho đúng ý, rồi Merge. 
+4. Bình tĩnh, không được tự ý xóa code của người khác!

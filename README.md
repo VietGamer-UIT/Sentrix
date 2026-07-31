@@ -1,36 +1,27 @@
 # Sentrix - AI-Powered Multimodal Customer Experience Analytics Platform
 
-Sentrix là nền tảng SaaS thu thập và phân tích trải nghiệm khách hàng đa phương thức qua QR và giọng nói. Hệ thống kết hợp Whisper (Speech-to-Text), Librosa, LLM ABSA, và mô hình RFMS để dự đoán churn, sử dụng Firebase Firestore cho multi-tenant và Zalo ZNS cho webhook cảnh báo.
+Chào mừng team Sentrix! Đây là dự án của 3 thành viên: Việt (Trưởng nhóm/Frontend), Tuyền (AI/Backend), và Tuấn (UI/UX/Data).
+Vì team mình toàn sinh viên năm nhất, chưa có nhiều kinh nghiệm làm việc nhóm, nên repo này được thiết kế với **CÁC NGUYÊN TẮC CHỐT CỨNG** để đảm bảo code không bị rối, không bị xung đột (conflict), và ai làm việc nấy.
 
-## Cấu trúc thư mục
+## 🚨 NGUYÊN TẮC "LÃNH ĐỊA" (CẤM VI PHẠM)
+Hệ thống được chia thành 3 "lãnh địa" riêng biệt. **Nguyên tắc tối thượng:** Bạn chỉ được phép thêm/sửa/xóa file trong thư mục mà mình phụ trách. CẤM TUYỆT ĐỐI việc sửa code trong thư mục của người khác nếu chưa được sự đồng ý.
 
-- `apps/`: Giao diện người dùng (Web client cho khách hàng & Dashboard quản trị) - Phụ trách: **Việt**
-- `backend/`: Lõi xử lý AI, API, và Database - Phụ trách: **Tuyền**
-- `design/`: Thiết kế UX/UI và tài liệu nghiên cứu thị trường - Phụ trách: **Tuấn**
-- `docs/`: Tài liệu dự án (Thuyết minh, BMC, Pitch deck)
-- `deploy/`: Cấu hình deploy Vercel và Render
-- `assets/`: Tài nguyên tĩnh (Logo, mã QR)
+- 👑 `apps/`: **Lãnh địa của VIỆT**. Gồm Web client (cho khách) & Dashboard (cho chủ quán).
+- 🧠 `backend/`: **Lãnh địa của TUYỀN**. Gồm API FastAPI, AI Pipeline, và Data models.
+- 🎨 `design/`: **Lãnh địa của TUẤN**. Gồm thiết kế Figma, UX/UI, tài liệu nghiên cứu.
+- 📚 `docs/`: Tài liệu chung (ai phụ trách mảng nào thì viết mảng đó).
+- 🚀 `deploy/`: Cấu hình đưa app lên mạng (Việt & Tuyền phối hợp).
+- 🖼️ `assets/`: File hình ảnh, logo, QR tĩnh.
 
-## Hướng dẫn cài đặt nhanh
+> **Tips:** Nhờ việc chia "lãnh địa" này, khi các bạn làm việc và đẩy code lên, sẽ GẦN NHƯ KHÔNG BAO GIỜ bị conflict code với nhau!
 
-### 1. Clone repository
-```bash
-git clone <url-repo-cua-ban>
-cd Sentrix
-```
+## 🚀 Hướng dẫn cài đặt cho từng người
 
-### 2. Cài đặt Backend (FastAPI)
-```bash
-cd backend/api
-python -m venv venv
-# Windows: venv\Scripts\activate
-# Mac/Linux: source venv/bin/activate
-pip install -r requirements.txt # (Sau này sẽ có file này)
-```
+Mọi người sau khi clone code về (`git clone https://github.com/VietGamer-UIT/Sentrix.git`), hãy đi vào thư mục của mình và đọc file `README.md` trong đó để biết phải làm gì tiếp theo.
 
-### 3. Cài đặt Frontend (React/Next.js)
-```bash
-cd apps/web-client
-npm install
-# hoặc yarn install
-```
+1. **Việt:** Đọc file `apps/README.md`
+2. **Tuyền:** Đọc file `backend/README.md`
+3. **Tuấn:** Đọc file `design/README.md`
+
+## 📚 Mới dùng Git? Đọc ngay CONTRIBUTING.md
+Nếu bạn chưa biết cách tạo nhánh (branch), lưu code (commit), và đẩy code (push) qua Pull Request, HÃY ĐỌC NGAY file `CONTRIBUTING.md`. Đó là luật chơi của team mình!
