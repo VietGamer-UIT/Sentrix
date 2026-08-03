@@ -19,3 +19,6 @@ env/
 # IDEs
 .vscode/
 .idea/
+
+# AI Pipeline
+backend/ai_pipeline/cleaned_absa_data.json
