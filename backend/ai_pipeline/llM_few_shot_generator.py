@@ -35,8 +35,9 @@ class SentimentAnalyzer:
         
         genai.configure(api_key=api_key)
         
-        # Sử dụng model Gemini 1.5 Flash (phù hợp với tốc độ và chi phí)
-        self.model = genai.GenerativeModel("gemini-1.5-flash")
+        # Sử dụng model Gemini thông qua biến môi trường (mặc định: gemini-3.1-flash-lite)
+        model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
+        self.model = genai.GenerativeModel(model_name)
         
         # Load dữ liệu sạch
         if data_filepath is None:

@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from backend.api.routes import health, feedback
+from backend.api.routes import health, feedback, analyze
 
 # Load biến môi trường từ file .env (nếu chạy local)
 load_dotenv()
@@ -42,3 +42,4 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 app.include_router(health.router, tags=["Health"])
 app.include_router(feedback.router, prefix="/api/v1", tags=["Feedback"])
+app.include_router(analyze.router, prefix="/api/v1", tags=["ABSA Analysis"])
