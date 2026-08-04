@@ -1,1 +1,1 @@
-Link Figma: [https://www.figma.com/file/C5e5U4Vn36gP0sE_da2Nf8KfjK/Sentrix-UI?type=design&node-id=0%3A1&mode=design&t=PlS7tWqD3n6gQyY5-1](https://www.figma.com/file/C5e5U4Vn36gP0sE_da2Nf8KfjK/Sentrix-UI?type=design&node-id=0%3A1&mode=design&t=PlS7tWqD3n6gQyY5-1)
+https://www.figma.com/design/L2htI7bKCV7NUSOWZm0npR/DashStack---Free-Admin-Dashboard-UI-Kit---Admin---Dashboard-Ui-Kit---Admin-Dashboard--Community-?node-id=0-11040&t=JxqHu8FHwwocHZHX-1
