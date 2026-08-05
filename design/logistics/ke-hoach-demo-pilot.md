@@ -6,7 +6,7 @@
 
 **2. Vật dụng hậu cần cần chuẩn bị:**
 - **Mã QR in sẵn:** Standee mini để bàn và phiên bản thẻ đeo nhỏ gọn (Đợi URL từ Backend để in).
-- **Thiết bị Demo:** 01 Laptop cài sẵn màn hình Streamlit Dashboard để trực quan hóa dữ liệu real-time.
+- **Thiết bị Demo:** 01 Laptop cài sẵn màn hình React Dashboard để trực quan hóa dữ liệu real-time.
 - **Nguồn điện:** Sạc dự phòng dung lượng cao và cáp sạc để đảm bảo Laptop/Điện thoại không sập nguồn trong quá trình demo liên tục.
 
 **3. Kịch bản mời khách (Dành cho Pilot tại UIT):**

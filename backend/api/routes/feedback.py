@@ -3,7 +3,7 @@ Feedback Endpoint — POST /api/v1/feedback
 ==========================================
 Author: Nguyễn Thanh Tuyền (AI & Data Architect)
 Giai đoạn: 3 (nhận + validate + fraud filter + lưu tạm)
-           Giai đoạn 4-6 sẽ thêm Whisper/Librosa/ABSA vào đây
+           Giai đoạn 4: Tích hợp Whisper STT — audio → transcript
 
 LUỒNG XỬ LÝ HIỆN TẠI (Giai đoạn 3):
   Nhận request → validate input → fraud filter → lưu audio tạm → trả response
@@ -25,6 +25,13 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from backend.api.middleware.fraud_filter import basic_fraud_filter
+from backend.ai_pipeline.stt_whisper import (
+    transcribe_audio,
+    WhisperError,
+    WhisperAuthError,
+    WhisperFormatError,
+    WhisperTimeoutError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +70,7 @@ class FeedbackAcceptedResponse(BaseModel):
     tenant_id: str
     location: str
     input_type: str           # "audio" | "text" | "audio_and_text"
+    transcript: str | None    # Giai đoạn 4: Kết quả STT từ Whisper (None nếu chỉ có text)
     is_suspicious: bool       # Kết quả từ fraud filter
     suspicious_reason: str | None  # Lý do nếu bị đánh dấu
 
@@ -234,10 +242,44 @@ async def submit_feedback(
             detail=f"Phản hồi không hợp lệ: {fraud_result.reason}",
         )
 
-    # --- Bước 4: Log kết quả (Giai đoạn 4-6 sẽ thay bằng xử lý AI thật) ---
+    # --- Bước 4: Whisper STT (Giai đoạn 4) ---
+    transcript: str | None = None
+
+    if has_audio and temp_audio_path:
+        try:
+            logger.info(f"[Feedback] Gọi Whisper STT cho request {request_id}")
+            transcript = transcribe_audio(temp_audio_path, language="vi")
+            logger.info(
+                f"[Feedback] Whisper trả về: {repr(transcript[:80])}"
+                f"{'...' if len(transcript) > 80 else ''}"
+            )
+        except WhisperAuthError as e:
+            logger.error(f"[Feedback] Lỗi API key Whisper: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"STT service không khả dụng (lỗi xác thực): {e}",
+            )
+        except WhisperFormatError as e:
+            logger.error(f"[Feedback] File audio không hợp lệ cho Whisper: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"File audio không xử lý được: {e}",
+            )
+        except WhisperTimeoutError as e:
+            logger.error(f"[Feedback] Whisper timeout: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+                detail=f"STT service tạm thời quá tải, thử lại sau.",
+            )
+        except WhisperError as e:
+            logger.error(f"[Feedback] Whisper lỗi không xác định: {e}")
+            # Không crash toàn bộ request — ghi nhận lỗi và để transcript = None
+            transcript = None
+
+    # --- Bước 5: Log trước khi trả response ---
     if fraud_result.is_suspicious:
         logger.warning(
-            f"[Feedback] Request {request_id} bị đánh dấu nghi ngờ: "
+            f"[Feedback] Request {request_id} bị đánh dấu ngại ngờ: "
             f"{fraud_result.reason} — vẫn xử lý tiếp"
         )
 
@@ -249,7 +291,6 @@ async def submit_feedback(
     else:
         input_type = "text"
 
-    # TODO (Giai đoạn 4): Gọi Whisper API để chuyển audio → text
     # TODO (Giai đoạn 5): Gọi Librosa để trích xuất MFCC/F0/Jitter/Shimmer
     # TODO (Giai đoạn 6): Gọi Gemini ABSA + Dynamic Weighted Fusion
     # TODO (Giai đoạn 7): Tính RFMS + P_churn
@@ -262,7 +303,7 @@ async def submit_feedback(
         f"| text_preview={repr((text_to_check or '')[:50])}"
     )
 
-    # --- Bước 5: Trả response 202 Accepted ---
+    # --- Bước 6: Trả response 202 Accepted ---
     return JSONResponse(
         status_code=status.HTTP_202_ACCEPTED,
         content=FeedbackAcceptedResponse(
@@ -275,6 +316,7 @@ async def submit_feedback(
             tenant_id=tenant_id,
             location=location,
             input_type=input_type,
+            transcript=transcript,
             is_suspicious=fraud_result.is_suspicious,
             suspicious_reason=fraud_result.reason if fraud_result.is_suspicious else None,
         ).model_dump(),
