@@ -15,6 +15,7 @@ Bao gồm test:
 
 import io
 import pytest
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 from backend.api.main import app
 
@@ -94,15 +95,17 @@ class TestAudioOnlyFeedback:
     def test_valid_audio_returns_202(self):
         """Gửi audio webm hợp lệ (10KB) → 202 Accepted."""
         audio_content = make_fake_audio(10_000)
-        response = client.post(
-            "/api/v1/feedback",
-            data=VALID_FORM_BASE,
-            files={"audio_file": ("feedback.webm", io.BytesIO(audio_content), "audio/webm")},
-        )
+        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"):
+            response = client.post(
+                "/api/v1/feedback",
+                data=VALID_FORM_BASE,
+                files={"audio_file": ("feedback.webm", io.BytesIO(audio_content), "audio/webm")},
+            )
         assert response.status_code == 202, response.text
         data = response.json()
         assert data["status"] == "accepted"
         assert data["input_type"] == "audio"
+        assert data["transcript"] == "Phục vụ tốt"  # Giai đoạn 4: phải có transcript
         assert len(data["request_id"]) == 36
 
     def test_audio_too_large_returns_413(self):
@@ -150,13 +153,15 @@ class TestAudioAndTextFeedback:
     def test_both_audio_and_text_returns_202(self):
         """Gửi cả audio + text → 202 với input_type='audio_and_text'."""
         audio_content = make_fake_audio(10_000)
-        response = client.post(
-            "/api/v1/feedback",
-            data={**VALID_FORM_BASE, "text_content": "Phục vụ tốt"},
-            files={"audio_file": ("feedback.webm", io.BytesIO(audio_content), "audio/webm")},
-        )
+        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"):
+            response = client.post(
+                "/api/v1/feedback",
+                data={**VALID_FORM_BASE, "text_content": "Phục vụ tốt"},
+                files={"audio_file": ("feedback.webm", io.BytesIO(audio_content), "audio/webm")},
+            )
         assert response.status_code == 202, response.text
         data = response.json()
         assert data["input_type"] == "audio_and_text"
         assert data["tenant_id"] == VALID_FORM_BASE["tenant_id"]
         assert data["location"] == VALID_FORM_BASE["location"]
+        assert data["transcript"] == "Phục vụ tốt"  # Whisper transcript có trong response
