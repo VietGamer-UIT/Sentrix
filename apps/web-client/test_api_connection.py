@@ -15,7 +15,7 @@ import sys
 import requests
 import json
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8001"
 
 def print_result(name, passed, detail=""):
     icon = "✅" if passed else "❌"
