@@ -1,23 +1,31 @@
 """
-Firestore Client — Khởi tạo kết nối Firebase Admin SDK
-========================================================
-Author: Nguyễn Thanh Tuyền (AI & Data Architect)
+Firestore Client — CRUD Operations (Multi-Tenant)
+===================================================
+Author: Nguyễn Thanh Tuyền (AI & Data Architect) — hỗ trợ bởi Đoàn Hoàng Việt
 Giai đoạn: 2 (khởi tạo client) + 8 (đọc/ghi dữ liệu thật)
+
+MÔ HÌNH DỮ LIỆU:
+  tenants/{tenant_id}/
+    feedbacks/{feedback_id}   — 1 lượt phản hồi
+    customers/{customer_id}  — hồ sơ khách hàng (RFMS + P_churn)
 
 CÁCH DÙNG:
     from backend.db.firestore_client import get_firestore_client
+    from backend.db import firestore_ops
 
-    db = get_firestore_client()
-    # Sau đó dùng db để thao tác Firestore (giai đoạn 8)
-    # doc = db.collection("tenants").document(tenant_id).get()
+    # Lưu feedback mới
+    feedback_id = await firestore_ops.save_feedback(tenant_id, feedback_data)
+
+    # Lấy hoặc tạo customer
+    customer = firestore_ops.get_or_create_customer(tenant_id, phone_number)
+
+    # Cập nhật RFMS + P_churn
+    firestore_ops.update_customer_rfms(tenant_id, customer_id, R, F, M, S, p_churn)
 
 BIẾN MÔI TRƯỜNG CẦN THIẾT (xem .env.example ở root repo):
     FIREBASE_CREDENTIALS_PATH  — đường dẫn đến file serviceAccountKey.json
-                                  Ví dụ: backend/serviceAccountKey.json
-    HOẶC (thay thế, dùng khi deploy lên Render.com để tránh lưu file JSON):
-    FIREBASE_PROJECT_ID        — Project ID của Firebase
-    FIREBASE_PRIVATE_KEY       — Private Key (dạng string, có \\n)
-    FIREBASE_CLIENT_EMAIL      — Client Email của Service Account
+    HOẶC:
+    FIREBASE_PROJECT_ID + FIREBASE_PRIVATE_KEY + FIREBASE_CLIENT_EMAIL
 
     Nếu có FIREBASE_CREDENTIALS_PATH → dùng file JSON (ưu tiên, dễ dùng local).
     Nếu không có file → fallback sang 3 biến riêng lẻ (phù hợp deploy production).
@@ -33,7 +41,6 @@ from firebase_admin import credentials, firestore
 logger = logging.getLogger(__name__)
 
 # Biến module-level để đảm bảo Firebase App chỉ khởi tạo 1 lần (singleton)
-# Firebase Admin SDK ném ValueError nếu bạn gọi initialize_app() 2 lần
 _firestore_client: Optional[firestore.Client] = None
 
 
@@ -44,13 +51,11 @@ def _initialize_firebase_app() -> None:
     Ưu tiên:
     1. File credentials JSON (FIREBASE_CREDENTIALS_PATH)
     2. Biến môi trường riêng lẻ (FIREBASE_PROJECT_ID + FIREBASE_PRIVATE_KEY + FIREBASE_CLIENT_EMAIL)
-    3. Application Default Credentials (khi chạy trên Google Cloud — không dùng ở đây)
 
     Raises:
         EnvironmentError: Nếu thiếu credentials và không thể khởi tạo.
         FileNotFoundError: Nếu FIREBASE_CREDENTIALS_PATH trỏ đến file không tồn tại.
     """
-    # Nếu đã có app rồi thì không khởi tạo lại
     if firebase_admin._apps:
         logger.debug("Firebase App đã được khởi tạo trước đó — bỏ qua.")
         return
@@ -58,7 +63,6 @@ def _initialize_firebase_app() -> None:
     cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "").strip()
 
     if cred_path:
-        # --- Cách 1: Dùng file serviceAccountKey.json ---
         if not os.path.exists(cred_path):
             raise FileNotFoundError(
                 f"[Firestore] FIREBASE_CREDENTIALS_PATH trỏ đến file không tồn tại: '{cred_path}'\n"
@@ -70,7 +74,6 @@ def _initialize_firebase_app() -> None:
         logger.info(f"[Firestore] Khởi tạo bằng file credentials: {cred_path}")
 
     else:
-        # --- Cách 2: Dùng biến môi trường riêng lẻ (cho production/Render.com) ---
         project_id = os.getenv("FIREBASE_PROJECT_ID", "").strip()
         private_key = os.getenv("FIREBASE_PRIVATE_KEY", "").strip()
         client_email = os.getenv("FIREBASE_CLIENT_EMAIL", "").strip()
@@ -92,8 +95,6 @@ def _initialize_firebase_app() -> None:
                 f"  → Xem .env.example ở root repo để biết format đúng."
             )
 
-        # FIREBASE_PRIVATE_KEY trong .env lưu dạng "-----BEGIN RSA...\\n..." (escaped \n)
-        # Cần replace "\\n" thành "\n" thực sự
         private_key = private_key.replace("\\n", "\n")
 
         cred = credentials.Certificate({
@@ -104,9 +105,7 @@ def _initialize_firebase_app() -> None:
             "token_uri": "https://oauth2.googleapis.com/token",
         })
         firebase_admin.initialize_app(cred)
-        logger.info(
-            f"[Firestore] Khởi tạo bằng biến môi trường. Project: {project_id}"
-        )
+        logger.info(f"[Firestore] Khởi tạo bằng biến môi trường. Project: {project_id}")
 
 
 def get_firestore_client() -> firestore.Client:
@@ -137,7 +136,6 @@ def get_firestore_client() -> firestore.Client:
         return _firestore_client
 
     except (EnvironmentError, FileNotFoundError) as e:
-        # Lỗi do thiếu/sai credentials — log rõ ràng, không crash im lặng
         logger.error(str(e))
         raise
 
@@ -155,7 +153,6 @@ def reset_firestore_client() -> None:
     """
     global _firestore_client
     _firestore_client = None
-    # Reset firebase app để có thể init lại với credentials khác khi test
     if firebase_admin._apps:
         for app in list(firebase_admin._apps.values()):
             firebase_admin.delete_app(app)
