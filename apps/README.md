@@ -1,18 +1,60 @@
 # 👑 LÃNH ĐỊA FRONTEND & DASHBOARD
-**Người cai quản:** Đoàn Hoàng Việt (Trưởng nhóm)
+
+> **📝 Cập nhật 2026-08-05:** Theo quyết định của trưởng nhóm **Việt**, frontend (`apps/`) hiện do **Tuấn** đảm nhận code trong giai đoạn này.
+> Việt sẽ tiếp quản lại sau khi backend (Tuyền) và frontend (Tuấn) đã có hình hài hoàn chỉnh.
+
+**Người code hiện tại:** Nguyễn Quốc Tuấn (`nguyenquoctuangm-code`)
+**Người cai quản gốc:** Đoàn Hoàng Việt (Trưởng nhóm) — sẽ tiếp quản lại sau giai đoạn này.
+
+---
 
 ## 📌 QUY TẮC CỦA LÃNH ĐỊA NÀY
-1. **Chỉ Việt mới được sửa code ở đây.** Tuyền và Tuấn nếu muốn thêm gì vào đây (ví dụ Tuyền muốn đổi biến môi trường) thì PHẢI nhắn Việt làm, hoặc Việt duyệt PR.
+
+1. **Chỉ Tuấn (tạm thời) và Việt (sau này) được sửa code ở đây.** Tuyền nếu cần thay đổi gì liên quan đến frontend thì nhắn Zalo cho Tuấn.
 2. Code Frontend phải chia Component rõ ràng, không viết nguyên 1 file 1000 dòng.
-3. Tuân thủ tuyệt đối thiết kế Figma mà Tuấn đã chốt. Nếu thấy thiết kế vô lý, nhắn Tuấn sửa Figma trước, code theo sau.
+3. Tuân thủ tuyệt đối thiết kế Figma và tài liệu UX/UI mà Tuấn đã chốt trong `design/ux-ui/`. Nếu thấy thiết kế vô lý, cập nhật `design/ux-ui/` trước, code theo sau.
+4. **KHÔNG được đụng vào `backend/`** dù chỉ để "tiện tay sửa" — chỉ được đọc để lấy thông tin API/schema.
 
-## 🎯 NHIỆM VỤ CỦA VIỆT
-Nơi đây chứa 2 ứng dụng chính:
-- `web-client/`: Giao diện cho khách hàng (Quét QR, ghi âm phản hồi).
-- `dashboard/`: Bảng điều khiển quản trị cho chủ quán (Xem thống kê, chỉ số churn).
+---
 
-## 📝 CHECKLIST CÔNG VIỆC BẮT ĐẦU CỦA VIỆT
-- [ ] 1. Di chuyển vào `web-client` và chạy lệnh tạo project Next.js/React.
-- [ ] 2. Dọn dẹp code rác mặc định của React. Cài TailwindCSS.
-- [ ] 3. Di chuyển vào `dashboard` và thiết lập môi trường Streamlit.
-- [ ] 4. Test chạy thử cả 2 app ở localhost và chụp hình gửi Zalo khoe team.
+## 🎯 NỘI DUNG 2 ỨNG DỤNG
+
+- `web-client/`: Giao diện cho **khách hàng** (Quét QR → Ghi âm phản hồi → Vòng quay may mắn).
+- `dashboard/`: Bảng điều khiển cho **chủ quán** (Xem KPI, sentiment, danh sách khách rủi ro Churn).
+
+---
+
+## 📚 NGUỒN THAM KHẢO BẮT BUỘC KHI CODE
+
+Không tự sáng tác thêm tính năng. Đây là nguồn sự thật duy nhất:
+
+| Tài liệu | Mục đích |
+|---|---|
+| `design/ux-ui/01-customer-flow/user-flow.md` | Luồng UX từng bước cho `web-client/` (6 bước, kèm rủi ro drop-off) |
+| `design/ux-ui/03-dashboard-reference/de-xuat-ux.md` | Layout và widget cụ thể cho `dashboard/` |
+| `design/ux-ui/figma-link.md` | Link Figma tham khảo phong cách UI (DashStack) |
+| `backend/db/schema.md` | Tên field Firestore chính xác — mock data PHẢI khớp field này |
+
+---
+
+## ⚡ TRẠNG THÁI API BACKEND (quan trọng — đọc trước khi code)
+
+| Endpoint | Trạng thái | Ghi chú |
+|---|---|---|
+| `GET /health` | ✅ **Có thật, hoạt động** | Kiểm tra server sống |
+| `POST /api/v1/feedback` | ✅ **Có thật, hoạt động** | Nhận audio/text từ khách, trả về `request_id` + `status`. Dùng multipart/form-data |
+| `POST /api/gamification/spin` | ❌ **CHƯA CÓ — dùng MOCK** | Chưa implement. Comment rõ `// MOCK` trong code, thay thật khi Tuyền báo xong |
+| Firestore KPI / customers | ❌ **CHƯA CÓ — dùng MOCK** | Dùng mock data khớp với `backend/db/schema.md` để build Dashboard trước |
+
+> **Quy tắc mock:** Mọi mock data phải dùng **đúng tên field** từ `backend/db/schema.md`. Không tự đặt tên field khác, tránh phải refactor lại khi nối thật.
+
+---
+
+## ✅ CHECKLIST CÔNG VIỆC (Tuấn)
+
+- [x] Giai đoạn 1: Cập nhật tài liệu minh bạch về thay đổi phân công
+- [ ] Giai đoạn 2: Dựng khung React (Vite) cho `web-client/`
+- [ ] Giai đoạn 3: Build đủ 5 màn hình `web-client/` theo `user-flow.md`
+- [ ] Giai đoạn 4: Nối `web-client/` với `POST /api/v1/feedback` thật
+- [ ] Giai đoạn 5: Build `dashboard/` với mock data khớp schema Firestore
+- [ ] Giai đoạn 6: Nối `dashboard/` với Firestore thật (chờ Tuyền báo sẵn sàng)
