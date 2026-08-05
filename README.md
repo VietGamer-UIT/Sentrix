@@ -6,12 +6,18 @@ Vì team mình toàn sinh viên năm nhất, chưa có nhiều kinh nghiệm là
 ## 🚨 NGUYÊN TẮC "LÃNH ĐỊA" (CẤM VI PHẠM)
 Hệ thống được chia thành 3 "lãnh địa" riêng biệt. **Nguyên tắc tối thượng:** Bạn chỉ được phép thêm/sửa/xóa file trong thư mục mà mình phụ trách. CẤM TUYỆT ĐỐI việc sửa code trong thư mục của người khác nếu chưa được sự đồng ý.
 
-- 👑 `apps/`: **Lãnh địa của VIỆT**. Gồm Web client (cho khách) & Dashboard (cho chủ quán).
+- 👑 `apps/`: **Lãnh địa của VIỆT** *(xem ghi chú cập nhật bên dưới)*. Gồm Web client (cho khách) & Dashboard (cho chủ quán).
 - 🧠 `backend/`: **Lãnh địa của TUYỀN**. Gồm API FastAPI, AI Pipeline, và Data models.
 - 🎨 `design/`: **Lãnh địa của TUẤN**. Gồm thiết kế Figma, UX/UI, tài liệu nghiên cứu.
 - 📚 `docs/`: Tài liệu chung (ai phụ trách mảng nào thì viết mảng đó).
 - 🚀 `deploy/`: Cấu hình đưa app lên mạng (Việt & Tuyền phối hợp).
 - 🖼️ `assets/`: File hình ảnh, logo, QR tĩnh.
+
+> **📝 Cập nhật 2026-08-05 — Thay đổi phân công tạm thời theo quyết định của trưởng nhóm:**
+> Trong giai đoạn hiện tại, **Tuấn đảm nhận việc code frontend** (`apps/web-client/`, `apps/dashboard/`) dựa trên wireframe UX/UI mà Tuấn đã thiết kế, theo quyết định của trưởng nhóm **Việt**.
+> Lý do: Backend (Tuyền) và Frontend cần có hình hài cụ thể sớm để team test end-to-end, trong khi Việt đang tập trung vào BMC, review code, chuẩn bị deploy và thuyết trình.
+> **Việt sẽ tiếp quản lại `apps/`** sau khi có bản frontend + backend hoàn chỉnh đầu tiên.
+> ⚠️ **Tuyền lưu ý:** Nếu thấy commit trong `apps/` từ tài khoản Tuấn — đây là có chủ đích theo thỏa thuận nhóm, không phải vi phạm lãnh địa. Mọi thắc mắc nhắn Zalo nhóm.
 
 > **Tips:** Nhờ việc chia "lãnh địa" này, khi các bạn làm việc và đẩy code lên, sẽ GẦN NHƯ KHÔNG BAO GIỜ bị conflict code với nhau!
 
