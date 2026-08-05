@@ -7,12 +7,16 @@ const MAX_DURATION_SEC = 15
 /**
  * RecordingPage — Bước 3 trong user-flow.md
  *
- * UX Requirements (từ user-flow.md):
- * - Giữ nút để ghi âm, thả để dừng
- * - Hiệu ứng sóng âm visual phản hồi tức thời
+ * UX Requirements:
+ * - Bấm nút → bắt đầu ghi âm ngay (không phải "giữ" — dễ hơn trên mobile)
+ * - Hiệu ứng sóng âm 7 bars phản hồi tức thời khi đang ghi
  * - Đồng hồ đếm ngược 15 giây, tự dừng khi hết giờ
- * - Nút phụ "gõ văn bản" thay thế
- * - Rủi ro: khách không biết mic có đang thu không → Visual rõ ràng
+ * - Cảnh báo màu vàng khi còn ≤ 5 giây
+ * - Nút phụ "gõ văn bản" thay thế cho người không muốn nói
+ * - Optimistic UI: navigate ngay, gửi API ngầm (không chờ server)
+ *
+ * Rủi ro (user-flow.md): Khách không biết mic có đang thu hay không
+ * Giải pháp: Waveform animation + text trạng thái rõ ràng + đếm ngược
  */
 function RecordingPage() {
   const [searchParams] = useSearchParams()
@@ -26,10 +30,11 @@ function RecordingPage() {
   const [isRecording, setIsRecording] = useState(false)
   const [timeLeft, setTimeLeft] = useState(MAX_DURATION_SEC)
   const [audioBlob, setAudioBlob] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [audioDurationSec, setAudioDurationSec] = useState(0)
   const [error, setError] = useState(null)
   const [textContent, setTextContent] = useState('')
   const [showText, setShowText] = useState(mode === 'text')
+  const [recordStartTime, setRecordStartTime] = useState(null)
 
   // === Refs ===
   const mediaRecorderRef = useRef(null)
@@ -40,20 +45,20 @@ function RecordingPage() {
   // Cleanup khi unmount
   useEffect(() => {
     return () => {
-      stopRecording()
+      clearInterval(timerRef.current)
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop())
       }
     }
   }, [])
 
-  // Countdown timer
+  // Countdown timer khi đang ghi
   useEffect(() => {
     if (isRecording) {
       timerRef.current = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            stopRecording()
+            handleStopRecording()
             return 0
           }
           return prev - 1
@@ -61,43 +66,52 @@ function RecordingPage() {
       }, 1000)
     }
     return () => clearInterval(timerRef.current)
-  }, [isRecording])
+  }, [isRecording]) // eslint-disable-line
 
-  const startRecording = useCallback(async () => {
+  const handleStartRecording = useCallback(async () => {
     setError(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
 
-      const recorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg'
-      })
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : 'audio/ogg'
+
+      const recorder = new MediaRecorder(stream, { mimeType })
       mediaRecorderRef.current = recorder
       chunksRef.current = []
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data)
       }
+
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: recorder.mimeType })
+        const blob = new Blob(chunksRef.current, { type: mimeType })
         setAudioBlob(blob)
-        // Dừng mic
         stream.getTracks().forEach(t => t.stop())
+        const elapsed = MAX_DURATION_SEC - timeLeft + 1
+        setAudioDurationSec(Math.min(elapsed, MAX_DURATION_SEC))
       }
 
-      recorder.start(100) // chunk mỗi 100ms để waveform mượt
+      recorder.start(200)
       setIsRecording(true)
+      setRecordStartTime(Date.now())
       setTimeLeft(MAX_DURATION_SEC)
     } catch (err) {
-      if (err.name === 'NotAllowedError') {
-        setError('Bạn cần cho phép truy cập microphone. Vui lòng thử lại.')
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Trình duyệt cần quyền truy cập microphone. Bấm vào biểu tượng 🔒 trên thanh địa chỉ để cho phép.')
+      } else if (err.name === 'NotFoundError') {
+        setError('Không tìm thấy microphone. Thử gõ văn bản nhé!')
       } else {
-        setError('Không thể khởi động microphone. Thử gõ văn bản nhé.')
+        setError('Không thể khởi động microphone. Thử chuyển sang gõ văn bản.')
       }
     }
-  }, [])
+  }, [timeLeft])
 
-  const stopRecording = useCallback(() => {
+  const handleStopRecording = useCallback(() => {
     clearInterval(timerRef.current)
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop()
@@ -105,47 +119,45 @@ function RecordingPage() {
     setIsRecording(false)
   }, [])
 
-  const handleRecordButton = () => {
+  const handleToggleRecord = () => {
     if (isRecording) {
-      stopRecording()
+      handleStopRecording()
     } else if (!audioBlob) {
-      startRecording()
+      handleStartRecording()
     }
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!audioBlob && !textContent.trim()) {
-      setError('Vui lòng ghi âm hoặc gõ phản hồi trước.')
+      setError('Vui lòng ghi âm hoặc gõ phản hồi trước khi gửi.')
       return
     }
 
-    setIsSubmitting(true)
-    setError(null)
-
-    // Optimistic UI: chuyển sang màn hình xác nhận NGAY (không chờ API)
-    // Gửi API chạy ngầm ở background — đúng theo user-flow.md Bước 4
+    // Optimistic UI: chuyển sang màn hình xác nhận NGAY — đúng user-flow.md Bước 4
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
 
-    // Gửi API ngầm sau khi đã navigate
+    // Gửi API ngầm sau khi đã navigate (fire-and-forget)
     submitFeedback({
       tenantId,
-      location,
-      audioBlob,
+      location: decodeURIComponent(location),
+      audioBlob: audioBlob || null,
       textContent: textContent.trim() || null
     }).catch(err => {
-      // Lỗi gửi ngầm — log để debug, không hiện cho user vì đã optimistic
-      console.error('[Feedback submit error]', err)
+      // Lỗi ngầm — log để debug, không ảnh hưởng UX
+      console.error('[Sentrix] Feedback submit failed silently:', err)
     })
   }
 
   const handleRetry = () => {
     setAudioBlob(null)
+    setAudioDurationSec(0)
     setTimeLeft(MAX_DURATION_SEC)
     setError(null)
+    setRecordStartTime(null)
   }
 
-  // Waveform bars (7 bars)
-  const waveformBars = Array.from({ length: 7 })
+  const isWarning = timeLeft <= 5 && isRecording
+  const waveformBars = [1, 2, 3, 4, 5, 6, 7]
 
   return (
     <div className="page">
@@ -153,131 +165,164 @@ function RecordingPage() {
       <div className="bg-glow bg-glow--accent" />
 
       <div className="page-content">
+
         {/* Header */}
         <div style={{ textAlign: 'center' }} className="fade-up">
           <h1 style={{ fontSize: 'var(--font-size-xl)' }}>
             {showText ? '✍️ Gõ phản hồi' : '🎙️ Ghi âm phản hồi'}
           </h1>
-          <span className="chip chip--location" style={{ marginTop: 8 }}>
-            📍 {decodeURIComponent(location)}
-          </span>
+          <div style={{ marginTop: 8 }}>
+            <span className="chip chip--location">📍 {decodeURIComponent(location)}</span>
+          </div>
         </div>
 
-        <div className="card fade-up fade-up--delay-1" style={{ textAlign: 'center' }}>
+        {/* === CHẾ ĐỘ GHI ÂM === */}
+        {!showText && (
+          <div className="card fade-up fade-up--delay-1" style={{ width: '100%', textAlign: 'center' }}>
 
-          {!showText ? (
-            /* === CHẾ ĐỘ GHI ÂM === */
-            <>
-              {/* Waveform visual */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--spacing-lg)' }}>
-                <div className={`waveform ${isRecording ? 'waveform--active' : ''}`}>
-                  {waveformBars.map((_, i) => (
-                    <div key={i} className="waveform-bar" />
-                  ))}
-                </div>
+            {/* Waveform animation */}
+            <div style={{ display: 'flex', justifyContent: 'center', height: 48, marginBottom: 'var(--spacing-md)' }}>
+              <div className={`waveform ${isRecording ? 'waveform--active' : ''}`}>
+                {waveformBars.map(i => (
+                  <div key={i} className="waveform-bar" style={{
+                    height: audioBlob ? '30%' : isRecording ? undefined : '20%',
+                    background: audioBlob
+                      ? 'linear-gradient(to top, #10B981, #34D399)'
+                      : 'linear-gradient(to top, var(--color-primary), var(--color-accent))'
+                  }} />
+                ))}
               </div>
+            </div>
 
-              {/* Countdown */}
-              <div className={`countdown ${timeLeft <= 5 ? 'countdown--warning' : ''}`}
-                   aria-live="polite" aria-label={`Còn ${timeLeft} giây`}>
-                {audioBlob ? '✅' : `${timeLeft}s`}
-              </div>
-
-              <p style={{ fontSize: 'var(--font-size-sm)', margin: 'var(--spacing-md) 0' }}>
-                {isRecording
-                  ? 'Đang ghi... Nhả nút để dừng'
-                  : audioBlob
-                    ? 'Ghi âm xong! Bấm gửi hoặc ghi lại'
-                    : 'Giữ nút để bắt đầu ghi'}
-              </p>
-
-              {/* Nút ghi âm tròn lớn */}
-              {!audioBlob && (
-                <div style={{ display: 'flex', justifyContent: 'center', margin: 'var(--spacing-md) 0' }}>
-                  <button
-                    id="btn-hold-record"
-                    className={`btn-record ${isRecording ? 'btn-record--recording' : ''}`}
-                    onMouseDown={handleRecordButton}
-                    onTouchStart={(e) => { e.preventDefault(); if (!isRecording) startRecording() }}
-                    onMouseUp={() => { if (isRecording) stopRecording() }}
-                    onTouchEnd={(e) => { e.preventDefault(); if (isRecording) stopRecording() }}
-                    aria-label={isRecording ? 'Đang ghi âm, nhả để dừng' : 'Giữ để ghi âm'}
-                  >
-                    {isRecording ? (
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-                        <rect x="6" y="6" width="12" height="12" rx="2" />
-                      </svg>
-                    ) : (
-                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                        <line x1="12" y1="19" x2="12" y2="23" />
-                        <line x1="8" y1="23" x2="16" y2="23" />
-                      </svg>
-                    )}
-                  </button>
+            {/* Trạng thái + Countdown */}
+            <div style={{ minHeight: 40, marginBottom: 'var(--spacing-md)' }}>
+              {audioBlob ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 32 }}>✅</span>
+                  <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-success)', fontWeight: 600 }}>
+                    Ghi âm xong · {audioDurationSec}s
+                  </p>
                 </div>
-              )}
-
-              {/* Sau khi có audio blob */}
-              {audioBlob && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-md)' }}>
-                  <button id="btn-submit-audio" className="btn btn--primary" onClick={handleSubmit} disabled={isSubmitting}>
-                    {isSubmitting ? 'Đang gửi...' : '🚀 Gửi phản hồi'}
-                  </button>
-                  <button id="btn-retry-record" className="btn btn--secondary" onClick={handleRetry}>
-                    🔄 Ghi lại
-                  </button>
+              ) : isRecording ? (
+                <div>
+                  <div className={`countdown ${isWarning ? 'countdown--warning' : ''}`}
+                       aria-live="polite" aria-label={`Còn ${timeLeft} giây`}>
+                    {timeLeft}s
+                  </div>
+                  <p style={{ fontSize: 'var(--font-size-xs)', color: isWarning ? 'var(--color-warning)' : 'var(--color-text-muted)', marginTop: 4 }}>
+                    {isWarning ? '⚡ Gần xong rồi!' : 'Đang ghi... Bấm lại để dừng'}
+                  </p>
                 </div>
-              )}
-            </>
-          ) : (
-            /* === CHẾ ĐỘ GÕ TEXT === */
-            <>
-              <div className="input-group" style={{ textAlign: 'left' }}>
-                <label className="input-label" htmlFor="text-feedback">
-                  Phản hồi của bạn
-                </label>
-                <textarea
-                  id="text-feedback"
-                  className="textarea"
-                  placeholder="Nhập cảm nhận của bạn về dịch vụ hôm nay..."
-                  value={textContent}
-                  onChange={(e) => setTextContent(e.target.value)}
-                  maxLength={2000}
-                  rows={4}
-                />
-                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', textAlign: 'right' }}>
-                  {textContent.length}/2000
+              ) : (
+                <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+                  Bấm nút để bắt đầu ghi âm
                 </p>
+              )}
+            </div>
+
+            {/* Nút ghi âm tròn lớn */}
+            {!audioBlob && (
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--spacing-md)' }}>
+                <button
+                  id="btn-toggle-record"
+                  className={`btn-record ${isRecording ? 'btn-record--recording' : ''}`}
+                  onClick={handleToggleRecord}
+                  aria-label={isRecording ? 'Đang ghi âm, bấm để dừng' : 'Bấm để ghi âm'}
+                >
+                  {isRecording ? (
+                    /* Icon Stop */
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="6" width="12" height="12" rx="2"/>
+                    </svg>
+                  ) : (
+                    /* Icon Mic */
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                         stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                      <line x1="12" y1="19" x2="12" y2="23"/>
+                      <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                  )}
+                </button>
               </div>
-              <button
-                id="btn-submit-text"
-                className="btn btn--primary"
-                onClick={handleSubmit}
-                disabled={isSubmitting || textContent.trim().length === 0}
-                style={{ marginTop: 'var(--spacing-md)' }}
-              >
-                {isSubmitting ? 'Đang gửi...' : '🚀 Gửi phản hồi'}
-              </button>
-            </>
-          )}
+            )}
 
-          {/* Error message */}
-          {error && (
-            <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-md)' }}>
-              ⚠️ {error}
-            </p>
-          )}
-        </div>
+            {/* Sau khi có audio blob */}
+            {audioBlob && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                <button id="btn-submit-audio" className="btn btn--primary" onClick={handleSubmit}>
+                  🚀 Gửi phản hồi
+                </button>
+                <button id="btn-retry-record" className="btn btn--secondary" onClick={handleRetry}>
+                  🔄 Ghi lại
+                </button>
+              </div>
+            )}
 
-        {/* Toggle giữa audio và text */}
+            {/* Error */}
+            {error && (
+              <p style={{
+                color: 'var(--color-danger)',
+                fontSize: 'var(--font-size-sm)',
+                marginTop: 'var(--spacing-md)',
+                lineHeight: 1.5
+              }}>
+                ⚠️ {error}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* === CHẾ ĐỘ GÕ TEXT === */}
+        {showText && (
+          <div className="card fade-up fade-up--delay-1" style={{ width: '100%' }}>
+            <div className="input-group">
+              <label className="input-label" htmlFor="text-feedback">
+                Cảm nhận của bạn
+              </label>
+              <textarea
+                id="text-feedback"
+                className="textarea"
+                placeholder="Ví dụ: Đồ ăn ngon, nhân viên thân thiện. Nhưng hơi chờ lâu..."
+                value={textContent}
+                onChange={(e) => { setTextContent(e.target.value); setError(null) }}
+                maxLength={2000}
+                rows={5}
+                autoFocus
+              />
+              <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', textAlign: 'right' }}>
+                {textContent.length} / 2000
+              </p>
+            </div>
+
+            {error && (
+              <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', margin: 'var(--spacing-sm) 0' }}>
+                ⚠️ {error}
+              </p>
+            )}
+
+            <button
+              id="btn-submit-text"
+              className="btn btn--primary"
+              onClick={handleSubmit}
+              disabled={textContent.trim().length < 2}
+              style={{ marginTop: 'var(--spacing-md)' }}
+            >
+              🚀 Gửi phản hồi
+            </button>
+          </div>
+        )}
+
+        {/* Toggle giữa audio / text */}
         <button
+          id="btn-toggle-mode"
           className="btn btn--ghost"
-          onClick={() => { setShowText(!showText); setError(null); setAudioBlob(null) }}
+          onClick={() => { setShowText(!showText); setError(null); handleRetry() }}
         >
           {showText ? '🎙️ Chuyển sang ghi âm' : '✍️ Thích gõ hơn?'}
         </button>
+
       </div>
     </div>
   )
