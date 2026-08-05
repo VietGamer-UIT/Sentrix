@@ -1,0 +1,3179 @@
+#1
+Phòng ốc có thiết kế đẹp, vệ sinh đảm bảo.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#2
+Nếu số lượng món ăn nhiều hơn thì tốt biết mấy.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#3
+Ngay chợ và Hồ Xuân Hương.
+{LOCATION#GENERAL, positive}
+
+#4
+Nhân viên có phong cách phục vụ lịch sự, ân cần.
+{SERVICE#GENERAL, positive}
+
+#5
+Về phòng ốc thì tôi không cần phải nói nhiều nữa, vì chất lượng đã rất tốt rồi.
+{ROOMS#QUALITY, positive}
+
+#6
+Tuy nhiên, ăn sáng không được phong phú và không hợp khẩu vị lắm.
+{FOOD&DRINKS#QUALITY, negative}, {FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#7
+Khi đến nhận phòng tại khách sạn TTC Hotel Premium Ngọc Lan Ngọc Lan Đà Lạt thì hơi bất ngờ vì tôi đặt phòng deluxe 1 giường đôi nhưng khách sạn lại đưa tôi 2 giường đơn.
+{HOTEL#GENERAL, negative}
+
+#8
+Thái độ phục vụ của nhân viên cũng thân thiện, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#9
+Nên lần này tôi đặt phòng cho bạn của tôi khi họ đến Đà Lạt, họ cũng không phàn nàn gì khi ở đây.
+{HOTEL#GENERAL, positive}
+
+#10
+Vị trí trung tâm, nhân viên nhiệt tình, phòng ốc tạm ổn, so với giá cả thì quá ok.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#PRICES, positive}, {ROOMS#QUALITY, neutral}
+
+#11
+Trong chuyến đi vừa rồi thì tôi đã chọn Khách Sạn TTC Hotel Premium Ngọc Lan là nơi để nghỉ ngơi.
+{HOTEL#GENERAL, neutral}
+
+#12
+Phòng ốc cũng sạch sẽ, tươm tất, nội thất trong phòng cũng trang bị đầy đủ.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#13
+Lúc đầu tôi thấy không vui lắm, tại vì họ xếp tôi ở căn phòng gác mái.
+{ROOMS#COMFORT, negative}, {ROOMS#DESIGN&FEATURES, negative}
+
+#14
+Nhưng view không đẹp như mong đợi.
+{HOTEL#GENERAL, neutral}
+
+#15
+Trang thiết bị, tiện nghi khách sạn cung cấp khá đầy đủ.
+{FACILITIES#GENERAL, positive}
+
+#16
+Phòng ở được giữ vệ sinh sạch sẽ, tiện nghi, trang thiêt bị trong phòng khách sạn trang bị đầy đủ hơn nữa nhân viên nơi này phục vụ rất chu đáo, nhiệt tình.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}, {ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#17
+Cách bố trí trang thiết bị hợp lý, các tiện nghi khang trang, dọn phòng kỹ lưỡng, gọn gàng.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#18
+khách sạn dịch vụ tốt.
+{SERVICE#GENERAL, positive}
+
+#19
+Tuy nhiên buffet cuối tuần k quá ngon nên các bạn không nên thử.
+{FOOD&DRINKS#QUALITY, negative}
+
+#20
+Khách sạn Ngọc Lan Đà Lạt có vị trí nằm gần trung tâm nên đi lại thuận tiện, dịch vụ phòng ốc ở đây cũng tốt, vệ sinh phòng sạch sẽ, gọn gàng, tiện nghi đầy đủ, nhân viên thì lịch sự, vui vẻ, mọi thứ đều ổn, giá cả cũng khá hợp lý, tôi khá hài lòng khi nghỉ tại đây.
+{LOCATION#GENERAL, positive}, {ROOMS#QUALITY, positive}, {ROOMS#CLEANLINESS, positive}, {HOTEL#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#PRICES, positive}, {HOTEL#COMFORT, positive}
+
+#21
+Chỉ có bữa sáng ở đây là tôi thấy chưa được ưng ý lắm, ít món ăn nên cũng không ngon.
+{FOOD&DRINKS#QUALITY, negative}
+
+#22
+Nhân viên chưa được niềm nở, biểu cảm khuôn mặt quá chán.
+{SERVICE#GENERAL, negative}
+
+#23
+Tôi có đặt dùm khách của tôi phòng ở khách sạn Ngọc Lan và khi khách đi về thì không có phàn nàn gì về dịch vụ cả, nhìn chung là hài lòng khi nghỉ tại đây, phòng ốc, mọi thứ đạt tiêu chuẩn và đạt yêu cầu.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}, {ROOMS#QUALITY, positive}
+
+#24
+Nếu đánh giá về tiêu chuẩn thì khách sạn này chưa đạt chuẩn 4  sao, cửa phòng tôi không kín, hệ thống cách âm không tốt nên tôi bị ảnh hưởng bởi tiếng động bên ngoài ; buffet ít món ; khi tôi sử dụng dịch vụ ở nhà hàng bên dưới khách sạn thì nhận xét về nhân viên ở đây chưa năng động, thiếu chủ động trong việc phục vụ, khi khách yêu cầu thì mới phục vụ thì tôi thấy hơi mất thời gian nên chưa hài lòng.
+{HOTEL#QUALITY, negative}, {ROOM_AMENITIES#QUALITY, negative}, {ROOMS#COMFORT, negative}, {FOOD&DRINKS#STYLE&OPTIONS, negative}, {SERVICE#GENERAL, negative}
+
+#25
+Đặc biệt là căn phòng tôi ở được trang bị đầy đủ tiện nghi hữu dụng và không kém phần sạch sẽ.
+{ROOM_AMENITIES#GENERAL, positive},   {ROOMS#CLEANLINESS, positive}
+
+#26
+Tôi đánh giá khách sạn được 9 điểm, giá cả như vậy tôi thấy rất là hợp lý.
+{HOTEL#PRICES, positive}, {HOTEL#GENERAL, positive}
+
+#27
+Theo ý kiến cá nhân của tôi thì tôi rất hài lòng về khách sạn Ngọc Lan Đà Lạt khi tôi có đặt phòng tại đây trong chuyến đi vừa qua.
+{HOTEL#COMFORT, positive}
+
+#28
+Bên cạnh đó thì vị trí của khách sạn khá thuận tiện cho việc đi lại của tôi.
+{LOCATION#GENERAL, positive}
+
+#29
+Khách sạn Ngọc Lan có dịch vụ rất tốt, tôi rất thích và rất thoải mái khi nghỉ tại đây.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#30
+Khách sạn Ngọc Lan Đà Lạt có vị trí ở trung tâm nên đi lại rất thuận tiện, tuy nhiên, cũng do gần trung tâm nên không gian có vẻ hơi ồn ào và cũng hạn chế view đẹp, được cái thì phòng ốc của khách sạn hơi nhỏ nhưng tiện nghi rất đầy đủ, vệ sinh sạch sẽ, đúng tiêu chuẩn 4  sao.
+{LOCATION#GENERAL, positive}, {HOTEL#COMFORT, negative}, {ROOMS#DESIGN&FEATURES, negative}, {ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {HOTEL#QUALITY, positive}
+
+#31
+Đầy đủ tiện nghi cơ bản phù hợp nhu cầu sử dụng.
+{ROOM_AMENITIES#GENERAL, positive}
+
+#32
+Khách sạn ở khu vực đông đúc nhưng trong phòng rất yên tĩnh, thoải mái để nghỉ ngơi, tiện nghi tương đối ổn.
+{HOTEL#COMFORT, positive}, {LOCATION#GENERAL, neutral}, {ROOM_AMENITIES#GENERAL, positive}
+
+#33
+Mọi dịch vụ ở đây đều tốt, tiện nghi đầy đủ, đáp ứng được nhu cầu sử dụng của tôi, vị trí thuận tiện đi lại và sinh hoạt vui chơi, thái độ phục vụ của nhân viên cũng vui vẻ và thân thiện.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {FACILITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#34
+Khách sạn Ngọc Lan phòng đẹp, vệ sinh sạch sẽ.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#35
+Phòng có tầm nhìn ra hồ và chợ đêm rất tuyệt.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#36
+Vì dịch vụ của khách sạn cũng giống như những khách sạn 2-3  sao không có điểm gì nổi bật.
+{SERVICE#GENERAL, negative}
+
+#37
+Vi trí khách sạn cũng ngay trung tâm rất thuận tiện cho tôi đi lại và di chuyển.
+{LOCATION#GENERAL, positive}
+
+#38
+Phục vụ chu đáo, nhân viên nhiệt tình, Vệ sinh cũng rất sạch sẽ.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#39
+Rất thoải mái.
+{HOTEL#COMFORT, positive}
+
+#40
+Vì vậy tôi thấy vệ sinh cũng không được tốt.
+{HOTEL#CLEANLINESS, negative}
+
+#41
+Nói chung là hài lòng, ngoại trừ sàn phòng lót bằng gỗ rất trơn, không phù hợp và an toàn cho trẻ em, nên thay bằng thảm.
+{HOTEL#GENERAL, positive}, {ROOM_AMENITIES#COMFORT, negative}
+
+#42
+địa điểm tốt, ăn sáng hơi kém, giá cả hơi đắt, nhưng có dịp sẽ ghé thăm nữa.
+{LOCATION#GENERAL, positive}, {FOOD&DRINKS#QUALITY, negative}, {HOTEL#PRICES, negative}
+
+#43
+Khách sạn nằm ở vị trí trung tâm, có thể xem bắn pháo hoa từ phòng nếu đặt hồ view.
+{LOCATION#GENERAL, positive}
+
+#44
+Gia đình tôi đã rất vui vì kì nghỉ này ngay lễ hội hoa Đà lạt.
+{HOTEL#GENERAL, neutral}
+
+#45
+Duy chỉ có một chút trục trặc:gối của khách sạn rất cao.
+{ROOM_AMENITIES#COMFORT, negative}
+
+#46
+Đặc biệt các nhân viên rất cởi mở và vui vẻ.
+{SERVICE#GENERAL, positive}
+
+#47
+Vệ sinh vô cùng sạch sẽ !
+{HOTEL#CLEANLINESS, positive}
+
+#48
+CẢm ơn Mytour đã chọn khách sạn giúp tôi, hẹn gặp lại các bạn vào dịp khác tôi sẽ liên hệ Mytour.
+{HOTEL#GENERAL, neutral}
+
+#49
+Họ đã sắp xếp phòng cho chúng tôi rất lãng mạn, ngọt ngào làm chúng tôi cảm giác thật hạnh phúc.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#COMFORT, positive}
+
+#50
+THức ăn sáng rất ngon, nhân viên tiếp đón nhiệt tình.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#51
+Chúng tôi cảm thây yêu sự bình yên của Đà Lạt, xen lẫn cái hối hả nhộn nhịp của dòng người đang lưu thông trên đường.
+{HOTEL#GENERAL, neutral}
+
+#52
+Việc xây dựng rất ồn ào.
+{HOTEL#MISCELLANEOUS, positive}, {HOTEL#COMFORT, negative}
+
+#53
+Phủ đầy sương vào buổi tối trong ánh đèn vàng đường phố hay mờ ảo trong sương vào buổi sáng sớm.
+{HOTEL#GENERAL, neutral}
+
+#54
+Chúng tôi đã có những giây phút thư giãn thoải mái tại đây.
+{HOTEL#COMFORT, positive}
+
+#55
+Cũng rất nhiệt tình và vui vẻ.
+{SERVICE#GENERAL, positive}
+
+#56
+Nhưng nếu mở cửa sổ, cửa ra lang cang thì lại dễ bị muỗi - đặc biệt không hiểu  sao muỗi ở Đà Lạt lại to đến vậy.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOMS#COMFORT, negative}
+
+#57
+Khách Sạn Saphir Đà Lạt đáp ứng được các yêu cầu của tôi về phòng ốc như:phòng có một giường đôi, phòng không hút thuốc, phòng ở tầng cao.
+{ROOMS#GENERAL, positive}
+
+#58
+Khách Sạn Saphir Đà Lạt có lối kiến trúc cổ nên nhìn phòng ốc có vẻ hơi cũ.
+{HOTEL#DESIGN&FEATURES, negative}
+
+#59
+Về vệ sinh thì tương đối ổn, tiện nghi thì thiếu bình đun nước sôi nên khi nào cần nước nóng thì báo nhân viên đem lên.
+{HOTEL#CLEANLINESS, neutral}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#60
+Bữa sáng phong phú với nhiều sự lựa chọn.
+{FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#61
+Phòng ốc tại khách sạn Saphir Đà Lạt tôi nhận xét là được dọn dẹp sạch sẽ và cũng đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#62
+Giá cả khá tương xứng.
+{HOTEL#PRICES, positive}
+
+#63
+Trừ điểm này ra thì còn lại mọi thứ đều ổn từ hệ thống phòng ốc, nhân viên phục vụ đến tiện nghi đi kèm và vị trí cũng như giá cả.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#64
+Phòng thì hôi, dơ, ẩm thấp, có cửa sổ nhưng không thoáng và vệ sinh không sạch sẽ.
+{ROOMS#CLEANLINESS, negative},   {ROOMS#COMFORT, negative}
+
+#65
+Sau khi ở đây tôi có vài nhận xét về phòng ôc cũng tàm tạm, view không đẹp nên tôi không thích cho lắm.
+{HOTEL#GENERAL, negative}, {ROOMS#GENERAL, neutral}
+
+#66
+Phòng ốc cũng được, nhân viên lễ tân thái độ niềm nở, vị trí thì gần trung tâm và giá cả cũng khá ok.
+{ROOMS#GENERAL, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#67
+Chất lượng phòng nghỉ phù hợp với nhu cầu nghỉ ngơi, tiện nghi được trang bị đầy đủ, họ chuẩn bị phòng ốc khá chu đáo, ngăn nắp.
+{ROOM_AMENITIES#GENERAL, positive},   {ROOMS#QUALITY, positive}
+
+#68
+Phòng ốc vệ sinh ổn, tiện nghi cơ bản tương đối đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#GENERAL, positive}
+
+#69
+Nhân viên khách sạn làm việc cũng tốt.
+{SERVICE#GENERAL, positive}
+
+#70
+Bữa sáng phong phú với nhiều sự lựa chọn món ăn.
+{FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#71
+Đã nhiều lần tôi chọn khách sạn Saphir Đà Lạt để đặt phòng vì nơi này có những dịch vụ ok tôi rất hài lòng, nhân viên nhiệt tình, lịch sự với khách hàng, phòng ở được giữ vệ sinh sạch sẽ và những tiện nghi, thiết bị trong phòng đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#72
+Nếu với mức giá như thế là không xứng đáng, chuyến này tôi chẳng hài lòng.
+{HOTEL#PRICES, negative}, {HOTEL#COMFORT, negative}
+
+#73
+Trong chuyến du lịch đến Đà Lạt vừa rồi, tôi đã chọn dịch vụ mà khách sạn Saphir.
+{HOTEL#GENERAL, positive}
+
+#74
+Điều kiện vệ sinh tốt, phòng được dọn dẹp thường xuyên.
+{ROOMS#CLEANLINESS, positive}
+
+#75
+Khách sạn Saphir Đà Lạt có dịch vụ tốt, mọi thứ đều ok, phòng ốc sạch sẽ và đầy đủ tiện nghi.
+{HOTEL#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#76
+Phòng ốc khách sạn rộng rãi, thiết kế đẹp và nội thất trong phòng bố trí hợp lý.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#77
+Nhân viên phục vụ thân thiện, lễ tân vui vẻ hướng dẫn khách.
+{SERVICE#GENERAL, positive}
+
+#78
+Khách sạn Saphir ở Đà Lạt lần này tôi cảm thấy chưa hài lòng khi chọn dịch vụ tại đây:Phòng ốc đồ đạc cũ kỹ, mà phòng tôi ở là phòng đầu tiên, gần lễ tân nên rất ồn, không có hệ thống cách âm nên rất khó ngủ, nhưng được một điểm là nhân viên ở đây cũng vui vẻ thân thiện và nhiệt tình, .
+{SERVICE#GENERAL, positive}, {ROOM_AMENITIES#QUALITY, negative}, {HOTEL#COMFORT, negative}, {ROOM_AMENITIES#QUALITY, negative}
+
+#79
+Tuy nhiên phục vụ bữa sáng chưa được đa dạng lắm.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#80
+Nhìn chung khách sạn sạch sẽ, cơ sở vật chất tốt, đồ ăn sáng hơi nghèo nàn nhưng tạm ổn so với tiêu chuẩn 4  sao.
+{HOTEL#CLEANLINESS, positive}, {FOOD&DRINKS#STYLE&OPTIONS, negative}, {FACILITIES#GENERAL, neutral}
+
+#81
+Tôi đã nghỉ lại khách sạn Saphir trong chuyến du lịch ngắn ngày của tôi tại Đà Lạt.
+{HOTEL#GENERAL, positive}
+
+#82
+Khách sạn sạch sẽ, nội thất đầy đủ, khá khang trang nên trong thời gian nghỉ ngơi lại đây tôi ở cũng cảm thấy thoải mái.
+{HOTEL#CLEANLINESS, positive}, {HOTEL#COMFORT, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#83
+Giá cả khi đặt qua mytour tôi thấy cũng khá hợp lý.
+{HOTEL#PRICES, positive}
+
+#84
+Không gian mát mẻ, phòng ốc tiện nghi, vệ sinh tươm tất, nhân viên phục vụ thì vừa vui vẻ vừa nhiệt tình nên tôi cũng tương đối có ấn tượng với khách sạn này.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#COMFORT, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#85
+Căn phòng tôi ở trông cũng thoáng mát và sạch sẽ nên nhìn chung tôi thấy dịch vụ như vậy cũng tốt rồi.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#86
+Bốn là, bữa sáng tại khách sạn thì không được phong phú và hầu như toàn những món đồ khô nên chưa được tốt cho lắm.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#87
+Tôi có đặt phòng tại khách sạn Saphir Đà Lạt thông qua hệ thống mytour dùm 1 người bạn.
+{HOTEL#GENERAL, positive}
+
+#88
+Phòng ốc ở khách sạn Saphir này cũng khá ổn, vệ sinh trong phòng khá sạch sẽ, nhưng tiện nghi thì nhìn khá cũ, tv thì cũ, trong phòng cũng thiếu một số tiện nghi như bình đun nước hay nước uống miễn phí.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#QUALITY, negative}, {ROOMS#GENERAL, positive}
+
+#89
+Nhìn chung, tôi thấy khá hài lòng khi nghỉ tại đây.
+{HOTEL#COMFORT, positive}
+
+#90
+Thức ăn ở đây cũng hơi nguội do cách bảo quản đưa đến cho khách chưa được tốt.
+{FOOD&DRINKS#QUALITY, negative}
+
+#91
+Bữa ăn sáng phong phú và phù hợp khẩu vị với tôi.
+{FOOD&DRINKS#QUALITY, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#92
+Không có gì phàn nàn về dịch vụ ở đây cả.
+{SERVICE#GENERAL, positive}
+
+#93
+Với giá cả như vậy thì tôi thấy cũng khá hợp lý.
+{HOTEL#PRICES, positive}
+
+#94
+Khách sạn Saphir Đà Lạt có chất lượng và dịch vụ cũng ổn.
+{HOTEL#QUALITY, neutral}, {SERVICE#GENERAL, neutral}
+
+#95
+Vị trí thuận tiện cho việc đi lại trong chuyến công tác của tôi.
+{LOCATION#GENERAL, positive}
+
+#96
+Không gian xung quanh khách sạn cũng khá đẹp và thoáng.
+{HOTEL#GENERAL, positive}
+
+#97
+Bữa ăn có nhiều món để lựa chọn, các món ăn cũng ổn.
+{FOOD&DRINKS#QUALITY, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#98
+Khách sạn Saphir toạ lạc tại trung tâm thành phố Đà Lạt, gần chợ, khá thuận tiện đi lại, tham quan những địa điểm du lịch.
+{LOCATION#GENERAL, positive}
+
+#99
+Cảm ơn các bạn nhân viên Mytour đã hỗ trợ tôi đặt phòng.
+{HOTEL#GENERAL, positive}
+
+#100
+Giá như vậy là khá rẻ cho chất lượng 4  sao.
+{HOTEL#PRICES, positive}, {HOTEL#QUALITY, positive}
+
+#101
+Hôm tôi đến khách sạn xếp tôi phòng ở đưới tầng hầm, phòng vệ sinh thì có mùi hôi, khách sạn thì tối.
+{ROOM_AMENITIES#CLEANLINESS, negative}, {HOTEL#DESIGN&FEATURES, negative}
+
+#102
+Còn lại những tiện nghi và dịch vụ của khách sạn thì rất ok.
+{ROOM_AMENITIES#GENERAL, positive}
+
+#103
+Tiện nghi trong phòng cũng ổn, tuy nhiên tôi thấy diện tích phòng rất nhỏ và phòng tôi được xếp ở lầu trên cùng, tôi có con nhỏ nên thấy hơi bất tiện.
+{ROOMS#COMFORT, negative}, {ROOM_AMENITIES#GENERAL, negative}
+
+#104
+Khách Sạn Saphir Đà Lạt có tiêu chuẩn 4  sao nhưng không có máy điều hoà cũng không có máy quạt, mùa này thời tiết nóng nên tôi cảm thấy chưa được thoải mái lắm.
+{ROOM_AMENITIES#DESIGN&FEATURES, negative}, {ROOMS#COMFORT, negative}
+
+#105
+Khách Sạn Saphir Đà Lạt có kiến trúc và được bài trí theo phong cách cổ, nhưng diện tích phòng hơi nhỏ nên chưa được thoải mái lắm.
+{HOTEL#DESIGN&FEATURES, positive}, {ROOMS#DESIGN&FEATURES, negative}, {ROOMS#COMFORT, negative}
+
+#106
+Phục vụ nhiệt tình, dễ thương.
+{SERVICE#GENERAL, positive}
+
+#107
+Thái độ nhân viên phục vụ rất tốt, chỉ không hài lòng vì dù còn phòng trống nhưng khách sạn vẫn thu phí lấy phòng sớm 250 nghìn : Điểm tốt nhất của khách sạn là buffet cực ngon của 1 cô đầu bếp cực dễ thương:x Cám ơn bạn Phan Hoàng Diệu Thư, nhân viên chăm sóc khách hàng của mytour đã nhiệt tình hỗ trợ mình trong đơn đặt phòng này, dù mình thay đổi ngày đi đến 3 lần nhưng bạn vẫn nhiệt tình hỗ trợ.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#108
+Một nơi nổi tiếng với những khung cảnh hữu tình, thơ mộng.
+{HOTEL#GENERAL, positive}
+
+#109
+Phòng ở sạch sẽ, thái độ phục vụ của nhân viên khách sạn rất tốt, chu đáo, thân thiện.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, negative}
+
+#110
+Tôi rất hài lòng về Khách Sạn Saphir Đà Lạt, phòng thoáng mát, có view nhìn ra toàn thành phố rất đẹp, nhân viên lại nhiệt tình chu đáo.
+{ROOMS#GENERAL, positive}, {SERVICE#GENERAL, positive},   {ROOMS#COMFORT, positive}
+
+#111
+Khách sạn yên tĩnh mặc dù gần trung tâm.
+{LOCATION#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#112
+Không gian và phòng khách có thiết kế cá tính rất hợp để chụp ảnh ở đây.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#113
+ban đêm có thêm sữa nóng khá tốt.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#114
+Vì cảm giác nó hơi thấp hình như hợp khách tây hơn là khách Việt.
+{ROOMS#COMFORT, negative}
+
+#115
+Phòngsạch sẽ.
+{ROOMS#CLEANLINESS, positive}
+
+#116
+Điểm cộng cho khách sạn là Buffet sáng ở saphir phong phú và ngon, nội thất đẹp, wifi mạnh, gần chợ, phòng giống trong hình chụp.
+{FOOD&DRINKS#QUALITY, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}, {LOCATION#GENERAL, positive}, {FACILITIES#QUALITY, positive}
+
+#117
+Khung cảnh đẹp.
+{HOTEL#DESIGN&FEATURES, positive}, {HOTEL#GENERAL, positive}
+
+#118
+Phòng ốc cũng sạch sẽ tươm tất.
+{ROOMS#CLEANLINESS, positive}
+
+#119
+Khách sạn phục vụ bữa ăn đêm nên rất tiện cho khách lẻ, ngại đi ra ngoài khi trời lạnh.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#120
+Khách sạn Saphir Đà Lạt mới chỉ khai trương cách đây 2 tháng.
+{HOTEL#GENERAL, positive}
+
+#121
+Phụ vụ tận tình chu đáo, nhưng thật sự tốt nếu có thêm những hướng dẫn về đặc sản và đặc trưng tại địa phương ví dụ như những nơi ăn uống, tham quan, cảnh thiên nhiên.
+{SERVICE#GENERAL, positive}
+
+#122
+Người đàn ông lấy túi của chúng tôi và đưa chúng tôi đến phòng của chúng tôi thậm chí sẽ không chấp nhận tiền boa!
+{SERVICE#GENERAL, positive}
+
+#123
+Nhân viên tiếp đón khách lịch sự, thái độ hoà đồng.
+{SERVICE#GENERAL, positive}
+
+#124
+Còn vị trí thì không thuận tiện đi lại lắm.
+{LOCATION#GENERAL, negative}
+
+#125
+Nhân viên thì cũng vui vẻ và hiền.
+{SERVICE#GENERAL, positive}
+
+#126
+Bữa ăn sáng ít món.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#127
+Resort có 1 quầy bar nhỏ ở hồ bơi.
+{FACILITIES#DESIGN&FEATURES, neutral}
+
+#128
+Phòng ốc ở đây cũng được, vị trí thuận tiện đi lại.
+{LOCATION#GENERAL, positive}, {ROOMS#GENERAL, neutral}
+
+#129
+Mũi Né Paradise Beach Resort tôi có nghỉ ngơi trong chuyến đi vừa qua và đánh giá nơi này tốt.
+{HOTEL#GENERAL, positive}
+
+#130
+Tuy nhiên tôi có đem 1 cái ly và 1 cái muỗng ở trong phòng ra ngoài uống nước và để đó, chứ không đem về phòng.
+{FOOD&DRINKS#MISCELLANEOUS, neutral}
+
+#131
+Trong chuyến du lịch vừa qua tôi có đặt phòng tại Mũi Né Paradise Beach Resort và sau khi ở đây tôi có nhận xét như sau.
+{HOTEL#GENERAL, neutral}
+
+#132
+Nhân viên phục vụ cũng lịch sự, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#133
+Các tiện ích có đầy đủ và tương xứng với giá, không có gì phàn nàn khi nghỉ tại đây.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#134
+Khách sạn có bãi biển không được đẹp, bể bơi bẩn, phòng ốc có mùi hôi khó chịu, đồ ăn sáng không ngon.
+{ROOMS#CLEANLINESS, negative},   {FOOD&DRINKS#QUALITY, negative}, {FACILITIES#GENERAL, positive}, {FACILITIES#CLEANLINESS, negative}
+
+#135
+Không gian lại rộng rãi và thoáng mát nên khi nghỉ ngơi lại đây tôi thấy thoải mái.
+{HOTEL#DESIGN&FEATURES, positive},   {HOTEL#COMFORT, positive}
+
+#136
+Nhân viên phục vụ ok, chu đáo, hỗ trợ du khách tận tình.
+{SERVICE#GENERAL, positive}
+
+#137
+Phòng có diện tích vừa đủ, tiện nghi sắp xếp ngăn nắp.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#138
+Bữa sáng khá chán, bởi vì lượng khách ít nên resort không tổ chức buffet mà mỗi người chỉ chọn 1 món với tí hoa quả thôi.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#139
+Tôi cảm thấy sau khi khách sạn đổi chủ thì quá là tệ.
+{HOTEL#GENERAL, negative}
+
+#140
+Nhìn chung, thì dịch vụ ở Paradise  Mũi Né không có gì phàn nàn cả.
+{SERVICE#GENERAL, neutral}
+
+#141
+Phòng ốc có đỡ hơn nhưng trong phòng không đáp ứng được các tiện nghi thiết yếu nhất, không có cả điện thoại bàn.
+{ROOM_AMENITIES#GENERAL, negative}
+
+#142
+Tôi có nghỉ tại Paradise Beach Resort trong chuyến đi vừa rồi, tôi khá hài lòng và thoải mái khi nghỉ tại đây, như nhiều ý kiến đánh giá thì tôi thấy dịch vụ ở đây cũng ok, phòng sạch sẽ, đạt tiêu chuẩn và tương xứng với giá tiền.
+{ROOMS#CLEANLINESS, positive}, {HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}, {ROOMS#PRICES, positive}
+
+#143
+Ngoài ra, nhân viên cũng tích cực hỗ trợ khách.
+{SERVICE#GENERAL, positive}
+
+#144
+Ở đây có chỗ tắm nhưng không thích hợp lắm với tôi vì gia đình tôi có trẻ con nên muốn có bãi tắm riêng thì sẽ thuận tiện hơn.
+{FACILITIES#COMFORT, negative}
+
+#145
+Về phòng ốc ở resort thì ok nhưng ở đây có vẻ thiếu nhân viên vì khi tôi xuống ăn bữa sáng phải ngồi rất lâu mà không thấy ai đến hỏi thăm cả.
+{ROOMS#GENERAL, positive}, {SERVICE#GENERAL, negative}
+
+#146
+Cơ sở vật chất đã có hiện tượng xuống cấp, tiện nghi trong phòng quá cũ được cái là các bạn nhân viên dọn dẹp kĩ lưỡng nên còn tạm được.
+{ROOM_AMENITIES#QUALITY, negative}, {ROOMS#CLEANLINESS, positive}
+
+#147
+Hồ bơi khách sạn này không sạch, xung quanh có rát, hệ thống xử lý nước chưa tốt, không có bộ lọc mặc dù lúc nào cũng có người vớt rát nhưng không vớt sạch được, mỗi lần tắm xong thì mẹ con tôi đều bị nổi mẫn đỏ.
+{FACILITIES#CLEANLINESS, negative}, {FACILITIES#QUALITY, negative}
+
+#148
+Cần chú ý kiểm tra đồ đạc trong phòng để thay thế.
+{ROOM_AMENITIES#GENERAL, negative}
+
+#149
+Chuyến nghỉ dưỡng của tôi tại resort này đã rất thành công.
+{HOTEL#COMFORT, positive}
+
+#150
+Nhìn chung bị điểm trừ cho máy lạnh và 9 điểm cho những điểm khác.
+{HOTEL#GENERAL, neutral}
+
+#151
+Trong chuyến du lịch Phan Thiết vừa rồi, tôi có lưu trú lại Paradise  Mũi Né, tôi nhận thấy phòng ốc sạch sẽ, nhân viên lịch sự, vị trí thuận tiện nên nhìn chung cũng được.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#152
+Xét về tổng quan từ vị trí, tiện nghi đến thái độ phục vụ của nhân viên đều khiến tôi cảm thấy hài lòng.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {FACILITIES#COMFORT, positive}
+
+#153
+Nhìn chung, mọi thứ ở đây đều rất tốt.
+{HOTEL#GENERAL, positive}
+
+#154
+Trong chuyến du lịch vừa rồi tôi có lựa chọn resort Mũi Né Paradise Beach để lưu trú lại.
+{HOTEL#GENERAL, neutral}
+
+#155
+Phòng ở sạch sẽ, thoáng mát rộng rãi và đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#156
+Mũi Né Paradise Resort có khuôn viên rộng rãi, thoáng mát, vệ sinh sạch sẽ, tiện nghi đầy đủ, nhân viên resort hỗ trợ khách nhiệt tình, tôi cảm thấy chất lượng của resort tốt, tôi không có vấn đề gì phải phàn nàn cả.
+{SERVICE#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}, {HOTEL#CLEANLINESS, positive}, {HOTEL#COMFORT, positive}
+
+#157
+Chất lượng resort xứng tầm 3  sao.
+{HOTEL#QUALITY, neutral}
+
+#158
+Mùa này ở Mũi Né Paradise Beach Resort bãi biển rất nhiều rác nên không tắm được, mặc dù nhân viên ở đây cũng rất tích cực để dọn nhưng do thiên nhiên nên cũng không cải thiện được.
+{FACILITIES#CLEANLINESS, negative}
+
+#159
+View nhìn ra ngoài có phần hạn chế.
+{ROOMS#GENERAL, negative}
+
+#160
+Tuy nhiên để đi đến các nơi vui chơi ở Phan thiết thì hơi xa, hơi bất tiện.
+{LOCATION#GENERAL, negative}
+
+#161
+Phòng ốc cũng hết sức tiện nghi và thoải mái.
+{ROOM_AMENITIES#COMFORT, positive}
+
+#162
+Nhân viên cũng ổn, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#163
+Vậy nên tôi thấy hài lòng và sẽ tiếp tục đặt phòng khách sạn này.
+{HOTEL#COMFORT, positive}
+
+#164
+Và phong cách phục vụ thân thiện, nhiệt tình của nhân viên khiến tôi cảm thấy rất hài lòng.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#165
+Rất thích hợp cho nghĩ dưỡng cùng gia đình.
+{HOTEL#COMFORT, positive}
+
+#166
+Thứ nhất:khi bước vào phòng mở cửa ra tôi thấy có một mùi rất khó chịu.
+{ROOMS#CLEANLINESS, negative}
+
+#167
+Trong phòng không có điện thoại nên tôi phải đi xuống tận quầy lễ tân để gọi người lên sửa.
+{ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#168
+Mũi Né Paradise Beach Resort có kiến trúc đẹp, trang thiết bị đầy đủ và hiện đại.
+{FACILITIES#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#169
+Do lịch công tác dày nên nhà tôi chỉ lưu trú tại resort 1 ngày.
+{HOTEL#GENERAL, neutral}
+
+#170
+1 vài review của tôi:- Vị trí:Resort nằm cuối bãi biển nên bãi tắm không được đẹp, lại xa khu trung tâm ăn uống tầm 2 km - Phòng:nhà tôi lấy 2 loại phòng:garden view và beachPfront.
+{LOCATION#GENERAL, negative}
+
+#171
+Resort có chất lượng tốt, trang thiết bị đầy đủ và hiện đại.
+{FACILITIES#GENERAL, positive}, {HOTEL#QUALITY, positive}
+
+#172
+Chúng tôi đã có thời gian vui vẻ và thoái mái khi nghĩ dưỡng tại đây.
+{HOTEL#COMFORT, positive}
+
+#173
+Nhân viên nhiệt tình chỉ dẫn tôi cách di chuyển từ ga đến khách sạn, nên tôi không bị bỡ ngỡ khi vừa xuống tàu.
+{SERVICE#GENERAL, positive}
+
+#174
+Resort khá đẹp.
+{HOTEL#GENERAL, positive}
+
+#175
+Đồ ăn tại Nhà hàng của resort tương đối ngon.
+{FOOD&DRINKS#QUALITY, positive}
+
+#176
+May là mình ở đây có 1 đêm.
+{HOTEL#GENERAL, neutral}
+
+#177
+Máy sấy tóc không có, điện thoại trong phòng không có, mỗi lần muốn liên hệ lễ tân phải chạy ra tận quầy, mà không biết nhân viên lễ tân đi đâu mà lúc nào quầy cũng vắng tanh, phải chạy vòng vòng đi tìm, cũng may là khách sạn nhỏ xíu.
+{SERVICE#GENERAL, negative},   {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#178
+Phòng ốc gọn gàng, sạch sẽ, cung cấp đầy đủ vật dụng cho tôi sử dụng.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#179
+Dịch vụ tương xứng với giá tiền.
+{HOTEL#PRICES, positive}, {SERVICE#GENERAL, positive}
+
+#180
+Vị trí đi lại dễ dàng và giá cả phải chăng.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#181
+Nhân viên dọn dẹp vệ sinh phòng ở sạch sẽ.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#182
+Tôi hoàn toàn hài lòng về mọi dịch vụ cũng như chất lượng mà khách sạn Blue Sea đã cung cấp trong thời gian lưu trú tại đây cùng gia đình.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}, {HOTEL#QUALITY, positive}
+
+#183
+Các chị em gia đình tôi có kỳ nghỉ vui vẻ ở Vũng Tàu.
+{HOTEL#GENERAL, positive}
+
+#184
+TÔi hy vọng khách sạn sẽ sớm cải thiện để phục vụ được tốt hơn.
+{SERVICE#GENERAL, negative}
+
+#185
+Khách sạn Blue Sea có vị trí gần biển nên cũng khá thuận tiện cho việc nghỉ ngơi của gia đình tôi mà giá cả cũng hợp lí.
+{LOCATION#GENERAL, positive}
+
+#186
+Tuy nhiên nếu phòng có cách âm tốt hơn thì tôi sẽ đánh giá cao hơn.
+{ROOMS#DESIGN&FEATURES, negative}
+
+#187
+Phòng ốc được dọn dẹp vệ sinh sạch sẽ, tươm tất, nội thất được bố trí đầy đủ, tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#188
+Nhân viên khách sạn họ phục vụ khách hàng ổn, vui vẻ, nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#189
+Các bạn nhân viên khách sạn họ phục vụ khách hàng nhiệt tình, vui vẻ.
+{SERVICE#GENERAL, positive}
+
+#190
+Tôi đã có khoảng thời gian nghỉ ngơi thoải mái tại Khách sạn Blue Sea.
+{HOTEL#COMFORT, positive}
+
+#191
+Các bạn nhân viên làm việc tốt, vui vẻ, nhiệt tình với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#192
+Chỉ có 1 việc không vui là gạch lót thang máy bị bể, rất dễ bị đứt chân nếu đi tắm biển không mang dép theo.
+{FACILITIES#MISCELLANEOUS, negative}
+
+#193
+Theo tôi nhận thấy khách sạn này này có chất lượng đạt yêu cầu.
+{HOTEL#QUALITY, positive}
+
+#194
+YÊN TĨNH.
+{HOTEL#COMFORT, positive}
+
+#195
+Mà nhìn chung, ăn uống vậy cũng được rồi.
+{FOOD&DRINKS#QUALITY, positive}
+
+#196
+Tiện nghi, trang thiết bị được khách sạn cung cấp khá đầy đủ.
+{FACILITIES#GENERAL, positive}, {FACILITIES#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#197
+Các bạn tiếp tân khách sạn dễ thương, vui vẻ, nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#198
+Ở đây thuận lợi cho việc tắm biển.
+{LOCATION#GENERAL, positive}
+
+#199
+Nói chung tôi hài lòng khi chọn khách sạn này nghỉ ngơi.
+{HOTEL#COMFORT, positive}
+
+#200
+Bởi vì mọi thứ đều tốt lắm.
+{HOTEL#GENERAL, positive}
+
+#201
+Dịch vụ không có gì phàn nàn và tương xứng với giá cả.
+{HOTEL#PRICES, positive}, {SERVICE#GENERAL, positive}
+
+#202
+Diện tích căn phòng nhỏ, hơi có mùi, và nệm cứng.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOM_AMENITIES#COMFORT, negative}, {ROOMS#CLEANLINESS, positive}
+
+#203
+Nhân viên thì phục vụ tốt, vui vẻ, nhiệt tình với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#204
+Cơ sở vật chất rất cũ, như là khu nhà nghỉ chứ không xứng tầm gọi là khách sạn.
+{ROOM_AMENITIES#QUALITY, negative}
+
+#205
+Nhân viên có thái đọ lịch sự, nhiệt tình với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#206
+Tôi nhận thấy dịch vụ mà khách sạn này cung cấp khiến tôi hài lòng như nhân viên thân thiện, lịch sự với khách hàng, phòng ở thì được vệ sinh sạch sẽ, những tiện nghi, thiết bị trong phòng được khách sạn trang bị đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#207
+Vừa rồi tôi có đặt phòng ở khách sạn Blue Sea đánh giá tổng quan tôi thấy khách sạn này tốt, nhân viên ở đay họ thân thiện với khách hàng, phòng ở được vệ sinh sạch sẽ, tiện nghi trong phòng được trang bị đầy đủ.
+{HOTEL#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#208
+Căn phòng không quá tuyệt vời nhưng sạch sẽ, trang thiết bị cơ bản là đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#GENERAL, neutral}
+
+#209
+Tôi thấy dịch vụ ở Khách Sạn Blue Sea này được, các dịch vu như phòng ốc, tiện nghi, vệ sinh chung đều đạt tiêu chuẩn, sạch sẽ, đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive},   {HOTEL#CLEANLINESS, positive},   {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#210
+Về nhân viên phục vụ thì họ vui vẻ, địa điểm gần biển.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#211
+Ở Khách Sạn Blue Sea thì vị trí cũng đẹp, đi lại thuận tiện, phòng ở cũng ok, vệ sinh sạch sẽ, đầy đủ tiện nghi.
+{LOCATION#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#212
+Riêng cá nhân tôi cảm nhận thì khách sạn Blue Sea có chất lượng tốt, ở thoải mái.
+{HOTEL#COMFORT, positive}, {HOTEL#QUALITY, positive}
+
+#213
+Mọi người ở Khách Sạn Blue Sea đều nhiệt tình, cung cách phục vụ tốt.
+{SERVICE#GENERAL, positive}
+
+#214
+Tôi thấy việc này khá bất tiện.
+{ROOMS#COMFORT, negative}
+
+#215
+Địa điểm khách sạn nằm gần biển nên tiện lợi.
+{LOCATION#GENERAL, positive}
+
+#216
+Khách sạn Blue Sea là nơi tôi lựa chọn để dừng chân cho chuyến đi đến Vũng Tàu vừa qua của mình.
+{HOTEL#GENERAL, positive}
+
+#217
+Phòng ốc đảm bảo được các yêu cầu cơ bản về sự tiện nghi, cũng như sự sạch sẽ.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#218
+Tôi cảm thấy chất lượng dịch vụ của Khách Sạn Blue Sea tốt, bữa sáng phù hợp khẩu vị với tôi.
+{FOOD&DRINKS#QUALITY, positive}, {SERVICE#GENERAL, positive}
+
+#219
+Khách sạn có vị trí hơi xa trung tâm nên đi lại hơi bất tiện một chút.
+{LOCATION#GENERAL, negative}
+
+#220
+Ngoài ra, phòng ốc đầy đủ tiện nghi, tươm tất, giá cả thì phù hợp nên tôi chẳng có gì để phàn nàn cả.
+{ROOM_AMENITIES#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#221
+Tuy nhiên, bữa sáng phục vụ còn ít món và quang cảnh xung quanh chưa đẹp lắm vì khách sạn đang xây dựng.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}, {HOTEL#MISCELLANEOUS, positive}, {HOTEL#GENERAL, negative}
+
+#222
+Tôi có góp ý nhỏ với khách sạn là nên có xe đưa đón, để hỗ trợ khách đi ra biển và có xe hay nhân viên hỗ trợ xách hành lí cho khách thì dịch vụ sẽ tốt hơn.
+{SERVICE#GENERAL, negative}, {FACILITIES#GENERAL, negative}
+
+#223
+Nhìn chung, mọi thứ còn lại thì cũng khá ổn.
+{HOTEL#GENERAL, positive}
+
+#224
+Phòng ốc ở đây thì cũng ok, ở cũng được, nhân viên thì cũng vui vẻ và thân thiện với khách.
+{SERVICE#GENERAL, positive}, {ROOMS#GENERAL, positive}
+
+#225
+Tôi cảm thấy hài lòng và thoải mái khi nghỉ tại khách sạn Blue Sea.
+{HOTEL#COMFORT, positive}
+
+#226
+Phòng ốc khá là thoải mái, rộng rãi, khăn tắm thì không được sạch sẽ lắm nhưng vì tôi có mang khăn theo nên cũng không phản ánh với khách sạn.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#CLEANLINESS, negative}
+
+#227
+Tôi có đặt phòng cho người thân của tôi ở tại khách sạn Blue Sea trong chuyến đi vừa qua.
+{HOTEL#GENERAL, positive}
+
+#228
+Chúng tôi có chuyến đi vui vẻ và thành công khi chọn Blue Sea cho chuyến đi của mình, đặc biệt là nhân viên ở đây rất dễ thương, ai cũng nhiệt tình, chu đáo.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#229
+Vị trí cũng khá thuận tiện và gần biển.
+{LOCATION#GENERAL, positive}
+
+#230
+Khách sạn này tôi đã ở trước đó, cảm thấy tốt nên đã đặt lại trong chuyến đi vừa rồi.
+{HOTEL#GENERAL, positive}
+
+#231
+Giá phòng phải chăng, vừa túi tiền.
+{ROOMS#PRICES, positive}
+
+#232
+Về dịch vụ của khách sạn thì khá là ổn.
+{SERVICE#GENERAL, positive}
+
+#233
+Dịch vụ phòng ngủ tốt, nhân viên thân thiện và phục vụ nhanh chóng.
+{SERVICE#GENERAL, positive}
+
+#234
+Chuyến đi này tôi rất hài lòng.
+{HOTEL#COMFORT, positive}
+
+#235
+Sóng WIFI phủ đến phòng quá kém.
+{FACILITIES#QUALITY, negative}
+
+#236
+Nhà tắm 2 ngăn sạch sẽ, áp lực nước vòi sen rất lớn.
+{ROOM_AMENITIES#MISCELLANEOUS, negative}, {ROOM_AMENITIES#CLEANLINESS, positive}
+
+#237
+Chất lượng tương xứng với giá tiền mình bỏ ra.
+{HOTEL#QUALITY, positive}, {HOTEL#PRICES, positive}, {HOTEL#QUALITY, positive}
+
+#238
+Nhìn chung mọi thứ ở đây khá ổn.
+{HOTEL#GENERAL, positive}
+
+#239
+Tuy nhiên cách âm không dược tốt nên tôi thấy hơi ồn ào.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#COMFORT, positive}
+
+#240
+Khách sạn nằm ở vị trí yên tĩnh, thích hợp cho gia đình đi nghĩ dưỡng.
+{LOCATION#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#241
+Nhất là nước cam, chua không uống nổi luôn.
+{FOOD&DRINKS#QUALITY, negative}
+
+#242
+Nói chung mình và các bạn củng đi khá hài lòng.
+{HOTEL#COMFORT, positive}
+
+#243
+Nhân viên cũng rất nhiệt tình, có điều cách âm hơi bị kém.
+{SERVICE#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, negative}
+
+#244
+Phòng không máy sấy tóc, bình đun nước sôi pha trà.
+{ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#245
+Đặc biệt nhân viên tận tình và chu đáo.
+{SERVICE#GENERAL, positive}
+
+#246
+Vị trí gần bãi biển.
+{LOCATION#GENERAL, positive}
+
+#247
+Hồ bơi là của khu Resort Sơn Thuỷ bên cạnh và muốn bơi phải đi bộ sang và mua vé !
+{FACILITIES#MISCELLANEOUS, negative}
+
+#248
+Vị trí tốt, gần biển và rất yên tĩnh.
+{LOCATION#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#249
+Trừ điều đó ra thì tôi không than phiền gì, thái độ nhân viên khá tốt.
+{SERVICE#GENERAL, positive}
+
+#250
+Tôi lưu trú 1 đêm tại Khách Sạn Phương Huy 1 Đà Lạt nhưng cảm nhận của tôi về dịch vụ của khách sạn khá tốt.
+{SERVICE#GENERAL, positive}
+
+#251
+Bởi vì ai nấy đều nhiệt tình, vui vẻ hỗ trợ khách hàng.
+{SERVICE#GENERAL, positive}
+
+#252
+Vừa qua, tôi có chọn Khách Sạn Phương Huy 1 Đà Lạt làm nơi lưu trú của mình theo đánh giá của tôi thì dịch vụ ở đây chỉ ở mức trung bình, từ chất lượng phòng ốc đến thái độ làm việc của nhân viên.
+{SERVICE#GENERAL, neutral}, {ROOMS#QUALITY, neutral}
+
+#253
+Còn cơ sở vật chất thì rất là tệ, phòng ốc cũ kĩ, trang thiết bị cũng cũ, vệ sinh thì không sạch sẽ và wifi rất là yếu.
+{ROOMS#CLEANLINESS, negative}, {FACILITIES#QUALITY, negative}, {ROOM_AMENITIES#QUALITY, negative}
+
+#254
+Căn phòng sạch sẽ, gọn gàng.
+{ROOMS#CLEANLINESS, positive}
+
+#255
+Nên so sánh với số tiền bỏ ra thì tôi thấy hợp lý.
+{HOTEL#PRICES, positive}
+
+#256
+Đặt phòng nhưng tôi đi suốt nên không đánh giá được tất cả.
+{HOTEL#GENERAL, neutral}
+
+#257
+Nghỉ ngơi tại Khách Sạn Phương Huy 1 Đà Lạt tôi rất hài lòng, các dịch vụ đều rất tốt.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#258
+Với mức phí đã bỏ ra thì tôi nhận thấy khách sạn này có chất lượng cũng được.
+{HOTEL#PRICES, positive}, {HOTEL#QUALITY, positive}
+
+#259
+Nội thất, trang thiết bị cần thiết khách sạn cung cấp tương đối đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}
+
+#260
+Nhờ vào địa thế gần trung tâm, nên khi muốn đi đâu đều nhanh chóng, tiện lợi.
+{LOCATION#GENERAL, positive}
+
+#261
+Mọi dịch vụ tôi sử dụng đều tốt từ phòng ốc, tiện nghi đến thái độ nhân viên cũng như mức giá cả và vị trí di chuyển.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {ROOMS#GENERAL, positive}, {FACILITIES#GENERAL, positive}
+
+#262
+Nhìn chung thì hài lòng khi nghỉ ngơi tại Khách Sạn Phương Huy 1 Đà Lạt này.
+{HOTEL#COMFORT, positive}
+
+#263
+Còn về giường nệm thì ổn, không có nước suối miễn phí trong phòng.
+{ROOM_AMENITIES#QUALITY, positive}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#264
+Tuy nhiên thì phòng ốc ở đây tôi thấy có vẻ hơi cũ.
+{ROOMS#QUALITY, negative}
+
+#265
+Tôi đến vào dịp Khách Sạn Phương Huy 1 Đà Lạt này đang sửa chữa nên hơi bất tiện với tôi.
+{HOTEL#MISCELLANEOUS, positive}, {HOTEL#COMFORT, negative}
+
+#266
+Đánh giá về dịch vụ tại khách sạn Phương Huy 1 Đà Lạt như sau.
+{HOTEL#GENERAL, neutral}
+
+#267
+Phòng ốc thì không giống như quảng cáo, hơi cũ, tv cũng cũ và nhỏ, tủ lạnh thì không có và vệ sinh thì tương đối. Nhân viên thì thái độ lịch sự và lễ phép.Vị trí đi lại thuận tiện và giá cả thì hợp lý.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOM_AMENITIES#MISCELLANEOUS, negative}, {HOTEL#CLEANLINESS, neutral}
+
+#268
+Khách Sạn Phương Huy 1 Đà Lạt có chất lượng và dịch vụ cũng được.
+{HOTEL#QUALITY, positive}, {SERVICE#GENERAL, positive}
+
+#269
+Ngoài ra thì những điểm khác tôi thấy cũng được.
+{HOTEL#GENERAL, positive}
+
+#270
+Chỉ có điều Phươg Huy 2 không có thang máy, phải đi bộ lên lầu 3. mỏi chân.
+{FACILITIES#DESIGN&FEATURES, negative}
+
+#271
+Khi tôi vừa đến nhận phòng tại khách sạn Phương Huy 1 Đà Lạt thì nhân viên báo là hết phòng nên chuyển tôi qua khách sạn khác cùng hệ thống và tôi đánh giá dịch vụ ở đó cũng bình thường, chưa có gì nổi bật hết từ việc đi lại, ngủ nghỉ đến nhân viên phục vụ và giá cả.
+{SERVICE#GENERAL, neutral}
+
+#272
+Về chất lượng phòng ốc thì khá tốt, giữ gìn vệ sinh sạch sẽ, nội thất, tiện nghi đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#QUALITY, positive}, {ROOMS#CLEANLINESS, positive}
+
+#273
+Khách sạn PH1 cũ, nhưng giá cả rất hợp lý.
+{HOTEL#PRICES, positive}, {HOTEL#QUALITY, negative}
+
+#274
+Nhìn chung thì không có gì để phàn nàn về nơi này.
+{HOTEL#GENERAL, positive}
+
+#275
+Tôi rất hài lòng khi quyết định nghỉ ngơi tại khách sạn này từ đội ngũ nhân viên phục vụ khách hàng chuyên nghiệp đến phòng ốc chú ý giữ gìn vệ sinh chu đáo và bố trí vật dụng, nội thất cần thiết đầy đủ, gọn gàng.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {HOTEL#COMFORT, positive}
+
+#276
+Tôi đã chọn Khách Sạn Phương Huy 1 Đà Lạt là nơi để nghỉ ngơi trong chuyến đi vừa qua.
+{HOTEL#GENERAL, positive}
+
+#277
+Khi lưu trú tại Khách Sạn Phương Huy 1 chất lượng dịch vụ ở đây khá tốt.
+{SERVICE#GENERAL, positive}
+
+#278
+Khách sạn toạ lạc ở gần chợ nên việc di chuyển thuận tiện và dễ dàng.
+{LOCATION#GENERAL, positive}
+
+#279
+Tôi cảm thấy hài lòng khi quyết định chọn Khách Sạn Phương Huy 1 Đà Lạt để trú ngụ.
+{HOTEL#COMFORT, positive}
+
+#280
+Theo như phản hồi thì dịch vụ tốt, người nhà tôi không than phiền gì.
+{HOTEL#COMFORT, positive}
+
+#281
+Phòng được dọn dẹp sạch sẽ hàng ngày.
+{ROOMS#CLEANLINESS, positive}
+
+#282
+Nhìn chung cũng không phàn nàn nhiều về nơi này.
+{ROOMS#COMFORT, positive}
+
+#283
+Nhìn chung Khách sạn Phương Huy 1 Đà Lạt có dịch vụ ổn.
+{SERVICE#GENERAL, neutral}
+
+#284
+Khách sạn Phương Huy 1 Đà Lạt có vị trí trung tâm nên thuận tiện đi lại và cũng dễ tìm kiếm và chi phí cũng hợp lí.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#285
+Vị trí thuận tiện và giá cả bình thường.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#286
+Kì nghỉ vừa qua tôi có chọn điểm dừng chân là khách sạn Phương Huy 1 Đà Lạt và sau khi ở đây tôi có vài nhận xét sau.
+{HOTEL#GENERAL, positive}
+
+#287
+Chất lượng phòng ốc chưa tốt, một phần vì phòng cũ, một phần vì vật dụng trong phòng chưa thiết thực.
+{ROOMS#QUALITY, negative}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#288
+Thái độ nhân viên làm việc ok.
+{SERVICE#GENERAL, positive}
+
+#289
+Tôi có đặt giúp người nhà tôi 1 căn phòng ở Khách Sạn Phương Huy 1 để người nhà tôi lưu trú lại trong chuyến du lịch Đà Lạt.
+{HOTEL#GENERAL, positive}
+
+#290
+Chuyến đi du lịch đến Đà Lạt Tôi đã chọn dịch vụ khách sạn Phương Huy 1 để nghỉ lại và thấy phòng ốc ở đây đầy đủ tiện nghi, phục vụ ổn nhưng chưa ấn tượng và bắt mắt cho lắm chỉ tạm ổn và không có điều gì để phàn nàn khi đã chọn dịch vụ này.
+{SERVICE#GENERAL, neutral}, {ROOM_AMENITIES#GENERAL, neutral}
+
+#291
+Tôi hài lòng lắm khi quyết định chọn lựa Khách Sạn Phương Huy 1 để nghỉ ngơi trong đợt vừa rồi.
+{HOTEL#COMFORT, positive}
+
+#292
+Địa thế toạ lạc của Khách Sạn Phương Huy 1 rất tốt, nằm gần trung tâm nên đi lại dễ dàng lắm.
+{LOCATION#GENERAL, positive}
+
+#293
+Khi về được phản hồi là những dịch vụ khách sạn đang cung cấp đến khách hàng có chất lượng cũng bình thường, phòng ở cũng ổn.
+{HOTEL#QUALITY, neutral}, {ROOMS#GENERAL, neutral}
+
+#294
+Tiện nghi, trang thiết bị cơ bản trong phòng được khách sạn cung cấp tương đối đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}
+
+#295
+Nằm ở vị trí dễ dàng tìm kiếm và khá gần chợ cũng như những địa điểm khác nên chúng Tôi cảm thấy giá cả hợp lý và chất lượng phòng cũng rất ổn.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {ROOMS#QUALITY, positive}
+
+#296
+Giá cả không cao, giá tương xứng với dịch vụ, tôi hài lòng khi nghỉ tại đây.
+{HOTEL#PRICES, positive}, {HOTEL#COMFORT, positive}
+
+#297
+Địa điểm của khách sạn thích hợp cho việc đi du lịch khám phá của tôi vì nằm gần trung tâm thành phố.
+{LOCATION#GENERAL, positive}
+
+#298
+Chẳng gì phải phiền lòng.
+{HOTEL#COMFORT, positive}
+
+#299
+Trả lại phòng đơn tuy nhiên khách sạn lại không hoàn trả lại số tiền này cho chúng tôi.
+{SERVICE#GENERAL, negative}
+
+#300
+Tôi đánh giá cao dịch vụ ở khách sạn Phương Huy 1 này, dịch vụ rất ok, mọi thứ đều tốt, đạt tiêu chuẩn và tương xứng với giá cả.
+{SERVICE#GENERAL, positive}, {ROOMS#QUALITY, positive}, {ROOMS#PRICES, positive}, {ROOMS#GENERAL, positive}
+
+#301
+Khách sạn Phương Huy 1 là nơi mà tôi chọn cho mình khi vừa qua tôi có chuyến du lịch đến Đà Lạt.
+{HOTEL#GENERAL, positive}
+
+#302
+Thái độ phục vụ của nhân viên bình thường, mức giá hợp lý.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#303
+Về dịch vụ phòng ốc thì sạch sẽ, gọn gàng và đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#304
+Không có điều gì phát sinh khi tôi sử dụng dịch vụ tại đây cả.
+{HOTEL#COMFORT, positive}
+
+#305
+Khách sạn Phương Huy 1 là nơi mà tôi chọn khi có chuyến du lịch đến Đà Lạt, vị trí khách sạn nằm ngay trung tâm, gần chợ cũng như gần các điểm du lịch nên rất thuận lợi, phòng ốc được trang bị đầy đủ tiện nghi, vệ sinh sạch sẽ cũng như nhân viên ở đây cũng vui vẻ, nhiệt tình.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#CLEANLINESS, positive}
+
+#306
+Ngoài ra thì vị trí thuận lợi cho tôi đi lại, giá cả ok, nhân viên phục vụ chu đáo.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#307
+Nhìn chung dịch vụ tương xứng với tầm giá nên tôi ở cũng khá ưng ý.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#308
+Nhân viên phục vụ nhiệt tình, vị trí đi lại cũng thuận tiện cho tôi vì vậy khi có dịp đến Đà Lạt 1 lần nữa tôi sẽ tiếp tục chọn khách sạn này.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#309
+Khi nhận phòng thì tôi thấy phòng của tôi có diện tích hơi nhỏ, trần nhà thấp do vậy mà không gian hơi ngộp một tí.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#COMFORT, neutral}
+
+#310
+Nhân viên ở đây thì vui vẻ, lịch sự.
+{SERVICE#GENERAL, positive}
+
+#311
+Căn phòng mà tôi ở thì sạch sẽ và có máy nước nóng.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#MISCELLANEOUS, positive}
+
+#312
+Giá cả bình dân nhưng chất lượng thì cũng tương đối tốt.
+{HOTEL#PRICES, positive}, {HOTEL#QUALITY, positive}
+
+#313
+Phòng ốc sạch sẽ, tiện nghi đầy đủ, nhân viên cũng phục vụ chu đáo nên tôi cũng rất hài lòng với chi phí mà mình đã bỏ ra.
+{SERVICE#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#314
+Nhân viên nói chuyện cũng dễ thương.
+{SERVICE#GENERAL, positive}
+
+#315
+Sáng hôm sau, gia đình tôi có phản ánh lại vấn đề, lễ tân vẫn vui vẻ, nhiệt tình sắp xếp chỗ đỗ xe cho gia đình tôi cũng như thay chăn, drap.
+{SERVICE#GENERAL, positive}
+
+#316
+Vị trí khách sạn gần chợ Đà Lạt rất thuận tiện.
+{LOCATION#GENERAL, positive}
+
+#317
+Dịch vụ khách sạn tốt mà giá lại khá rẻ.
+{HOTEL#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#318
+Tôi rất hài lòng về nơi này và sẽ quay lại nếu có dịp.
+{HOTEL#COMFORT, positive}
+
+#319
+Khách sạn không có thang máy nên hơi bất tiện, tuy nhiên có thể yêu cầu nhân viên khiêng vali lên tân phòng.
+{SERVICE#GENERAL, positive}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#320
+Tuy là khách sạn 1  sao nhưng tôi không nghĩ khách sạn Phương Huy 1 lại có dịch vụ tốt như vậy.
+{SERVICE#GENERAL, positive}
+
+#321
+Khách sạn cần nâng cấp lại.
+{HOTEL#QUALITY, negative}
+
+#322
+Nếu có dịp quay lại tôi sẽ chọn Khách sạn Phương Huy.
+{HOTEL#GENERAL, positive}
+
+#323
+Khách sạn có vị trí tốt, tiện nghi sang trọng, phục vụ nhiệt tình, vệ sinh sạch sẽ, giá cả vào ngày lễ hơi cao so với chất lượng.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, negative}, {HOTEL#CLEANLINESS, positive}, {HOTEL#QUALITY, negative}, {ROOM_AMENITIES#DESIGN&FEATURES, positive}
+
+#324
+Vị trí thuận tiện, phòng nghỉ sạch sẽ, nhân viên nhiệt tình.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#325
+Phòng để 1 cái hơi bất tiện, vì là phòng 2 người.
+{ROOM_AMENITIES#COMFORT, negative}
+
+#326
+Khách sạn bình dân với mức giá 200.000 đồng / đêm với thái độ nhân viên phục vụ tốt, niềm nở.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#327
+Chỉ là hơi xa trung tâm 1 chút, nên phải đi xe máy.
+{LOCATION#GENERAL, negative}
+
+#328
+Phòng rộng rãi, nhân viên ân cần, lịch sự, vị trí trung tâm, tiện lợi đi tham quan các địa điểm nổi tiếng ở Đà Lạt.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, positive}
+
+#329
+Ngoài 2 vđề nêu trên, tôi khá hài lòng với nơi đây.
+{HOTEL#COMFORT, positive}
+
+#330
+Trừ việc đó ra thì tôi không than phiền gì.
+{HOTEL#COMFORT, positive}
+
+#331
+Mọi dịch vụ vẫn đáp ứng tốt từ vấn đề phòng ở, ăn uống đến nhân viên phục vụ, vị trí đi lại hay mức giá cả.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#332
+Đối với số tiền mà tôi đã chi trả thì chất lượng dịch vụ ở Terracotta Hotel and Resort Đà Lạt phù hợp.
+{HOTEL#PRICES, positive}
+
+#333
+Đây là làn thứ 2 tôi trở lại, Khách sạn đẹp, yên tĩnh thích hợp nghỉ dưỡng Tôi hài lòng với kỳ nghỉ ở dây.
+{HOTEL#GENERAL, positive}
+
+#334
+Thiết kế diện tích phòng ốc rộng rãi, bài trí trang thiết bị trang nhã.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#335
+Phong cách phục vụ của nhân viên hoạt bát nhưng cũng không kém phần lịch sự.
+{SERVICE#GENERAL, positive}
+
+#336
+Nơi nghỉ dưỡng tuyệt vời.
+{HOTEL#GENERAL, positive}
+
+#337
+Vì ở Terracotta Hotel and Resort Đà Lạt có khung cảnh đẹp và thơ mộng.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#338
+Chứ nhìn phòng vẫn trang nhã, tiện nghi.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#339
+Đúng ra thì nên mở thêm minimart để khách tiện mua nhu yếu phẩm cần thiết.
+{HOTEL#MISCELLANEOUS, negative}
+
+#340
+- Buffet sáng rất tệ.
+{FOOD&DRINKS#QUALITY, negative}
+
+#341
+Và sáng hôm sau các loại bánh mà cô tiếp tân xinh đẹp mang lên phòng cho tôi đều có mặt đầy đủ trên quầy buffet trong 3 buổi sáng liên tiếp không thay đổi = > chồng tôi bảo, thế hoá ra chiều hôm nọ họ đưa bánh thừa buổi sáng lên cho mìnH à em.
+{SERVICE#GENERAL, negative}, {FOOD&DRINKS#MISCELLANEOUS, negative}
+
+#342
+Lúc đi chơi về tôi thấy các vết đen bám trên lông thảm nên có gọi lễ tân hỏi, tôi được thông báo đã hút bụi rất kĩ.
+{ROOM_AMENITIES#MISCELLANEOUS, neutral}
+
+#343
+Resort phục vụ ăn sáng nhiều món, chế biến đồ ăn ngon, hợp khẩu vị chung của du khách.
+{FOOD&DRINKS#QUALITY, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#344
+Vào khoảng 14 giờ, tôi đặt xe đi vòng quanh hồ, nhân viên hẹn lại đến 16 giờ30 nhưng vẫn không bố trí được tài xế để lái xe, tôi thấy chưa hài lòng về phần dịch vụ này lắm.
+{SERVICE#GENERAL, negative}, {FACILITIES#MISCELLANEOUS, negative}
+
+#345
+Kì nghỉ vừa qua tôi có đặt phòng ở Terracotta Hotel and Resort Đà Lạt, resort cung cấp đầy đủ các tiện nghi phục vụ cho nhu cầu nghỉ ngơi của tôi, giá cả tương xứng so với chất lượng dịch vụ.
+{HOTEL#PRICES, positive}, {SERVICE#GENERAL, positive}
+
+#346
+Không gian rộng thoáng, không khí trong lành.
+{HOTEL#DESIGN&FEATURES, positive}, {HOTEL#COMFORT, positive}
+
+#347
+TÔi thấy khách sạn có vị trí đi lại hơi xa, việc lui tới trung tâm chợ Đà Lạt cũng không thuận lợi.
+{LOCATION#GENERAL, negative}
+
+#348
+Nhân viên cũng vui vẻ và nhiệt tình thân thiện, tiện nghi bên trong rất tốt.
+{SERVICE#GENERAL, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#349
+Phòng ốc sạch sẽ, thoáng mát mọi chất lượng dịch vụ tại đây tôi rất hài lòng.
+{ROOMS#CLEANLINESS, positive},   {ROOMS#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#350
+Terracotta Hotel and Resort Đà Lạt đảm bảo những điều kiện về tiện nghi phòng ở, tạo sự thoải mái cho khách hàng trong quá trình lưu trú.
+{ROOMS#COMFORT, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#351
+Tôi thấy khá hài lòng về dịch vụ của Terracotta Hotel and Resort Đà Lạt.
+{HOTEL#COMFORT, positive}
+
+#352
+Terracotta Hotel and Resort Đà Lạt mang đến một chất lượng tuyệt vời, phòng ở được chú trọng vệ sinh sạch sẽ, tiện nghi phòng ốc đầy đủ và đạt tiêu chuẩn.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#353
+Tôi cảm thấy rất thoải mái khi sử dụng dịch vụ ở đây.
+{HOTEL#COMFORT, positive}
+
+#354
+Về Terracotta Hotel and Resort Đà Lạt, tôi không có gì phàn nàn.
+{HOTEL#COMFORT, positive}
+
+#355
+Phòng ở được vệ sinh sạch sẽ, sắp xếp vật dụng gọn gàng.
+{ROOMS#CLEANLINESS, positive}
+
+#356
+Phòng đẹp, khuôn viên rộng, phục vụ tốt.
+{SERVICE#GENERAL, positive},   {ROOMS#DESIGN&FEATURES, positive}
+
+#357
+Phòng của tôi ở trong góc nên có vẻ không gian không được thoáng cho lắm.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOMS#COMFORT, negative}
+
+#358
+Họ bố trí tôi ở căn phòng có diện tích rộng rãi và được thiết kế tiện nghi trang nhã.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#DESIGN&FEATURES, positive}
+
+#359
+Tác phong phục vụ nhiệt tình, niềm nở.
+{SERVICE#GENERAL, positive}
+
+#360
+Tôi cảm thấy hài lòng trong thời gian ở Terracotta Hotel and Resort Đà Lạt.
+{HOTEL#COMFORT, positive}
+
+#361
+Nhìn chung thì tôi cảm thấy hài lòng về chất lượng dịch vụ của Terracotta Hotel and Resort Đà Lạt này.
+{HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#362
+Không gian rộng rãi và mát mẻ.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#363
+Còn chất lượng phòng cũng được sạch sẽ, đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#QUALITY, positive}
+
+#364
+Thái độ nhân viên phục vụ dễ thương, vui vẻ, khung cảnh đẹp, ăn uống ổn và giá cả phù hợp.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#365
+Cảnh quan ở Terracotta Hotel and Resort Đà Lạt đẹp, không gian vừa mát mẻ, vừa rộng rãi.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#366
+Thái độ phục vụ của nhân viên nơi đây tốt, chăm sóc khách hàng nhiệt tình, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#367
+Kỳ lễ vừa qua tôi có nghỉ ngơi tại Terracotta Hotel and Resort Đà Lạt tôi thấy rất hài lòng về chất lượng dịch vụ ở đây từ dịch vụ phòng ốc cũng như nhân viên cũng như vị trí đi lại mọi thứ đều có chất lượng tốt.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#GENERAL, positive}
+
+#368
+Phòng ốc rộng rãi, vệ sinh sạch sẽ.
+{ROOMS#DESIGN&FEATURES, positive},   {ROOMS#CLEANLINESS, positive}
+
+#369
+Phòng ở phù hợp với số tiền tôi đã chi trả.
+{HOTEL#PRICES, positive}
+
+#370
+Nhân viên lễ tân cực kỳ tốt.
+{SERVICE#GENERAL, positive}
+
+#371
+Tôi có đặt phòng giúp bạn tại Terracotta Hotel and Resort Đà Lạt, sau khi về thì bạn tôi không phàn nàn gì về chất lượng resort này đang có, vì thế nếu có đánh giá tôi sẽ đánh giá khách sạn này ở mức khá tốt.
+{HOTEL#GENERAL, positive}
+
+#372
+Phòng ốc chú ý giữ gìn vệ sinh sạch sẽ và bố trí tiện nghi đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#373
+Tôi sẽ đánh giá khách sạn này ở mức cao nhất vì chất lượng nơi này tốt lắm.
+{HOTEL#QUALITY, positive}
+
+#374
+Khung cảnh đẹp, cùng không gian rộng rãi, mát mẻ đủ làm tôi đánh giá số điểm tuyệt đối cho Terracotta Hotel Resort và Spa Đà Lạt.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#375
+Khách sạn này có phòng ốc khang trang và rộng rãi, tiện nghi được phân bổ đầy đủ để sử dụng.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#376
+Thật ra về chất lượng phòng ốc thì tôi không có chê trách gì, nó phù hợp với mục đích nghỉ ngơi của tôi.
+{ROOMS#QUALITY, positive}
+
+#377
+Còn về cảnh quan đẹp, mát mẻ.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#378
+Những dịch vụ khách sạn đang cung cấp theo cảm nhận của tôi rất tuyệt vời.
+{SERVICE#GENERAL, positive}
+
+#379
+Còn về chất lượng phòng nghỉ thì đạt yêu cầu, các trang thiết bị tiện nghi hoạt động tốt, dọn phòng kỹ lưỡng, gọn gàng.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#QUALITY, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#380
+Phục vụ ổn, mọi người đều nhiệt tình tiếp đón du khách.
+{SERVICE#GENERAL, positive}
+
+#381
+Lần này, ở Terracotta Hotel Resort và Spa Đà Lạt, tôi chưa hài lòng lắm vì tôi đặt giường đôi nhưng resort nói hết phòng và xếp tôi ở phòng 2 giường đơn, phải ghép giường, nên nghỉ ngơi cũng chưa thoải mái lắm.
+{HOTEL#COMFORT, negative}, {ROOMS#COMFORT, negative}, {SERVICE#GENERAL, negative}
+
+#382
+Theo cá nhân tôi thấy thì dịch vụ ở Terracotta Hotel Resort và Spa Đà Lạt cũng ổn.
+{SERVICE#GENERAL, neutral}
+
+#383
+Terracotta Hotel Resort và Spa Đà Lạt là một địa điểm nghỉ dưỡng tuyệt vời, không gian rất đẹp, sân vườn rộng rãi và mát mẻ.
+{HOTEL#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#384
+Chi phí đã trả là hoàn toàn xứng đáng.
+{HOTEL#PRICES, positive}
+
+#385
+Không gian thoáng mát, đẹp, tôi khá hài lòng khi nghỉ tại đây.
+{HOTEL#COMFORT, positive}
+
+#386
+Tuy nhiên, ở đây thì hệ thống wifi hơi yếu, không sử dụng được, khá bất tiện về điều này.
+{FACILITIES#QUALITY, negative}
+
+#387
+Phòng ốc sạch sẽ, đẹp, nhân viên chuyên nghiệp và lịch sự, đúng với tiêu chuẩn mà khách sạn để.
+{SERVICE#GENERAL, positive},   {ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#388
+Nhân viên thì chuyên nghiệp, lịch sự.
+{SERVICE#GENERAL, positive}
+
+#389
+Nhân viên làm việc cũng rất chu đáo và nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#390
+Nhân viên thì lịch sự, nhiệt tình với khách.
+{SERVICE#GENERAL, positive}
+
+#391
+Ăn sáng cũng ok, nhìn chung, thì mọi thứ ở đây đều ổn, tôi hài lòng khi nghỉ tại đây.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#392
+Nhìn chung, mọi thứ đều tốt, đáp ứng được yêu cầu của tôi.
+{HOTEL#GENERAL, positive}
+
+#393
+Ở đây hơi xa trung tâm, khá yên tĩnh, là nơi thích hợp để nghỉ dưỡng.
+{LOCATION#GENERAL, negative}, {HOTEL#COMFORT, positive}
+
+#394
+Vì có xe nhà nên việc đi lại cũng khá dễ dàng và thuận tiện.
+{HOTEL#MISCELLANEOUS, positive}
+
+#395
+Nhân viên thì theo tôi thấy chưa được nhiệt tình và chu đáo lắm.
+{SERVICE#GENERAL, negative}
+
+#396
+Thích nhất là có trồng nhiều hoa đẹp, có những bức tượng gốm nho nhỏ xinh xắn bày biện khắp nơi trong khuôn viên.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#397
+Khung cảnh resort thoáng đãng, phòng ốc sạch sẽ.
+{HOTEL#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#398
+Tôi khá vừa lòng khi chọn Cần Giờ Resort để lưu trú trong kỳ nghỉ vừa rồi.
+{HOTEL#COMFORT, positive}
+
+#399
+Phòng ốc thì sạch sẽ, đồ đạc gọ n gàng.Nhân viên thì vui vẻ, ni ềm nở chào đón. Bữa sáng không phải buf fet nhưng ăn cũng được.Vị trí đi lại cũng tiện và giá cả thì phải chăng.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive},   {ROOMS#CLEANLINESS, positive}, {FOOD&DRINKS#MISCELLANEOUS, neutral}, {HOTEL#PRICES, positive}
+
+#400
+Tôi đã có 1 ngày nghỉ ngơi thoải mái khi ở Cần Giờ Resort.
+{HOTEL#COMFORT, positive}
+
+#401
+Thiết kế phòng ốc rộng rãi, dọn phòng kỹ càng và sạch sẽ nên tôi thấy ở đây cũng khá tốt.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#402
+Nhìn chung về Cần Giờ Resort, tôi thấy cũng ổn.
+{HOTEL#GENERAL, neutral}
+
+#403
+Phòng ốc được dọn dẹp sạch sẽ, tiện nghi.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#404
+Tuy nhiên các tiện ích kèm theo không tốt lắm, nhất là hồ bơi không sạch sẽ mấy.
+{FACILITIES#CLEANLINESS, negative}
+
+#405
+Phòng ốc đáp ứng đúng yêu cầu mong đợi ban đầu của tôi.
+{ROOMS#GENERAL, positive}
+
+#406
+Thế nhưng phòng nhiều muỗi, và toilet hôi vì không có quạt hút mùi.
+{ROOMS#CLEANLINESS, negative},   {ROOM_AMENITIES#CLEANLINESS, negative}
+
+#407
+Còn thái độ làm việc cũng bình thường.
+{SERVICE#GENERAL, neutral}
+
+#408
+Khi tôi đến nhận phòng, mọi người lịch sự, thân thiện chào hỏi, đón tiếp.
+{SERVICE#GENERAL, positive}
+
+#409
+Diện tích phòng nghỉ rộng rãi, không gian mát mẻ, tạo cảm giác thư giãn khi nghỉ ngơi lại đây.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#COMFORT, positive}
+
+#410
+Nhân viên dọn dẹp phòng ốc sạch sẽ, đầy đủ tiện nghi, vị trí thuận tiện đi lại.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#411
+Tổng quan nơi này đẹp, phòng ốc sạch sẽ, các bạn nhân viên vui vẻ, giá cả hợp lý.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}, {HOTEL#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#412
+Tôi đánh giá khách sạn này có chất lượng dịch vụ cũng được.
+{SERVICE#GENERAL, positive}
+
+#413
+Phòng ở vệ sinh sạch sẽ, trang thiết bị đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#414
+Tuy nhiên phòng Tôi có máy lạnh hơi yếu nên chưa được mát lắm.
+{ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#415
+Ở đây còn muỗi nhiều quá.
+{HOTEL#CLEANLINESS, negative}
+
+#416
+Tuy nhiên bữa sáng còn chưa đa dạng.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#417
+Với lại, hiện nay resort cũng chưa có bãi tắm riêng nữa.
+{FACILITIES#MISCELLANEOUS, negative}
+
+#418
+Về vị trí toạ lạc của Cần Giờ Resort thì tôi không phàn nàn gì, đi lại thuận lợi.
+{LOCATION#GENERAL, positive}
+
+#419
+Về nhân viên cũng làm việc lịch sự, không có gì phàn nàn, ăn uống ok, tôi hài lòng khi nghỉ tại đây.
+{SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#420
+Trong chuyến du lịch đến Cần Giờ vừa rồi, tôi đã chọn dịch vụ ở Cần Giờ resort.
+{HOTEL#GENERAL, positive}
+
+#421
+Chất lượng phòng đạt yêu cầu, dọn dẹp sạch và đầy đủ đồ dùng cơ bản.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#QUALITY, positive}
+
+#422
+Nhìn chung, resort tốt và tôi cảm thấy hài lòng khi nghỉ tại đây.
+{HOTEL#COMFORT, positive}
+
+#423
+Resort sạch sẽ, phòng ốc cũng sạch, đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#424
+Nước trong hồ bơi không sạch, lâu lâu mới thay một lần. Đồ ăn thì đảm bảo an toàn vệ sinh nhưng giá thành còn đắt quá.
+{FACILITIES#CLEANLINESS, negative}, {FOOD&DRINKS#MISCELLANEOUS, positive}, {FOOD&DRINKS#PRICES, negative}
+
+#425
+Sau khoảng thời gian trải nghiệm dịch vụ của resort về, người quen tôi phản hồi dịch vụ ở đây cũng ok, giá cả như vậy chấp nhận được.
+{HOTEL#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#426
+Phòng ốc sạch sẽ, tiện nghi cũng tốt.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#427
+Với lại tôi thấy đồ ăn sáng chưa được đa dạng lắm, và hơi có muỗi.
+{ROOMS#CLEANLINESS, negative}, {FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#428
+Đồ ăn sáng thì cũng tàm tạm nhưng bù lại thái độ phục vụ tốt, thân thiện, vui vẻ.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#QUALITY, neutral}
+
+#429
+Sau thời gian ở đây, từ phòng ở đến nhân viên thì tôi không có gì phải phàn nàn cả.
+{HOTEL#GENERAL, positive}
+
+#430
+Dịch vụ và tiện ích cơ bản kèm theo hoạt động tốt.
+{SERVICE#GENERAL, positive}
+
+#431
+Cần Giờ Resort toạ lạc nằm gần biển nên thuận tiện đi lại lắm.
+{LOCATION#GENERAL, positive}
+
+#432
+Vào buổi tối thì đường đi không có đèn nên khá tối. 4.
+{HOTEL#MISCELLANEOUS, negative}
+
+#433
+Resort này vị trí đẹp.
+{LOCATION#GENERAL, positive}
+
+#434
+Thái độ phục vụ của nhân viên thì ok và nhìn chung thì resort này có chất lượng cũng khá ổn.
+{SERVICE#GENERAL, positive}, {HOTEL#QUALITY, positive}
+
+#435
+Khuôn viên rộng rãi, đồ ăn phục vụ đa dạng mà cũng ngon miệng, các hoạt động vui chơi giải trí rất vui.
+{FOOD&DRINKS#STYLE&OPTIONS, positive}, {FOOD&DRINKS#QUALITY, positive}, {HOTEL#MISCELLANEOUS, positive}
+
+#436
+Tôi không hề hài lòng về resort này.
+{HOTEL#COMFORT, negative}
+
+#437
+Resort có bãi đỗ xe nhưng có tính phí riêng.
+{FACILITIES#PRICES, negative}
+
+#438
+Phòng ốc sạch sẽ, tiện nghi tốt.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#439
+Nhân viên cũng lịch sự, thân thiện và nhiệt tình với khách.
+{SERVICE#GENERAL, positive}
+
+#440
+Tôi thấy phòng ốc ở Cần Giờ resort khá sạch sẽ, tiện nghi đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#441
+Tuy nhiên, có lẽ do lúc tôi đến thì resort hơi vắng khách nên đồ ăn sáng ở đây không được phong phú cho lắm.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#442
+Vừa qua khi có chuyến đi đến Cần Giờ thì tôi đã có đặt phòng tại Cần Giờ Resort thông qua hệ thống của mytour.
+{HOTEL#GENERAL, positive}
+
+#443
+Tôi ở Cần Giờ resort tôi thấy rất hài lòng.
+{HOTEL#COMFORT, positive}
+
+#444
+Nhưng chỉ có điểm là cảnh biển của resort chưa được đẹp.
+{HOTEL#DESIGN&FEATURES, negative}
+
+#445
+Cần Giờ resort có các dịch vụ tốt, tôi đã có một kỳ nghỉ dưỡng vui vẻ cùng bạn bè.
+{SERVICE#GENERAL, positive}
+
+#446
+Phòng tôi ở vị trí cuối cùng của dãy, lúc trời mưa mặc dù đã đóng cửa sổ nhưng vẫn bị nước nhiễu vào phòng.
+{ROOMS#MISCELLANEOUS, negative}
+
+#447
+Tôi đã nhiều lần ở lại resort Cần Giờ nhưng vấn đề muỗi nhiều vẫn chưa khắc phục được.
+{ROOMS#CLEANLINESS, negative}
+
+#448
+Hệ thống còn không còn được mới nữa.
+{HOTEL#QUALITY, negative}
+
+#449
+Tôi thấy cũng hài lòng, vậy nên những lần sau tôi sẽ quay lại khách sạn này.
+{HOTEL#GENERAL, positive}
+
+#450
+Tôi thấy mọi thứ rất tuyệt vời.
+{HOTEL#GENERAL, positive}
+
+#451
+Và sẽ giới thiệu cho bạn bè người thân tới resort.
+{HOTEL#GENERAL, positive}
+
+#452
+Phòng rất yên tĩnh, thoáng đãng, vê sinh luôn sạch sẽ, tiện nghi đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive},   {ROOMS#CLEANLINESS, positive},   {ROOMS#COMFORT, positive}
+
+#453
+Về phòng ốc thì rất tốt, khuôn viên đẹp.
+{HOTEL#DESIGN&FEATURES, positive}, {ROOMS#GENERAL, positive}
+
+#454
+Nhân viên phục vụ dễ thương, nhiệt tình hỗ trợ khách.
+{SERVICE#GENERAL, positive}
+
+#455
+Tuy nhiên ít dịch vụ giải trí, thể thao.
+{HOTEL#MISCELLANEOUS, negative}
+
+#456
+Gia đình tôi rất hài lòng khi ở tại Cần Giờ Resort.
+{HOTEL#COMFORT, positive}
+
+#457
+Tôi không hài lòng vấn đề này.
+{HOTEL#COMFORT, negative}
+
+#458
+Vị trí resort gần biển nên thuận tiện ra biển đi dạo và ăn hải sản.
+{LOCATION#GENERAL, positive}
+
+#459
+Mình dự trù sẽ quay lại đây thêm nhiều lần nữa.
+{HOTEL#GENERAL, positive}
+
+#460
+Tôi quên thoa kem tránh muỗi nên bị chít nhiều.
+{HOTEL#MISCELLANEOUS, negative}, {ROOMS#CLEANLINESS, negative}
+
+#461
+Phòng nghỉ không quá rộng nhưng sạch sẽ và đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, neutral}, {ROOMS#CLEANLINESS, positive}
+
+#462
+Dịch vụ Cần Giờ Resort tạm ổn, lễ tân vui vẻ, và nhanh nhẹn.
+{SERVICE#GENERAL, neutral}
+
+#463
+Ưu điểm:Resort yên tĩnh thích hợp cho nghĩ dưỡng.
+{HOTEL#COMFORT, positive}
+
+#464
+- Phòng họp:Máy điều hoà hư mà không sửa chữa.
+{ROOM_AMENITIES#QUALITY, negative}
+
+#465
+Khu nghỉ mát này toạ lạc bên cạnh bãi biển trong một khu vườn xinh đẹp.
+{LOCATION#GENERAL, positive}
+
+#466
+Một số nhân viên có thái độ thiếu nhiệt tình, thiếu hợp tác với khách.
+{SERVICE#GENERAL, negative}
+
+#467
+Với giá thành bình dân và tiêu chuẩn 1  sao thì tôi đánh giá dịch vụ tại đây cũng ổn, không có gì phát sinh trong thời gian lưu trú vừa qua.
+{HOTEL#PRICES, positive},   {SERVICE#GENERAL, neutral}
+
+#468
+Một điểm trừ tại Happy Day 1 Guesthouse là toilet hơi cũ và bị ẩm mốc.
+{ROOM_AMENITIES#QUALITY, negative}
+
+#469
+Tuy nhiên, nhân viên nên thay drap mỗi khi dọn thì sẽ tốt hơn nhiều.
+{SERVICE#GENERAL, positive}
+
+#470
+Nói chung thì dịch vụ ở đây theo tôi thì cũng ổn, cũng đáp ứng được nhu cầu cơ bản từ phòng ở vệ sinh gọn gàng, ngăn nắp đến vị trí ra chợ gần nên thuận tiện đi lại.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {LOCATION#GENERAL, positive}
+
+#471
+Kì nghỉ mát vừa qua ở Đà Lạt tôi có chọn Happy Day 1 Guesthouse làm nơi lưu trú và có vài ý kiến sau.
+{HOTEL#GENERAL, positive}
+
+#472
+Happy Day 1 chỉ là Guesthouse nhưng nó có đủ các trang thiết bị và vật dụng sinh hoạt cần thiết để du khách sử dụng.
+{FACILITIES#GENERAL, positive}
+
+#473
+Mọi thứ đều tốt, trừ thời gian nhận phòng khác trên Mytour.
+{HOTEL#GENERAL, positive}
+
+#474
+Chất lượng dịch vụ ở đây cũng được phù hợp với giá tiền mà tôi đã bỏ ra.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#475
+Kì nghỉ vừa qua tôi có đặt phòng ở Happy Day 1 Guesthouse, tôi cũng không phàn nàn gì khi lưu trú ở đây, giá cả nhìn chung cũng tương xứng so với chất lượng dịch vụ, phòng ốc cũng sạch sẽ và tiện nghi cơ bản được trang bị đầy đủ.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#476
+Tôi cũng không gặp vấn đề nào phàn nàn cả.
+{HOTEL#GENERAL, positive}
+
+#477
+Cơ sở vật chất nhìn cũ.
+{FACILITIES#GENERAL, negative}
+
+#478
+Nhân viên thân thiện khi tiếp đón khách hàng.
+{SERVICE#GENERAL, positive}
+
+#479
+Những vật dụng, tiện nghi cần thiết được khách sạn cung cấp đầy đủ, gọn gàng.
+{FACILITIES#GENERAL, positive}
+
+#480
+Với địa thế gần chợ, phù hợp đối với nhu cầu đi lại của du khách.
+{LOCATION#GENERAL, positive}
+
+#481
+Tuy nhiên, dịch vụ phòng không tốt lắm.
+{ROOMS#GENERAL, negative}
+
+#482
+Chăn với drap cũng không được sạch lắm.
+{ROOM_AMENITIES#CLEANLINESS, negative}
+
+#483
+Nhân viên thì làm việc cũng khá thân thiện.
+{SERVICE#GENERAL, positive}
+
+#484
+Happy Day 1 Hotel có phòng hơi chật, không được ấn tượng với tôi cho lắm, cửa nhà vệ sinh cũng bị hỏng, không có đóng kín được.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOM_AMENITIES#DESIGN&FEATURES, negative}
+
+#485
+Điểm trừ duy nhất là diện tích phòng hơi nhỏ, chứ vệ sinh thì đảm bảo, sạch sẽ tinh tươm.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOMS#CLEANLINESS, positive}
+
+#486
+So sánh với dịch vụ mà Happy Day 1 Hotel đang cung cấp thì giá thành hợp lý.
+{HOTEL#PRICES, positive}
+
+#487
+Thái độ chào đón, phục vụ khách thân thiện nhưng cũng không kém phần lịch sự.
+{SERVICE#GENERAL, positive}
+
+#488
+Happy Day 1 Hotel có lợi thế là gần chợ nên thuận tiện cho việc tham quan và mua sắm của tôi, thái độ phục vụ của nhân viên cũng nhiệt tình, hỗ trợ tốt.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#489
+phòng ốc sạch sẽ ngăn nắp.
+{ROOMS#CLEANLINESS, positive}
+
+#490
+Vì chất lượng dịch vụ tương ứng với số tiền tôi đã bỏ ra.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#491
+Nhân viên họ có thái độ tương đối vui vẻ, lịch sự với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#492
+Chứ phòng được chuẩn bị kỹ càng và sạch sẽ.
+{ROOMS#CLEANLINESS, positive}
+
+#493
+Về dịch vụ phòng ốc tại Happy Day 1 Hotel theo tôi đánh giá cũng tạm ổn vì hệ thống máy nóng lạnh chập chờn, lúc thì nóng quá, lúc thì không nóng.
+{SERVICE#GENERAL, positive}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#494
+Nhân viên tại Happy Day 1 Hotel này phục vụ tốt, nhiệt tình, thân thiện.
+{SERVICE#GENERAL, positive}
+
+#495
+Tổng thể tôi hài lòng và không phàn nàn gì hết.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#496
+Nhìn chung mọi thứ tại khách sạn Happy Day 1 Hotel tôi thấy cũng tạm ổn trong suốt thời gian lưu trú tại đây cùng người thân.
+{HOTEL#GENERAL, neutral}
+
+#497
+Khách sạn không có thang máy nên đi lại hơi khó khăn.
+{FACILITIES#DESIGN&FEATURES, negative}
+
+#498
+Những bạn nhân viên thì có cung cách phục vụ khách hàng tốt.
+{SERVICE#GENERAL, positive}
+
+#499
+Phòng ốc cũng như toilet đã xuống cấp.
+{ROOMS#QUALITY, negative}
+
+#500
+Happy Day 1 Hotel có vị trí ổn.
+{LOCATION#GENERAL, positive}
+
+#501
+Tôi được bố trí nghỉ ngơi tại phòng 001 nhưng phòng ốc cũng như tiện nghi dơ, tất cả mọi thứ cũ.
+{ROOMS#GENERAL, negative}, {ROOMS#CLEANLINESS, negative}
+
+#502
+Phòng ốc tại đây cũng sạch sẽ, tương đối đủ tiện nghi cho tôi sử dụng.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#503
+Giá cả như vậy cũng khá phù hợp.
+{HOTEL#PRICES, positive}
+
+#504
+Phòng ốc được dọn dẹp vệ sinh sạch sẽ, nội thất trong phòng được trang bị đầy đủ nghi đầy đủ, cung cách phục vụ của nhân viên khách sạn này ok, nhiệt tình, thân thiện.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOM_AMENITIES#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#505
+Tôi chọn Khách sạn Happy Day 1 Hotel cho chuyến đi vừa rồi và tôi cảm thấy khá ok.
+{HOTEL#GENERAL, positive}
+
+#506
+Phòng ốc sạch sẽ, tươm tất, thoáng mát.
+{HOTEL#CLEANLINESS, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#507
+Giá phòng hợp lý.
+{ROOMS#PRICES, positive}
+
+#508
+Không quá nổi bật nhưng cũng không có gì phàn nàn khi nghỉ tại đây.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#509
+Tuy nhiên nhà vệ sinh nơi này đã khá cũ rồi.
+{ROOM_AMENITIES#DESIGN&FEATURES, positive}
+
+#510
+Tôi đi cùng người già và trẻ em nhưng lúc đầu khách sạn không biết nên bố trí tôi 2 phòng ở lầu 2 và lầu 3.
+{HOTEL#GENERAL, positive}
+
+#511
+Nhân viên thì cũng được, tiếp đón tốt.
+{SERVICE#GENERAL, positive}
+
+#512
+HappyDay Hotel có vị trí khá gần trung tâm nên đi lại thuận tiện.
+{LOCATION#GENERAL, positive}
+
+#513
+Giá cả hợp lý, tiện nghi đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {FACILITIES#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#514
+Nhân viên khách sạn niềm nở, chu đáo và tận tình giúp đỡ mọi thông tin du lịch. pHòng ở thì trang thiết bị khá tốt. xIn chân thành cảm ơn my tour và khách sạnan happyday.
+{SERVICE#GENERAL, positive}
+
+#515
+Nhân viên nhiệt tình chu đáo.
+{SERVICE#GENERAL, positive}
+
+#516
+Sạch sẽ, thoáng mát, nhân viên rất thoải mái, dịch vụ tốt, địa điểm khách sạn nằm ngay khu trung tâm dễ dàng đi chơi, chúng tôi cảm thấy rất hài lòng khi ở tại đây, sẽ quay lại Happy hotel trong chuyến du lịch đến Đà Lạt lần sau, cám ơn Happy hotel đã cho chúng tôi một trải nghiệm tuyệt vời.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#COMFORT, positive}, {ROOMS#COMFORT, positive}
+
+#517
+Đến khi chúng tôi bị nhân viên bắt trả phòng lúc 16 giờ thì tôi mới xem lại mail với dòng chứ rất nhỏ, gọi lại thì mytour chuyển máy cho người khác không phải người bán phòng cho tôi, và bạn này trả lời vô trách nhiệm, không có thiện chí giúp đỡ khách hàng.
+{SERVICE#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, positive}
+
+#518
+Tổng quan, tôi thấy thoải mái khi ở đây.
+{HOTEL#DESIGN&FEATURES, positive}, {HOTEL#COMFORT, positive}, {ROOMS#COMFORT, positive}
+
+#519
+Dù diện tích căn phòng hơi nhỏ một chút nhưng bù lại vệ sinh phòng ốc sạch sẽ tinh tươm.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#520
+Chẳng điểm nào khiến tôi phiền lòng cả.
+{HOTEL#COMFORT, positive}
+
+#521
+Phòng ốc khách sạn được trang bị đầy đủ tiện nghi, vệ sinh sạch sẽ, nhân viên khách sạn vui vẻ và nhiệt tình.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#CLEANLINESS, positive}, {ROOMS#CLEANLINESS, positive}
+
+#522
+Về cách làm việc của nhân viên cũng thân thiện, nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#523
+Tôi đánh giá dịch vụ phòng ở Happy Day không được tốt.
+{HOTEL#GENERAL, positive}
+
+#524
+Tôi lựa chọn khách sạn này vì nó nằm gần hồ Xuân Hương, gần chợ, dễ dàng đi lại.
+{HOTEL#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#525
+Không những vậy, hôm sau 2 phòng giường đôi của tôi lại ghép thành 1 phòng 3 giường, tôi rất khó chịu nhưng vì chỉ ở đêm nữa rồi về nên tôi cũng không muốn phiền phức chấp nhận ở tạm.
+{HOTEL#GENERAL, positive}
+
+#526
+Diện tích căn phòng rộng nhưng mà trong phòng rất sơ sài.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#527
+Khách sạn Happy Day là nơi tôi lựa chọn để nghỉ ngơi cho chuyến đi Đà Lạt vừa qua của mình.
+{HOTEL#GENERAL, positive}
+
+#528
+Bạn ấy không chịu tìm mà cứ bảo là tôi không có đưa.
+{HOTEL#GENERAL, positive}
+
+#529
+Tôi góp ý để lần sau nhân viên tại đây nên kĩ lưỡng hơn chứ cách phục vụ như thế không ổn tí nào.
+{SERVICE#GENERAL, positive}
+
+#530
+Thời gian lưu lại đây tôi không thể nào ngủ được vì khách sạn quá ồn.
+{HOTEL#GENERAL, positive}
+
+#531
+Nhìn chung giá cả khách sạn như thế là phù hợp với chất lượng, vệ sinh tốt, thái độ phục vụ của nhân viên thân thiện, phòng ở đây rất thoáng nhưng để ấn tượng hơn thì khách sạn nên thay cửa nhôm bằng một loại cửa có chất liệu khác.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#532
+Chuyến đi của tôi đã rất tệ khi tôi chọn khách sạn Happy Day để nghỉ lại.
+{HOTEL#GENERAL, positive}
+
+#533
+Nói chung thì dịch vụ rất tốt, mọi người đều thân thiện và vui vẻ với du khách.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#534
+Vừa qua thì tôi có đặt phòng tại khách sạn Happy Day thông qua hệ thống của công ty mytour cho chuyến đi đến Đà Lạt của mình.
+{HOTEL#GENERAL, positive}
+
+#535
+Vậy nên bọn mình ở trong phòng cũng ít nói chuyện và không thể mở nhạc hay loa ngoài vì sẽ vọng hết ra ngoài.
+{HOTEL#GENERAL, positive}
+
+#536
+Phòng nhìn cũng khá mới.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#DESIGN&FEATURES, positive}
+
+#537
+Vị trí khách sạn có vị trí tốt, gần khu những ăn uống và mua sắm nên chúng tôi rất hài lòng.
+{LOCATION#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#538
+Giá thuê xe máy khá rẻ 80 nghìn/ xe số, 100 nghìn/ tay ga.
+{FACILITIES#PRICES, positive}
+
+#539
+Căn phòng mà tôi ở tại khách sạn Happy Day thì cũng tương đối ổn nhưng các trang thiết bị nội thất trong phòng thì hơi cũ.
+{ROOM_AMENITIES#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#540
+Thái độ phục vụ của nhân viên rất nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#541
+Lúc đầu tôi ở căn phòng lúc trời mưa thì bị dột, nước lúc có lúc không.
+{ROOM_AMENITIES#QUALITY, positive}
+
+#542
+Phòng ốc cũng được trang bị đầy đủ tiện nghi, vệ sinh sạch sẽ.
+{ROOM_AMENITIES#GENERAL, positive}, {HOTEL#CLEANLINESS, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#543
+Điều tôi ấn tượng nhất chính là sự hoà đồng, mến khách của những nhân viên ở khách sạn Happy này.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#544
+Happy Đà Lạt nằm ngay trung tâm nên đi chợ Đà Lạt, đi dạo Hồ Xuân Hương và đi ăn uống cũng rất thuận lợi.
+{LOCATION#GENERAL, positive}
+
+#545
+Nhìn chung thì tôi khá là hài lòng về chất lượng và dịch vụ của khách sạn này.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}, {HOTEL#QUALITY, positive}
+
+#546
+Tôi hài lòng về khách sạn và sẽ quay lại khi có cơ hội.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#547
+Nhân viên rất thân thiện, nhiệt tình, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#548
+Nhân viên khách sạn khá thân thiện và nhiệt tình ; chúng tôi cần gì cũng có nước nóng, nước đá, chăn, .  Đây sẽ là nơi lưu trú thích hợp và làm hài lòng các bạn, dĩ nhiên là có chúng tôi.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#549
+Tôi và gia đình phải nâng cấp lên một phòng cao cấp hơn.
+{HOTEL#GENERAL, positive}
+
+#550
+Nhưng chỉ có một vấn đề khiến tôi không hài lòng là nhân viên tự ý đổi phòng của tôi.
+{SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#551
+Nhưng sang ngày hôm sau, khách snj lại lấy ại và chuyển tôi lên phòng trên cùng, căn phòng này tệ hơn và không có sự riêng tư.
+{SERVICE#GENERAL, positive}, {ROOMS#COMFORT, positive}
+
+#552
+Tạo cho du khách cảm giác thư giãn và thoải mái khi nghỉ ngơi.
+{HOTEL#COMFORT, positive}
+
+#553
+Về mức độ đa dạng của món ăn trong bữa sáng thì chấp nhận được.
+{FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#554
+Cơ sở hạ tầng tốt, trang thiết bị hiện đại.
+{FACILITIES#QUALITY, positive}, {FACILITIES#DESIGN&FEATURES, positive}
+
+#555
+khách sạn gần bờ biển tiện lợi, khung cảnh đẹp, nhân viên thân thiện nhiệt tình.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#556
+Chất lượng dịch vụ ở đây làm tôi hài lòng về số tiền mà tôi đã bỏ ra.
+{HOTEL#COMFORT, positive}
+
+#557
+Nếu xét về tổng quan sau thời gian nghỉ ngơi lại Khách Sạn Mường Thanh Grand Đà Nẵng, thì dịch vụ tạm ổn.
+{SERVICE#GENERAL, neutral}
+
+#558
+Phòng cũng rộng rãi, thoáng mát, tiện nghi, đạt tiêu chuẩn.
+{ROOMS#DESIGN&FEATURES, positive},   {ROOMS#COMFORT, positive}
+
+#559
+Cơ sơ chất chất được trang bị đầy đủ, khang trang, không gian sạch sẽ, phòng ốc được sắp xếp gọn gàng.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#560
+Trong chuyến đi vừa rồi, tôi có đặt phòng tại Khách Sạn Mường Thanh Grand Đà Nẵng để nghỉ ngơi.
+{HOTEL#GENERAL, positive}
+
+#561
+Khách sạn có vị trí thuận tiện đi lại, nhân viên cũng nhiệt tình, thân thiện.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#562
+Theo đánh giá của riêng tôi thì chất lượng khách sạn này nhìn chung cũng được.
+{HOTEL#QUALITY, neutral}
+
+#563
+Tôi khá hài lòng về Khách Sạn Mường Thanh Grand Đà Nẵng, nơi mà tôi đã ở lại tại đây trong chuyến đi vừa rồi.
+{HOTEL#COMFORT, positive}
+
+#564
+Buffet sáng hơi chán, một phần do đồ ăn không phong phú, một phần do món ăn không mấy hợp khẩu vị.
+{FOOD&DRINKS#QUALITY, negative}, {FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#565
+Chỉ bất tiện ở điểm là hơi vị trí khách sạn này hơi xa biển.
+{LOCATION#GENERAL, negative}
+
+#566
+Nhân viên khách sạn họ phục vụ khách hàng nhìn chung khá là vui vẻ.
+{SERVICE#GENERAL, positive}
+
+#567
+Khách sạn 4  sao mà hệ thống máy lạnh nóng.
+{ROOM_AMENITIES#QUALITY, negative}
+
+#568
+Diện tích căn phòng tôi ở hơi nhỏ so với hình ảnh.
+{ROOMS#DESIGN&FEATURES, negative}
+
+#569
+Chất lượng khách sạn rất tương xứng với tiêu chuẩn 4  sao.
+{HOTEL#QUALITY, positive}
+
+#570
+Nhân viên khách sạn này nhiệt tình, chu đáo.
+{SERVICE#GENERAL, positive}
+
+#571
+Tôi có nghỉ ngơi ngơi một đêm tại Khách sạn Mường Thanh Grand Đà Nẵng và theo tôi nhận xét thì dịch vụ ở đây ok.
+{SERVICE#GENERAL, positive}
+
+#572
+Chất lượng những dịch vụ khách sạn đang cung cấp đến khách hàng ok.
+{SERVICE#GENERAL, positive}
+
+#573
+Nhận xét của tôi với Khách sạn Mường Thanh Grand Đà Nẵng là tốt.
+{HOTEL#GENERAL, positive}
+
+#574
+Chuyến đi Đà Nẵng cùng gia đình của chúng Tôi vừa qua đã chọn dịch vụ khách sạn Mường Thanh Grand Đà Nẵng để nghỉ lại và thấy dịch vụ phòng ốc khang trang và lịch sự Thức ăn sáng được chuẩn bị chu đáo và khá hợp khẩu vị.
+{FOOD&DRINKS#QUALITY, positive}, {SERVICE#GENERAL, positive}
+
+#575
+Nội thất, cơ sở vật chất được khách sạn trang bị đầy đủ.
+{ROOM_AMENITIES#GENERAL, positive}, {FACILITIES#GENERAL, positive}
+
+#576
+Theo cá nhân tôi đánh giá thì Khách Sạn Mường Thanh Grand Đà Nẵng này đã xuống cấp nhiều rồi.
+{HOTEL#QUALITY, negative}
+
+#577
+Nghỉ ngơi không thoải mái, về dịch vụ chung thì ok, nhân viên cũng lịch sự.
+{SERVICE#GENERAL, positive}, {ROOMS#COMFORT, negative}
+
+#578
+Những dịch vụ khách sạn cung cấp có chất lượng tốt khiến tôi hài lòng lắm.
+{HOTEL#COMFORT, positive}, {HOTEL#QUALITY, positive}
+
+#579
+Có bấm chuông để nhân viên lên dọn phòng nhưng vẫn không ai dọn.
+{SERVICE#GENERAL, negative}, {ROOMS#CLEANLINESS, negative}
+
+#580
+Hỏi thì nói ưu tiện khách mới.
+{SERVICE#GENERAL, positive}
+
+#581
+Bữa sáng phục vụ đủ món, hồ bơi dọn dẹp tương đối đạt yêu cầu.
+{FACILITIES#DESIGN&FEATURES, positive},   {FOOD&DRINKS#STYLE&OPTIONS, positive}
+
+#582
+Bữa ăn sáng phục vụ khá ngon, căn phòng nhân được khá rộng rãi, sạch sẽ, gọn gàng.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#583
+Khách Sạn TTC Hotel Premium Ngọc Lan có chất lượng phục vụ đến nội thất trang thiết bị trong phòng đều tốt và tiện nghi.
+{SERVICE#GENERAL, positive},  {ROOM_AMENITIES#QUALITY, positive}
+
+#584
+Tôi có nghỉ tại Khách Sạn Ngọc Lan Đà Lạt này vài lần rồi, lần này thì phòng ở không đẹp lắm, phòng khá bí, vì chỉ có 1 cái cửa số nhỏ, view cũng không đẹp.
+{ROOMS#COMFORT, negative}, {ROOMS#GENERAL, negative}, {ROOMS#DESIGN&FEATURES, negative}
+
+#585
+Cộng với thái độ phục vụ của nhân viên lịch sự và niềm nở với du khách nên thời gian ở đây tôi thấy thoải mái.
+{SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#586
+Vị trí khách sạn tuyệt vời, lễ tân thân thiện, phòng mới và đẹp Không có gì để phàn nàn.
+{LOCATION#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#587
+Tôi hài lòng điểm này.
+{HOTEL#COMFORT, positive}
+
+#588
+Tôi đã có một kỳ trăng mật khá hoàn hảo.
+{HOTEL#GENERAL, neutral}
+
+#589
+Bữa sáng được phục vụ ở tầng cao nhất của nhà hàng.
+{FOOD&DRINKS#STYLE&OPTIONS, neutral}
+
+#590
+Bãi đậu xe hơi nhỏ nên hơi bất tiện.
+{FACILITIES#COMFORT, negative}
+
+#591
+Khâu vệ sinh được chú ý sạch sẽ, tinh tươm.
+{HOTEL#CLEANLINESS, positive}
+
+#592
+Mọi thứ ở đây đều tốt chỉ có vị trí thì tôi chưa thích lắm thôi.
+{HOTEL#GENERAL, positive}, {LOCATION#GENERAL, negative}
+
+#593
+Chúng tôi vô tình ở lại khách sạn River Palace và trả 60 nghìn đồng vào đêm đầu tiên ở Đà Lạt và nó thậm chí không bằng chất lượng của Saphir.
+{ROOMS#PRICES, positive}, {HOTEL#QUALITY, positive}
+
+#594
+Điểm cộng là không gian resort sạch sẽ, thái độ phục vụ niềm nở và vui vẻ.
+{SERVICE#GENERAL, positive}, {HOTEL#CLEANLINESS, positive}, {HOTEL#CLEANLINESS, positive}
+
+#595
+Lại thêm vấn đề buffet không ngon nữa.
+{FOOD&DRINKS#QUALITY, negative}
+
+#596
+Paradise Beach Resort là một trong những sự lựa chọn của tôi cho chuyến du lịch Mũi Né vừa rồi.
+{HOTEL#GENERAL, neutral}
+
+#597
+Cám ơn mytour đã giúp tôi đặt phòng nhanh chóng.
+{SERVICE#GENERAL, positive}
+
+#598
+Nhân viên phục vụ rất là tận tình.
+{SERVICE#GENERAL, positive}
+
+#599
+Phòng ốc nơi đây rất đẹp, sạch sẽ và tiện nghi.
+{ROOMS#DESIGN&FEATURES, positive},   {ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#600
+Nhân viên khách sạn rất là dễ thương, buffet thì rất ngon, vợ chồng tôi rất hài lòng, lần sau sẽ tiếp tục ghé thăm.
+{SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#601
+Vị trí thì nằm trong hẻm, các dịch vụ còn lại đều ok, phòng khá sạch sẽ, ở cũng không có gì phàn nàn, đầy đủ tiện nghi cơ bản.
+{ROOMS#CLEANLINESS, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, negative}, {ROOM_AMENITIES#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#602
+Mọi thứ đều tốt, từ phòng ở sạch sẽ, đầy đủ tiện nghi, đến phong cách làm việc của nhân viên cũng thân thiện, vui vẻ.
+{HOTEL#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#603
+Khách sạn Blue Sea cũng khiến tôi hài lòng, tôi nghĩ đây là một khách sạn khá tốt.
+{HOTEL#COMFORT, positive}
+
+#604
+Vị trí của khách sạn thì nằm gần biển nên đi lại cũng thuận tiện.
+{LOCATION#GENERAL, positive}
+
+#605
+Nhân viên thì cũng vui vẻ và nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#606
+Vấn đề vệ sinh rất là tệ.
+{HOTEL#CLEANLINESS, negative}
+
+#607
+Còn lại tôi hoàn toàn hài lòng về khách sạn.
+{HOTEL#COMFORT, positive}
+
+#608
+Tôi đi cùng với gia đình, nói chung khách sạn tốt, nhân viên thân thiện, chu đáo, phòng ốc sạch sẽ, thoải mái.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive},   {ROOMS#CLEANLINESS, positive}
+
+#609
+Bởi khi tôi mới tới khách sạn nhận phòng, mọi người đã vui vẻ, thân thiện tiếp đón tôi.
+{SERVICE#GENERAL, positive}
+
+#610
+Mọi dịch vụ tại khách sạn Phương Huy 1 Đà Lạt theo tôi đánh giá là đều tốt và đáp ứng đủ nhu cầu của gia đình tôi từ phòng ốc gọn gàng, sạch sẽ, tiện nghi đi kèm được đến thái độ nhân viên vui vẻ, vị trí cũng thuận tiện và giá cả phù hợp.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#611
+Bên cạnh đó, căn phòng họ sắp xếp tôi ở cũng đáp ứng được những tiêu chí cơ bản về sự thoáng mát, sạch sẽ.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#COMFORT, positive}
+
+#612
+Chuyến đi Đà Lạt vừa qua Tôi chọn dịch vụ khách sạn Phương Huy 1 để nghỉ lại và thấy dịch vụ phòng ốc khang trang, tiện nghi đầy đủ, chúng Tôi được nhanh phòng và phục vụ nhiệt tình chu đáo nữa nên hoà toàn hài lòng và ấn tượng về dịch vụ này.
+{FACILITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#613
+Theo cá nhân tôi thấy thì dịch vụ ở khách sạn Phương Huy 1 ok, vì giá cả hợp lý, giá không cao nên cũng không có ý kiến nhiều về dịch vụ, nhìn chung thì phòng ốc cũng đạt tiêu chuẩn, vệ sinh sạch sẽ, tiện nghi có đầy đủ.
+{HOTEL#PRICES, positive}, {HOTEL#CLEANLINESS, positive}, {ROOM_AMENITIES#GENERAL, positive}, {ROOMS#QUALITY, negative}
+
+#614
+Dịp lễ mà giá chỉ 200 nghìn khi đặt qua Mytour.
+{HOTEL#PRICES, negative}
+
+#615
+Nhân viên đón tiếp niềm nở và vui vẻ, ăn uống được và giá cả thì hợp lý.
+{SERVICE#GENERAL, positive}, {HOTEL#PRICES, positive}, {FOOD&DRINKS#QUALITY, neutral}
+
+#616
+Quang cảnh đẹp, hài hoà.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#617
+Lần 2:phòng ngay thang máy lại ở vị trí mái xéo nên không thoải mái và ồn bởi tiếng thang máy người ta đi lên đi xuống đến 12 giờ đêm tôi phải đổi phòng lần 3 thì mới yên ổn ngủ được.
+{ROOMS#DESIGN&FEATURES, negative},   {ROOMS#COMFORT, negative}
+
+#618
+Đồng thời thì nhân viên thân thiện, niềm nở với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#619
+Các bạn nhân viên họ phục vụ khách hàng lịch sự.
+{SERVICE#GENERAL, positive}
+
+#620
+Đến Cần Giờ Resort nghỉ ngơi tôi khá hài lòng với các dịch vụ mà resort đang cung cấp.
+{HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#621
+Do đó, thời gian ở Cần Giờ Resort, tôi thấy ok.
+{HOTEL#COMFORT, positive}
+
+#622
+Căn phòng nằm hơi khuất nên bị muỗi nữa.
+{ROOMS#CLEANLINESS, negative}, {ROOMS#MISCELLANEOUS, negative}
+
+#623
+Ở Cần Giờ Resort giúp tôi thuận tiện đi lại tham quan.
+{LOCATION#GENERAL, positive}
+
+#624
+Tôi rất hài lòng về Cần Giờ Resort, nơi đây có không gian thoáng mát, giá cả hợp lý.
+{HOTEL#PRICES, positive},   {HOTEL#COMFORT, positive}
+
+#625
+Mình thấy Cần Giờ Resort phục vụ tốt nhưng buffet còn đơn điệu và ít món quá.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#626
+Bữa sáng tự chọn được mở rộng cũng khá ngon.
+{FOOD&DRINKS#QUALITY, positive}
+
+#627
+Vị trí ở đây cũng thuận tiện cho tôi di chuyển.
+{LOCATION#GENERAL, positive}
+
+#628
+Về vị trí, khách sạn gần chợ, tiện lợi cho việc đi lại.
+{LOCATION#GENERAL, positive}
+
+#629
+Nhìn chung tôi không có gì phải phàn nàn.
+{HOTEL#GENERAL, positive}
+
+#630
+Về chất lượng phòng cũng khá ổn, nhân viên dọn phòng sạch sẽ.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOMS#QUALITY, positive}
+
+#631
+Nhìn chung chất lượng dịch vụ nơi này cũng được.
+{HOTEL#GENERAL, positive}, {HOTEL#QUALITY, positive}
+
+#632
+Tôi có nghỉ tại HappyDay Hotel trong chuyến đi vừa rồi và không có gì phàn nàn khi nghỉ tại đây, mọi thứ khá tốt, phòng ốc sạch sẽ, tiện nghi đầy đủ, dịch vụ không phải là quá tốt nhưng với giá cả như vậy là phù hợp.
+{HOTEL#GENERAL, positive}, {HOTEL#PRICES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#633
+Bù lại thì nhân viên làm việc ok, địa điểm gần trung tâm, dù  sao thì nhờ vậy mà việc đị lại trong thành phố của tôi đã dễ dàng hơn.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}
+
+#634
+Xét về dịch vụ chung ở Happy Day Hotel thì cơ bản là ổn, ở đây, không phải là quá tốt, phòng ốc khá chật, nhỏ, ở chưa thoải mái lắm, nhưng vì giá cả không cao, giá khá hợp lý, nên cũng không ý kiến nhiều về dịch vụ, nhìn chung, dịch vụ tương xứng với giá cả, vệ sinh cũng khá sạch sẽ.
+{HOTEL#GENERAL, positive}, {HOTEL#PRICES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#635
+Khách sạn gần chợ, đi chợ đêm thông qua chợ mới Đà Lạt rất gần.
+{LOCATION#GENERAL, positive}
+
+#636
+Trong toilet đèn sáng yếu, nước cũng yếu.
+{ROOM_AMENITIES#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#637
+Chúng tôi thuê xe nửa ngày từ 3 giờ chiều đến 7 giờ sang hôm sau chỉ với 50 nghìn.
+{SERVICE#GENERAL, positive}
+
+#638
+Khách sạn tổng quan là sạch sẽ.
+{HOTEL#CLEANLINESS, positive}, {ROOMS#CLEANLINESS, positive}
+
+#639
+Nhân viên ở đây thì rất vui vẻ, lich sự và nhiệt tình với khách.
+{SERVICE#GENERAL, positive},
+
+#640
+Vị trí của khách sạn rất gần chợ, tiện lợi vui chơi tham quan, nhân viên thì nhiệt tình, vui vẻ, phòng ốc đầy đủ tiện nghi, sạch sẽ.
+{ROOM_AMENITIES#GENERAL, positive}, {SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#641
+Với mức giá quá cao không xứng đồng tiền bỏ ra.
+{HOTEL#PRICES, negative}
+
+#642
+Nhân viên ở đây rất nhiệt tinh và chu đáo với tôi, họ thường đáp ứng được mọi nhu cầu của tôi.
+{SERVICE#GENERAL, positive}
+
+#643
+Khách sạn sạch đẹp, phục vụ tốt.
+{SERVICE#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#644
+Ăn sáng thì người lớn nhận xét ăn khá ngon, nhưng trẻ em không thích lắm.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}, {FOOD&DRINKS#QUALITY, positive}
+
+#645
+Tuy phòng khá chật, nhưng khâu vệ sinh phòng ốc cũng được dọn dẹp sạch sẽ.
+{ROOMS#DESIGN&FEATURES, neutral}, {ROOMS#CLEANLINESS, positive}
+
+#646
+Giá tiền hợp lý khi đặt qua mytour.
+{HOTEL#PRICES, positive}
+
+#647
+Bữa sáng hợp khẩu vị của tôi.
+{FOOD&DRINKS#QUALITY, positive}
+
+#648
+Nhìn chung, chất lượng dịch vụ ở đây cũng tốt.
+{SERVICE#GENERAL, positive}
+
+#649
+Vị trí gần trung tâm, tôi đánh giá tốt dịch vụ ở đây.
+{LOCATION#GENERAL, neutral}, {SERVICE#GENERAL, positive}
+
+#650
+Thái độ đón tiếp khách ân cần niềm nở, thức ăn sáng được chuẩn bị khá chu đáo và hợp khẩu vị với Tôi.
+{SERVICE#GENERAL, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#651
+Phòng ốc sạch đẹp, tầm nhìn thoáng.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#652
+Mọi thứ ở đây từ phòng ốc, nhân viên cho đến bữa ăn đều khá ok và tôi có thể cho khách sạn được 10 điểm về chất lượng.
+{ROOMS#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#GENERAL, positive}
+
+#653
+Khách sạn chưa thực sự hoàn hảo nhưng với mức giá như vậy thì tôi cũng không có yêu cầu gì nhiều.
+{HOTEL#GENERAL, neutral}, {HOTEL#PRICES, neutral}
+
+#654
+Giá phòng ở đây cũng phù hợp với chất lượng.
+{HOTEL#PRICES, neutral}, {HOTEL#QUALITY, neutral}
+
+#655
+Khách sạn gần công viên ấp Ánh Sáng.
+{LOCATION#GENERAL, positive}
+
+#656
+Vì phòng tôi chọn là phòng city view nhưng thật chất không hề nhìn ra được thành phố.
+{ROOMS#DESIGN&FEATURES, negative}
+
+#657
+Mọi thứ tương đối ổn không có gì phải phàn nàn.
+{HOTEL#GENERAL, neutral}
+
+#658
+Với phong cách phục vụ lịch sự và chuyên nghiệp đã gây ấn tượng tốt cho khách lưu trú tại khách sạn.
+{SERVICE#GENERAL, positive}
+
+#659
+Thái độ phục vụ của nhân viên ok, vui vẻ, thân thiện với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#660
+Tuy nhiên, tôi thấy nhà vệ sinh ở đây dơ, bồn cầu cũng bị ố vàng.
+{ROOM_AMENITIES#CLEANLINESS, negative}
+
+#661
+1. Khi tôi lên phòng thì mặc dù wifi vẫn có hiển thị nhưng tôi không thể vào được.
+{FACILITIES#QUALITY, negative}
+
+#662
+Cảm thấy hài lòng với dịch vụ trên và tiếp tục ủng hộ cho những dịp sau.
+{SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#663
+Tuy nhiên, tôi có một góp ý đó là cách âm trong phòng cực kì tệ, rất ồn và tôi không được nghỉ ngơi thoải mái khi ở đây.
+{ROOMS#DESIGN&FEATURES, negative},   {ROOMS#COMFORT, negative}
+
+#664
+Nhân viên nhiệt tình, niềm nở trong khi tiếp đón khách.
+{SERVICE#GENERAL, positive}
+
+#665
+Nhìn chung thì tôi khá hài lòng về khách sạn này và tôi không có gì để phàn nàn về khách sạn cả.
+{HOTEL#COMFORT, positive}
+
+#666
+Phòng ốc với diện tích rộng rãi, vệ sinh sạch sẽ, được trang bi tiện nghi đầy đủ phù hợp nhu cầu sử dụng.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#667
+Khách sạn có kiến trúc rất đẹp, phòng được trang bị đầy đủ các tiện nghi hiện đại nhưng tôi thấy lạ là không được trang bị máy lạnh cũng như quạt máy, những khách sạn có chất lượng tương đương khác ở Đà Lạt từng ở thì tôi thấy được trang bị rất đầy đủ.
+{ROOM_AMENITIES#GENERAL, negative}, {HOTEL#DESIGN&FEATURES, positive}
+
+#668
+Tiện nghi phòng ốc đầy đủ, sạch sẽ và thoáng mát.
+{ROOM_AMENITIES#GENERAL, positive},   {ROOMS#CLEANLINESS, positive}, {HOTEL#COMFORT, positive}
+
+#669
+Khách sạn gần trung tâm, rất tiện lợi cho việc đi lại và vui chơi, không gian lãng mạn, cổ kính thích hợp cho cặp đôi.
+{LOCATION#GENERAL, positive}
+
+#670
+Như phòng mình ở sáng hướng nắng chiếu vào, nên khá nóng, hỏi khách sạn xem có quạt không thì khách sạn nói không có.
+{ROOMS#COMFORT, negative}, {ROOM_AMENITIES#GENERAL, negative}
+
+#671
+Tuy phòng hơi nhỏ nhưng nhân viên phục vụ rát tốt.
+{SERVICE#GENERAL, positive},   {ROOMS#DESIGN&FEATURES, negative}
+
+#672
+Khách sạn có chất lượng quá bình thường.
+{HOTEL#QUALITY, neutral}
+
+#673
+Do ở một ngày nên cũng không đổi phòng.
+{HOTEL#MISCELLANEOUS, neutral}
+
+#674
+Tôi đã đến ở Mũi Né Paradise Beach Resort này cũng nhiều lần rồi.
+{HOTEL#GENERAL, positive}
+
+#675
+Phòng ốc thì cũ, dơ, dưới giường còn nhiều rác mà nhân viên không dọn kĩ.
+{SERVICE#GENERAL, negative}, {ROOMS#CLEANLINESS, negative}, {ROOMS#QUALITY, negative}
+
+#676
+Chỉ có điều resort nên kiểm tra lại đường truyền internet và tv để nâng cao chất lượng dịch vụ hơn.
+{FACILITIES#QUALITY, negative}, {SERVICE#GENERAL, negative}
+
+#677
+Nhân viên thì ok, vui vẻ, thân thiên, một số tiện ích chưa đáp ứng được yêu cầu của khách.
+{SERVICE#GENERAL, positive}, {FACILITIES#GENERAL, neutral}
+
+#678
+- Hồ bơi sâu nhất chỉ có 1m4 nên không đã lắm.
+{FACILITIES#DESIGN&FEATURES, neutral}
+
+#679
+Về chất lượng phòng ốc thì được.
+{ROOMS#QUALITY, positive}
+
+#680
+Không gian xung quanh của resort rất là thoáng đãng, ở cũng thoải mái, Các dịch vụ từ phòng ở, tiện nghi, cách phục vụ của nhân viên cho đến ăn sáng cũng đều rất ổn, tôi đều hài lòng.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#COMFORT, positive}, {ROOMS#COMFORT, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#681
+Tôi thấy hài lòng khi nghỉ tại Mũi Né Paradise Beach resort.
+{HOTEL#COMFORT, positive}
+
+#682
+Vị trí cũng gần biển nên rất tiện lợi, bãi biển riêng dài và đẹp.
+{LOCATION#GENERAL, positive}
+
+#683
+Tuy nhiên Phòng của resort có diện tích hơi bé và chưa đẹp lắm.
+{ROOMS#DESIGN&FEATURES, negative}, {ROOMS#GENERAL, negative}
+
+#684
+Quang cảnh xung quanh rất đẹp nhưng tiếc cái là khuôn viên hơi nhỏ.
+{HOTEL#DESIGN&FEATURES, negative},   {HOTEL#GENERAL, positive}
+
+#685
+Phòng không có quạt hút trong nhà vệ sinh nên hơi có mùi.
+{ROOMS#CLEANLINESS, negative}
+
+#686
+Xa các bãi tắm trung tâm khác.
+{LOCATION#GENERAL, negative}
+
+#687
+Về Mũi Né Paradise Beach Resort tất cả đều ổn, mọi thứ chấp nhận được, giá cả ăn uống rất hợp lý, đồ ăn ngon.
+{HOTEL#GENERAL, positive},   {FOOD&DRINKS#PRICES, positive}, {FOOD&DRINKS#QUALITY, positive}
+
+#688
+Mong quý khách sạn khắc phục sự cố này.
+{FACILITIES#MISCELLANEOUS, negative}
+
+#689
+Khách Sạn Blue Sea tốt, phòng nghỉ sạch sẽ và gọn gàng, trang thiết bị đầy đủ, hoạt động tốt.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#QUALITY, positive}, {HOTEL#GENERAL, positive}
+
+#690
+Thời gian trải nghiệm dịch vụ ở Khách Sạn Blue Sea tương đối ngắn nhưng nếu xét về cơ bản thì mọi thứ đều tốt.
+{HOTEL#GENERAL, positive}
+
+#691
+Họ nâng cấp miễn phí cho tôi loại phòng cao hơn, các trang thiết bị tiện nghi đều hoạt động tốt, dọn phòng tươm tất.
+{ROOM_AMENITIES#QUALITY, positive}
+
+#692
+Phòng của tôi bị sự cố, hệ thống thoát nước bị hỏng nước cứ trào ngược lên nhìn rất là kinh.
+{ROOM_AMENITIES#QUALITY, negative}
+
+#693
+Chất lượng phòng ở đáp ứng được sự thoáng mát cũng như sự sạch sẽ.
+{ROOMS#CLEANLINESS, positive}, {ROOMS#QUALITY, positive}, {HOTEL#COMFORT, positive}
+
+#694
+Với mức giá đặt qua Mytour như vậy thì tôi thấy hợp lý nhưng so với giá chuẩn của khách sạn thì thấy cao bởi đây giống như chung cư người ta nâng cấp lên chứ chưa chuẩn riêng về khách sạn.
+{HOTEL#PRICES, positive}
+
+#695
+Vị trí khách sạn nằm xa trung tâm.
+{LOCATION#GENERAL, negative}
+
+#696
+Tôi có đi Vũng Tàu với gia đình và ở 2 phòng 3.
+{HOTEL#GENERAL, positive}
+
+#697
+Nhân viên phục vụ cũng được, tôi yêu cầu gì cũng đáp ứng.
+{SERVICE#GENERAL, positive}
+
+#698
+Không gian trong phòng mà tôi ở thoáng đãng, sáng sủa luôn có ánh nắng nên tôi cảm thấy rất hài lòng.
+{ROOMS#COMFORT, positive}
+
+#699
+Mytour đã hỗ trợ tôi nhanh chóng, hiệu quả.
+{HOTEL#GENERAL, positive}
+
+#700
+Vòi nước trong phòng toilet bị rò rỉ.
+{ROOM_AMENITIES#QUALITY, negative}, {ROOM_AMENITIES#MISCELLANEOUS, negative}
+
+#701
+Do có lựa chọn trước nên vị trí ở đây khá thuận tiện cho chuyến đi du lịch của tôi.
+{LOCATION#GENERAL, positive}
+
+#702
+Trong chuyến du lịch tại Vũng Tàu vừa qua, gia đình tôi có ở lại khách sạn Blue Sea.
+{HOTEL#GENERAL, positive}
+
+#703
+Phòng ốc sạch sẽ, thoáng mát, ở rất thoải mái.
+{ROOMS#CLEANLINESS, positive},   {ROOMS#COMFORT, positive}
+
+#704
+Đây là khách sạn quen của nhóm tôi.
+{HOTEL#GENERAL, positive}
+
+#705
+Khách sạn hướng biển nên cảnh rất đẹp và đầy đủ các tiện nghi.
+{HOTEL#GENERAL, positive}, {HOTEL#GENERAL, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#706
+Phòng ốc tiện nghi đầy đủ, vệ sinh cũng sạch sẽ nhưng nhìn cách bày trí, chất lượng nội thất thì bình thường.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#QUALITY, negative}
+
+#707
+Dịch vụ và phòng tại khách sạn tốt và đáp ứng tốt nhu cầu của khách.
+{HOTEL#GENERAL, positive}
+
+#708
+Khâu vệ sinh phòng cũng khá tốt, nhân viên của khách sạn vui vẻ và thân thiện.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#709
+Dịch vụ mà khách sạn Phương Huy 1 Đà Lạt đã đáp ứng cho tôi trong kì nghỉ vừa qua là đều tốt từ hệ thống phòng ốc, nhân viên phục vụ đến vị trí đi lại cũng như vấn đề giá cả.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {ROOMS#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#710
+Vị trí thì xa chợ khoảng 800m, các bạn nhân viên phục vụ thì ổn và do giá cả rẻ nên tôi cũng không đòi hỏi gì nhiều về dịch vụ nơi này.
+{SERVICE#GENERAL, neutral}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}
+
+#711
+Để đánh giá về dịch vụ tại khách sạn Phương Huy 1 Đà Lạt là mọi thứ khá ổn, đáp ứng được nhu cầu tuy không nổi bật từ vị trí toạ lạc, thái độ nhân viên phục vụ cũng như vệ sinh phòng ốc, tiện nghi đi kèm và vấn đề giá cả.
+{HOTEL#GENERAL, neutral}, {SERVICE#GENERAL, neutral}, {LOCATION#GENERAL, neutral}, {HOTEL#PRICES, neutral}, {ROOM_AMENITIES#GENERAL, neutral}
+
+#712
+Thái độ nhân viên phục vụ dễ thương, vui vẻ, vị trí tiện lợi cho việc di chuyển và giá cả phù hợp túi tiền nên tôi khá hài lòng về nơi này.
+{SERVICE#GENERAL, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {HOTEL#COMFORT, positive}
+
+#713
+Phòng ốc thì đã cũ, cửa toilet không khoá được, trong những phòng tôi đặt thì có phòng không có quạt phải gọi bổ sung, máy nước nóng lúc có lúc không, nghỉ ngơi thì cũng tạm thôi.
+{ROOM_AMENITIES#QUALITY, negative}, {ROOMS#QUALITY, negative}
+
+#714
+Nhân viên dọn phòng hằng ngày đều đặn và nhanh chóng.
+{SERVICE#GENERAL, positive}
+
+#715
+Các bạn nhân viên khách sạn có thái độ phục vụ khách hàng khá là tốt.
+{SERVICE#GENERAL, positive}
+
+#716
+Khách sạn chuẩn bị phòng ốc tương đối chu đáo, vệ sinh phòng ở cẩn thận.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}
+
+#717
+Khách sạn Phương Huy 1 tôi có đặt phòng cho con trai khi có cơ hội đến Đà Lạt.
+{HOTEL#GENERAL, positive}
+
+#718
+Khi đến nhận phòng thì phòng ẩm, không được tốt lắm, do đó tôi đổi sang phòng khác khá ok sách sẽ, tiện nghi cơ bản đầy đủ, nhân viên ở đây nhiệt tình, thân thiện lắm, hướng dẫn, giới thiệu những quán ăn ngon cho khách hàng.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, negative}
+
+#719
+Dịch vụ phòng chưa tốt.
+{ROOMS#GENERAL, negative}, {SERVICE#GENERAL, negative}
+
+#720
+Mọi người đều lịch sự, địa điểm thuận tiện, giá cả hợp lý nên tôi ở thấy thoải mái.
+{LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#721
+Nhân viên có cung cách lịch sự, tác phong nhanh nhẹn.
+{SERVICE#GENERAL, positive}
+
+#722
+Nói chung là mọi thứ ok hết nên tôi cảm thấy hài lòng khi lưu trú lại Khách Sạn Phương Huy 1 này.
+{HOTEL#GENERAL, positive}, {HOTEL#COMFORT, positive}
+
+#723
+Về phòng ốc thì sạch sẽ tinh tươm, không gian thoáng mát.
+{ROOMS#CLEANLINESS, positive},   {ROOMS#COMFORT, positive}
+
+#724
+Vị trí đắc địa nằm trên đường Bùi Thị Xuân nên ra chợ cũng gần.
+{LOCATION#GENERAL, positive}
+
+#725
+Nhân viên rất vui vẻ, nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#726
+Đây là một khách sạn nhỏ nhưng mới, và sạch sẽ ở trung tâm thành phố Đà Lạt, rất thuận tiện cho việc đi lại và vui chơi.
+{LOCATION#GENERAL, positive}, {HOTEL#QUALITY, positive}, {HOTEL#CLEANLINESS, positive}
+
+#727
+CHúng tôi sẽ tiếp tục đặt đoàn khách của.
+{HOTEL#GENERAL, positive}
+
+#728
+Nhân viên dịch vụ phòng nên kiểm tra về đường điện và pin của remote để khách hàng hài lòng hơn.
+{ROOM_AMENITIES#MISCELLANEOUS, neutral}
+
+#729
+Anh nhận thấy khách sạn chỉ bình thường, nhưng tv thì cũ và nhiễu sóng.
+{HOTEL#GENERAL, neutral}, {ROOM_AMENITIES#QUALITY, negative}
+
+#730
+Phong cảnh đẹp, không khí trong lành, phục vụ tốt.
+{HOTEL#COMFORT, positive}, {HOTEL#DESIGN&FEATURES, positive}, {SERVICE#GENERAL, positive}
+
+#731
+Thái độ phục vụ của nhân viên thân thiện và luôn tươi cười vui vẻ.
+{SERVICE#GENERAL, positive}
+
+#732
+Chứ về tổng thể thì tốt rồi.
+{HOTEL#GENERAL, positive}
+
+#733
+Cảm nhận khách quan của riêng tôi khi lưu trú lại Terracotta Hotel and Resort Đà Lạt thì dịch vụ tốt.
+{SERVICE#GENERAL, positive}
+
+#734
+Theo cảm nhận của riêng tôi thì dịch vụ của Terracotta Hotel and Resort Đà Lạt cũng được.
+{SERVICE#GENERAL, neutral}
+
+#735
+Điểm làm tôi ấn tượng nhất khi ở Terracotta Hotel and Resort Đà Lạt là không gian rộng mát.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#736
+Còn khung cảnh xung quanh thì khá đẹp mà giá cả thì quá hợp lý.
+{HOTEL#PRICES, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#737
+Mọi thứ ở Terracotta Hotel and Resort Đà Lạt này tôi thấy đều ok.
+{HOTEL#GENERAL, positive}
+
+#738
+Tôi hoàn toàn hài lòng về những dịch vụ mà Terracotta Hotel Resort và Spa Đà Lạt đã cung cấp cho gia đình tôi trong chuyến du lịch vừa qua.
+{HOTEL#COMFORT, positive}
+
+#739
+Ăn sáng ok.
+{FOOD&DRINKS#QUALITY, positive}
+
+#740
+Quang cảnh ở đây nên thơ và hữu tình.
+{HOTEL#DESIGN&FEATURES, positive}
+
+#741
+Nhìn chung chuyến đi cảm thấy hài lòng.
+{HOTEL#COMFORT, positive}
+
+#742
+Các tiện ích đi kèm đầy đủ, phòng sạch, nhân viên phục vụ vui vẻ.
+{SERVICE#GENERAL, positive}, {ROOMS#CLEANLINESS, positive}, {FACILITIES#GENERAL, positive}
+
+#743
+Phòng ốc được thiết kế sang trọng, không gian ấm cúng, tiện nghi đầy đủ mà mọi thứ được sắp xếp rất hài hoà, bữa sáng thì ngon miệng và đa dạng.
+{FOOD&DRINKS#QUALITY, positive}, {FOOD&DRINKS#STYLE&OPTIONS, positive}, {HOTEL#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#744
+Khu này hơi xa trung tâm, thích hợp để nghỉ dưỡng, tôi hài lòng khi nghỉ tại đây.
+{LOCATION#GENERAL, negative}
+
+#745
+Nói chung là tôi cảm thấy hài lòng khi ở đây.
+{HOTEL#COMFORT, positive}
+
+#746
+Nhìn chung cảm thấy thật hài lòng về sự lựa chọn về dịch vụ này cho chuyến đi nghỉ mát của Tôi.
+{HOTEL#COMFORT, positive}
+
+#747
+Xứng đáng với chất lượng 4  sao.
+{HOTEL#QUALITY, positive}
+
+#748
+Khuôn viên không những rộng mà còn mát mẻ vì nằm ngay cạnh bờ biển.
+{LOCATION#GENERAL, positive}, {HOTEL#DESIGN&FEATURES, positive}
+
+#749
+Trong quá trình đặt phòng và lưu trú tại Cần Giờ Resort, tôi không gặp phải vấn đề gì quá khó khăn.
+{HOTEL#GENERAL, positive}
+
+#750
+Khá tốt trong khu vực đó, thức ăn ngon.
+{FOOD&DRINKS#QUALITY, positive}
+
+#751
+Vị trị khách sạn cũng tốt tuy nhiên phòng hơi cũ, bể bơi không được sạch lắm, nhà hàng giá quá cao.
+{ROOMS#QUALITY, negative}, {HOTEL#PRICES, negative}, {FACILITIES#CLEANLINESS, negative}
+
+#752
+Về dịch vụ phòng ốc và thái độ của nhân viên thì ok nhưng mà Cần Giờ Resort này nhiều muỗi, nhiều lắm.
+{ROOMS#GENERAL, positive}, {SERVICE#GENERAL, positive}, {HOTEL#CLEANLINESS, negative}
+
+#753
+Phòng sạch đẹp, đầy đủ tiện nghi cho tôi sử dụng.
+{ROOM_AMENITIES#GENERAL, positive},   {ROOMS#CLEANLINESS, positive}
+
+#754
+Bữa ăn sáng cũng được, tương đối đa dạng.
+{FOOD&DRINKS#QUALITY, positive}
+
+#755
+Tuy nhiên, ăn sáng ở đây chỉ có 2 món.
+{FOOD&DRINKS#STYLE&OPTIONS, negative}
+
+#756
+Phòng ốc cũng rộng rãi và tương đối đầy đủ tiện nghi.
+{ROOM_AMENITIES#GENERAL, positive}, {ROOMS#DESIGN&FEATURES, positive}
+
+#757
+Còn chất lượng phòng thì tạm ổn.
+{ROOMS#QUALITY, neutral}
+
+#758
+Thứ hai, khách sạn không kiểm tra kỹ phòng trước khi cho khách nhận.
+{SERVICE#GENERAL, negative}
+
+#759
+Khách sạn có vị trí rất tốt, rất tiện lợi cho việc đi lại và vui chơi.
+{LOCATION#GENERAL, positive}
+
+#760
+Mọi thứ đều ổn, duy chỉ có thức ăn trong khách sạn quá đắt so với chất lượng và số lượng.
+{FOOD&DRINKS#QUALITY, negative}, {FOOD&DRINKS#PRICES, negative}
+
+#761
+Tuy nhiên, có 2 điểm tôi cảm thấy chưa được hài lòng đó là:vào buổi tối, xảy ra 3 hay 4 lần cúp điện khoản 5 phút rồi có lại ; truyền hình cáp thì sau 23:59 thì không có tín hiệu nhưng tới sáng hôm sau thì có lại.
+{ROOMS#MISCELLANEOUS, negative}
+
+#762
+Resort chỉ ở mức tương đối, tạm chấp nhận được, chất lượng khá ổn với mức giá khá hợp lý.
+{HOTEL#GENERAL, neutral}, {HOTEL#PRICES, positive}, {HOTEL#QUALITY, neutral}
+
+#763
+Chứ về phòng ở thì không vấn đề gì, thoáng mát, sạch đẹp.
+{ROOMS#CLEANLINESS, positive}
+
+#764
+Nói chung tôi đánh giá mọi thứ tầm mức trung bình thôi.
+{HOTEL#GENERAL, neutral}
+
+#765
+Về dịch vụ của Happy Day 1 Guesthouse, tôi không có gì phàn nàn.
+{SERVICE#GENERAL, positive}
+
+#766
+Có điều nước nóng ở đây lúc nóng lúc lạnh, tôi có nhờ nhân viên hỗ trợ nhưng cũng không khắc phục được.
+{ROOMS#MISCELLANEOUS, negative}, {SERVICE#GENERAL, neutral}, {ROOMS#MISCELLANEOUS, negative}
+
+#767
+Khách sạn giá rẻ nhưng tiện nghi tương đối ổn.
+{HOTEL#PRICES, positive}, {FACILITIES#GENERAL, positive}
+
+#768
+Địa điểm khách sạn thuận tiện di chuyển đến các điểm tham quan.
+{LOCATION#GENERAL, positive}
+
+#769
+Phòng ở bố trí tiện nghi, nội thất cần thiết đầy đủ.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#GENERAL, positive}
+
+#770
+Nhìn chung tôi góp ý khách sạn nên sớm cải thiện lại vấn đề trên để phục vụ tốt hơn.
+{SERVICE#GENERAL, positive}
+
+#771
+Tôi thấy dịch vụ ở Happy Day 1 Hotel này cũng bình thường.
+{SERVICE#GENERAL, neutral}
+
+#772
+Vị trí không gần chợ lắm.
+{LOCATION#GENERAL, positive}
+
+#773
+khách sạn có dọn phòng nhưng chỉ gấp lại chăn mà không hề quét phòng, về phòng thấy chăn gối gọn gàng nhưng phòng thì bẩn nguyên nên k hiểu dọn phòng làm gì ?
+{ROOMS#CLEANLINESS, negative}, {SERVICE#GENERAL, negative}
+
+#774
+Thái độ mọi người ở Happy Day 1 Hotel đều vui vẻ và nhiệt tình trong cách nói chuyện, cư xử với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#775
+Vòi nước thì có nước chảy tùm lum, lavabo thì nước rút chậm.
+{ROOM_AMENITIES#DESIGN&FEATURES, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#776
+Tuy nhiên cũng có một số ưu điểm như nhân viên phục vụ nhiệt tình, thân thiện, hỗ trợ khách hàng tốt, vấn đề vệ sinh cũng sạch sẽ và giá cả chấp nhận được.
+{SERVICE#GENERAL, positive}
+
+#777
+Nhân viên có thái độ phục vụ tốt, nhiệt tình với khách hàng.
+{SERVICE#GENERAL, positive}
+
+#778
+Họ nhiệt tình, tiếp đón khách hàng một cách niềm nở.
+{SERVICE#GENERAL, positive}
+
+#779
+Về nhân viên thì ok.
+{SERVICE#GENERAL, positive}
+
+#780
+Vừa qua thì tôi có đặt phòng tại Happy Day thông qua hệ thống của công ty mytour cho chuyến đi đến Đà Lạt của mình.
+{HOTEL#GENERAL, positive}
+
+#781
+Tại khách sạn có cho thuê xe máy với giá rẻ, xe cho thuê đều là xe mới.
+{HOTEL#PRICES, positive}, {FACILITIES#DESIGN&FEATURES, positive}, {FACILITIES#QUALITY, positive}
+
+#782
+Khách sạn có vị trí ngay chợ Đà lạt nên rất thuận tiện cho việc đi mua đồ và dạo chợ vào buổi tối.
+{LOCATION#GENERAL, positive}
+
+#783
+Cùng một câu hỏi mà hỏi tôi tới 2 3 lần thấy cũng vui vui.
+{HOTEL#GENERAL, positive}
+
+#784
+Tôi đã thoả thuận với mytour là trưa ngày thứ 5 chuyển phòng của mình từ phòng lớn xuống phòng nhỏ.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#785
+Nếu có dịp lên đây lần nữa, tôi sẽ tiếp tục ủng hộ khách sạn.
+{HOTEL#GENERAL, positive}
+
+#786
+Nhân viên thì khá ổn, nhiệt tình.
+{SERVICE#GENERAL, positive}
+
+#787
+Đặc biệt là thiết kế phòng rộng và khang trang.
+{ROOMS#DESIGN&FEATURES, positive}
+
+#788
+Bữa sáng ăn ngon và đa dạ ng món. Phòng ốc thì dọn dẹp sạc h sẽ, gọn gàng. Vị trí đi lại thuận tiện, nhân viên vui vẻ và niềm nở chào đón. Giá cả xét ra cũng khá tương xứng với chất lượng nên tôi hài lòng khi ở đây.
+{FOOD&DRINKS#STYLE&OPTIONS, positive}, {FOOD&DRINKS#QUALITY, positive}, {ROOMS#CLEANLINESS, positive}, {LOCATION#GENERAL, positive}, {HOTEL#PRICES, positive}, {HOTEL#COMFORT, positive}
+
+#789
+Các bạn nhân viên thì tươi cười và nhiệt tình đón tiếp.
+{SERVICE#GENERAL, positive}
+
+#790
+Phòng ốc thì sạch sẽ, tiện nghi thì đầy đủ, còn khá mới.
+{ROOMS#CLEANLINESS, positive}, {ROOM_AMENITIES#QUALITY, positive}
+
+#791
+Tôi có đặt phòng ở Khách Sạn Mường Thanh Grand Đà Nẵng, dịch vụ ở đây ok và tôi không phàn nàn gì khi sử dụng dịch vụ ở đây.
+{SERVICE#GENERAL, positive}, {ROOMS#COMFORT, positive}
+
+#792
+Khách sạn Mường Thanh Grand Đà Nẵng sau khi sử dụng những dịch vụ khách sạn đang cung cấp tôi cảm thấy hài lòng.
+{HOTEL#COMFORT, positive}, {SERVICE#GENERAL, positive}
+
+#793
+Nhân viên không được thân thiện, phòng ở sạch, ăn uống được, không có dao cạo râu, không có áo choàng tắm, chỉ thích hợp cho ai muốn đi thăm quan trung tâm thành phố, đi tăm biển phải mất 70 nghìn taxi 2 chieu, có thể xem rồng phun lửa và cầu quay từ trên khách sạn.
+{SERVICE#GENERAL, negative}, {LOCATION#GENERAL, negative}, {ROOMS#CLEANLINESS, negative}, {FOOD&DRINKS#QUALITY, positive}, {ROOM_AMENITIES#GENERAL, negative}
+
+#794
+Trang bị nội thất phòng khá khang trang nhưng không gian phòng vào buổi đêm hơi ẩm.
+{ROOM_AMENITIES#DESIGN&FEATURES, positive}
+
+#795
+Nhân viên nhiệt tình, lịch sự với khách hàng.
+{SERVICE#GENERAL, positive}

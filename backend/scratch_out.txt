@@ -1,0 +1,131 @@
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Beauty_ABSA\data_test.csv ---
+['data', 'stayingpower', 'texture', 'smell', 'price', 'others', 'colour', 'shipping', 'packing']
+['Hàng đóng gói đẹp và chắc chắn, nhìn rất dễ thương và ưng bụng ạ!', '', '', '', '', '', '', '', 'positive']
+['Cảm giác son bên trong rất là ít luôn í, đóng gói cẩn thận, dịch nhưng mà giao hàng khá nhanh', '', '', '', '', '', '', 'positive', 'positive']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Beauty_ABSA\data_train.csv ---
+['data', 'stayingpower', 'texture', 'smell', 'price', 'others', 'colour', 'shipping', 'packing']
+['son đẹp lăm,sẽ ủng hộ tiếp , shipper cũng dễ thương nữa hihihihi', '', '', '', '', '', '', 'positive', '']
+['Son đẹp lắm nha mn tuy là son nội địa giá rẻ nhưng chất son mịn dễ tán ko bị bón cục mùi son thơm nhẹ nhẹ ko quá nồng ', '', 'positive', 'positive', 'positive', '', '', '', '']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Beauty_ABSA\data_val.csv ---
+['data', 'stayingpower', 'texture', 'smell', 'price', 'others', 'colour', 'shipping', 'packing']
+['Son màu lên siu đẹp giá lại hạt dẻ, cho shop 5s. Nhưng son không lì đâu nha mn ai có ý định đánh 1 lần r đi chs mk nghĩ k nên nha nên mag theo có trôi thì son lại, giá như z thì son thế này là ok r', 'negative', '', '', 'positive', '', 'positive', '', '']
+['Son mịn lắm á bôi lên thì hơi khô thôi nói chung là với giá nvay ko đòi hỏi nhiều', '', 'neutral', '', 'positive', '', '', '', '']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Education_ABSA\Test.txt ---
+#1
+cần nhiều giờ thực hành hơn nữa vì chủ yếu được học lý thuyết , thời gian tiếp xúc thiết bị ít .
+{Nói chung, negative}, {Đề xuất, negative}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Education_ABSA\Train.txt ---
+#1
+thầy liên hệ thực tiễn nhiều gây hứng thú cho sinh viên .
+{Kỹ năng giảng dạy, positive}, {Kinh nghiệm, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Education_ABSA\Validation.txt ---
+#1
+thầy dạy tận tâm , truyền đạt tốt .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Hotel_ABSA\Dev.txt ---
+#1
+Phòng ốc có thiết kế đẹp, vệ sinh đảm bảo.
+{ROOMS#DESIGN&FEATURES, positive}, {ROOMS#CLEANLINESS, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Hotel_ABSA\Test.txt ---
+#1
+Mọi người đều nói chuyện lịch sự.
+{SERVICE#GENERAL, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Hotel_ABSA\Train.txt ---
+#1
+Vừa qua tôi có dùng dịch vụ tại Khách Sạn TTC Hotel Premium Ngọc Lan Ngọc Lan Đà Lạt.
+{HOTEL#GENERAL, positive}, {SERVICE#GENERAL, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Mother_ABSA\mebe_shopee.csv ---
+['', 'id', 'cmt', 'giá', 'dịch_vụ', 'an_toàn', 'chất_lượng', 'ship', 'other', 'chính_hãng']
+['1', '18093', 'shop đóng_gói cẩn_thận , giao hàng . bé uống hợp . ủng_hộ', '0', '0', '0', '1', '1', '0', '0']
+['2', '18092', 'giao hàng , , sản_phẩm tốt , ủng_hộ shop dài_dài', '0', '0', '0', '1', '1', '0', '0']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Mother_ABSA\mebe_tiki.csv ---
+['', 'id', 'text', 'aspect0', 'aspect1', 'aspect2', 'aspect3', 'aspect4', 'aspect5']
+['0', '24921', '2 quà khuyến_mãi món . đầu xe 3 bánh bọ sắt gắn 2 bánh_xe . lèo xếp bệnh_viện ghi 60 món hét mấy miếng to . quà khuyến_mãi như đánh_đố . không tâm quà', '0', '-1', '0', '0', '0', '0']
+['3', '24918', 'gói bỉm cũ bạc_màu loại mẫu_mã . gói bỉm rách . không hài_lòng', '0', '0', '-1', '-1', '0', '0']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Phone_ABSA\Dev.txt ---
+#1
+Máy ok, k chê điểm nào, chính thức là fans ViVo Mọi chức năng đều như ý mình mong muốn Lần đầu tiên xài thử vivo
+{GENERAL, positive}, {SER_ACC, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Phone_ABSA\Test.txt ---
+#1
+Điện thoải ổn. Facelock cực nhanh, vân tay ôk , màn hình lớn, pin trâu ( liên quân , Zalo, YouTube ) một ngày mất khoảng 45 % ) tuy chỉ chip 439 nhưng rất mượt. Đa nhiệm khá ổn
+{SCREEN, positive}, {FEATURES, positive}, {PERFORMANCE, positive}, {GENERAL, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Phone_ABSA\Train.txt ---
+#1
+Mới mua máy này Tại thegioididong thốt nốt cảm thấy ok bin trâu chụp ảnh đẹp loa nghe to bắt wf khỏe sóng ổn định, giá thành vừa với túi tiền, nhân viên tư vấn nhiệt tình
+{CAMERA, positive}, {FEATURES, positive}, {BATTERY, positive}, {PRICE, positive}, {GENERAL, positive}, {SER_ACC, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Res_ABSA\Dev.txt ---
+#1
+Mà không biết phải nhân viên cũ hay mới nữa nhưng cảm giác thân thiện hơn.
+{SERVICE#GENERAL, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Res_ABSA\Test.txt ---
+#1
+❤ Bánh đc bao gói bao bì khá lạ, là túi nilong đc băng dập kín để hút khí, chứ kfai túi giấy như các shop khác 💪🏻.
+{RESTAURANT#MISCELLANEOUS, positive}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Res_ABSA\Train.txt ---
+#1
+Giá 53k size vừa.
+{DRINKS#PRICES, neutral}, {DRINKS#STYLE&OPTIONS, neutral}
+
+#2
+
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Technology_ABSA\tech_shopee.csv ---
+['', 'id', 'cmt', 'giá', 'dịch_vụ', 'ship', 'hiệu_năng', 'chính_hãng', 'cấu_hình', 'phụ_kiện', 'other', 'mẫu_mã']
+['0', '18727', 'sản_phẩm tốt , đẹp keng , tiếc không android 9 không sim , chủ shop nhiệt_tình .', '0', '1', '0', '0', '0', '0', '0', '0', '1']
+['1', '18726', 'máy máy đẹp lắm tốt chưa shop trả_lời nhiệt_tình shop', '0', '1', '0', '0', '0', '0', '0', '0', '1']
+
+--- backend/ABSA_Dataset/ABSA_Dataset\Technology_ABSA\tech_tiki.csv ---
+['', 'id', 'cmt', 'giá', 'dịch_vụ', 'ship', 'hiệu_năng', 'chính_hãng', 'cấu_hình', 'phụ_kiện', 'other', 'mẫu_mã']
+['0', '33465', 'ổn tầm giá . màn_hình , loa trung_bình , không . chụp hình chân_dung siêu ảo , không ưng lắm . giá rẻ không đòi_hỏi', '1', '0', '0', '0', '0', '-1', '-1', '0', '0']
+['1', '33464', 'hàng , máy ổn giá , tiki giúp kích_hoạt như giúp m kì hài_lòng', '1', '0', '0', '0', '0', '0', '0', '0', '0']

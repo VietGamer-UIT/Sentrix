@@ -1,0 +1,1999 @@
+#1
+cần nhiều giờ thực hành hơn nữa vì chủ yếu được học lý thuyết , thời gian tiếp xúc thiết bị ít .
+{Nói chung, negative}, {Đề xuất, negative}
+
+#2
+giảng viên nhiệt tình , kết hợp truyền đạt nhiều kiến thức trong thực tiễn .
+{Kinh nghiệm, positive}, {Hành vi, positive}
+
+#3
+cách truyền đạt , sự tận tâm .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#4
+thầy dạy hay và rất nhiệt tình .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#5
+môn học nên cập nhật giáo trình mới liên tục , tài liệu học tập cũ , rất nhiều chỗ sai .
+{Cung cấp tài liệu, negative}, {Đề xuất, negative}
+
+#6
+giảng viên nghỉ phải thông báo cho sinh viên trước , vì môn học thầy luôn điểm danh nhưng thầy lại không lên lớp thường xuyên , bắt sinh viên phải chờ rồi ra về thường xuyên .
+{Đề xuất, negative}, {Hành vi, negative}
+
+#7
+thay đổi cách truyền đạt môn , thay vì giảng viên có giờ lên lớp giảng bài nhàm chán , sinh viên tiếp thu thụ động , ý kiến : giảng viên chia nhỏ nhóm học tập , mỗi buổi sẽ đưa chủ đề của bài hôm đó và giải thích cách làm việc , cho thời gian sinh viên làm việc nhóm với sự giám xác của giảng viên , sau đó bốc thăm cho từng nhóm lên trình bày , sau đó giảng viên nhận xét cho điểm .
+{Đề xuất, negative}, {Kỹ năng giảng dạy, negative}
+
+#8
+giảng viên giảng dạy nhiệt tình , phương pháp dạy hay , chỉ dẫn hiệu quả , bài tập làm nhiều .
+{Bài tập, positive}, {Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#9
+thầy giảng bài dễ hiểu , vui tính , sẵn sàng giải đáp thắc mắc của sinh viên .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#10
+thầy dạy nhiệt tình , mong được học thầy những kỳ sau :d .
+{Nói chung, positive}, {Hành vi, positive}
+
+#11
+giảng dạy nhiệt tình , vui vẻ , hài hước tạo cảm giác hứng thú cho sinh viên trong giờ học .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#12
+cô giải nhiều bài tập , dạy dễ hiểu .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#13
+cô dạy nhiệt tình , dễ hiểu , quan tâm sinh viên .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#14
+nâng cao kiến thức cho sinh viên rất tốt , giảng dạy dễ hiểu .
+{Kỹ năng giảng dạy, positive}, {Kiến thức, positive}
+
+#15
+thầy dạy hay , nhiều kinh nghiệm , có phần demo trực tiếp trên visual studio giúp dễ hiểu .
+{Kỹ năng giảng dạy, positive}, {Kinh nghiệm, positive}, {Cung cấp tài liệu, positive}
+
+#16
+giáo viên hướng dẫn nhiệt tình , vui vẻ , dễ tính .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#17
+nhiệt tình giải đáp thắc mắc của sinh viên , chu đáo , tận tâm , nội dung thực hành chuẩn bị cẩn thận và cần thiết .
+{Cung cấp tài liệu, positive}, {Hành vi, positive}
+
+#18
+cô rất nhiệt tình , giảng bài khá hay .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#19
+nhiệt tình , kỹ năng dạy kinh nghiệm .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#20
+cung cấp slide , kiến thức , truyền dạt tốt .
+{Cung cấp tài liệu, positive}, {Kiến thức, positive}, {Kỹ năng giảng dạy, positive}
+
+#21
+nhiệt tình giúp đỡ sinh viên và tạo sinh viên có nơi để nâng cao kỹ năng lập trình .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#22
+cô dạy hay nhiệt tình .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#23
+thầy dạy rất hay giải nhiều bài tập .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#24
+thầy cô giáo dạy rất nhiệt tình và vui vẻ .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#25
+giảng viên rất tận tâm , nhiệt huyết , cô có khả năng truyền đặt cao , cách giảng dạy lôi cuốn , thu hút .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#26
+phương pháp dạy hay , tân tâm , nhiệt tình .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#27
+thầy dạy rất vui và hiệu quả !
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#28
+thiếu trang bị , dụng cụ thực hành cần thiết , không đáp ứng đủ thời gian giảng dạy do vắng tiết .
+{Hành vi, negative}, {Thiết bị dạy học, negative}
+
+#29
+đề nghị giảng viên sử dụng hiệu quả hơn kênh moodle để nâng cao chất lượng giảng dạy .
+{Đề xuất, negative}
+
+#30
+giảng viên đảm bảo thời gian lên lớp tốt , chấm điểm công bằng .
+{Chấm điểm, positive}, {Hành vi, positive}
+
+#31
+thầy cho nhiều bài tập .
+{Bài tập, positive}
+
+#32
+cô rất dễ thương , dạy dễ hiểu .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#33
+nhiệt tình , tạo cách chủ động cho học sinh tiếp cận với môn học .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#34
+thầy giảng rất hay , dạy rất nhiệt tình .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#35
+cô giảng hay , có ví dụ dễ hiểu , có làm mẫu bài tập , nhiệt tình .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#36
+giảng viên gây hứng thú cho sinh viên với bài giảng của mình , vui vẻ , thân thiện với sinh viên .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#37
+một số bài thầy giảng còn khó hiểu , ít sát thực hành và ít sửa bài tập về nhà .
+{Kỹ năng giảng dạy, negative}, {Bài tập, negative}
+
+#38
+truyện đạt kiến thức dễ hiểu dễ tiếp thu , gần gũi , nhiệt tình .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#39
+thầy dạy hay , không khí vui vẻ và tận tình giải đáp mọi thắc mắc .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#40
+thầy giải đáp thắc mắc của sinh viên nhiệt tình và đầy đủ , kiến thức nhiều và phong phú .
+{Kiến thức, positive}, {Hành vi, positive}
+
+#41
+cần nâng cấp máy trong phòng máy thực hành vì cấu hình hơi yếu và phòng học không nóng và bụi thì tốt hơn .
+{Đề xuất, negative}, {Thiết bị dạy học, negative}
+
+#42
+môn học không mang tính ứng dụng và thực tế , kiến thức quá chung chung .
+{Kiến thức, negative}, {Chương trình học, negative}
+
+#43
+giảng viên dạy tâm huyết , nhiệt tình , bài tập cụ thể rõ ràng .
+{Hành vi, positive}, {Bài tập, positive}
+
+#44
+thầy dạy tương đối ổn , có tính thực tế .
+{Kỹ năng giảng dạy, positive}, {Kinh nghiệm, positive}
+
+#45
+giảng dễ hiểu , nhiệt tình trong công tác giảng dạy .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#46
+mong thầy xen kẽ bài tập vào bài giảng lý thuyết , như thế sẽ dễ hiểu bài hơn ạ .
+{Đề xuất, negative}
+
+#47
+giảng viên dạy sinh động , hiệu quả , đảm bảo giờ lên lớp .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#48
+dạy nhiệt tình , mở rộng kiến thức cho sinh viên , làm bài tập nhiều .
+{Kiến thức, positive}, {Bài tập, positive}, {Hành vi, positive}
+
+#49
+thầy wzjwz137 dạy rất hay , chi tiết , nhiệt tình và dễ hiểu .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#50
+giáo viên luôn tạo điều kiện cho sinh viên luyện nói tiếng anh tại lớp , giải thích về bài học , ngữ pháp , từ mới vào đầu giờ .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#51
+thầy có dạy những kiến thức , kinh nghiệm có tính áp dụng lâu dài .
+{Kiến thức, positive}, {Kinh nghiệm, positive}
+
+#52
+cô dạy rất hay và dễ hiểu , đặc biệt rất nhiệt tình trong giảng dạy và quan tâm tới sinh viên .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#53
+giáo viên dạy tân tâm , nhiệt tình , dễ hiểu .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#54
+thân thiện , hòa đồng , giảng dạy có kỹ lưỡng .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#55
+thầy cho làm các bài tập tại lớp trong khi sinh viên chưa biết gì về vấn đề đó .
+{Hành vi, negative}, {Bài tập, negative}
+
+#56
+giảng viên giảng dạy rất tốt , thường xuyên cung cấp thêm nhiều kiến thức .
+{Kiến thức, positive}, {Kỹ năng giảng dạy, positive}
+
+#57
+thầy nhiệt tình , bài giảng phong phú đa dạng .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#58
+giảng viên nhiệt tình , tận tâm với công việc , slide dễ hiểu , hoạt động học tập sôi nổi .
+{Kỹ năng giảng dạy, positive}, {Cung cấp tài liệu, positive}, {Hành vi, positive}
+
+#59
+cô dạy dễ hiểu , hỗ trợ tốt cho các bạn .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#60
+cần có các thiết bị di động thật để sinh viên thực hành khi cần thiết , vì các chương trình mô phỏng trên máy tính là không đầy đủ .
+{Thiết bị dạy học, negative}, {Đề xuất, negative}
+
+#61
+cô giảng rất chán slide tiếng anh dùng nhiều từ chuyên ngành , nên nếu không bắt kịp những gì cô giảng thì cũng khó để hiểu được bài giảng .
+{Cung cấp tài liệu, negative}, {Kỹ năng giảng dạy, negative}
+
+#62
+cô rất vui tính , nhiệt tình , giảng bài tập chi tiết , dễ hiểu .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}, {Bài tập, positive}
+
+#63
+chưa tận tâm trong giảng dạy , không nghiên cứu kỹ bài giảng trước khi lên lớp .
+{Kỹ năng giảng dạy, negative}, {Hành vi, negative}
+
+#64
+thầy dạy thực tế , nhiệt tình với sinh viên .
+{Hành vi, positive}, {Kinh nghiệm, positive}
+
+#65
+giọng cô nhỏ , không nên sắp ở giảng đường vì sẽ rất dễ gây buồn ngủ và không nghe rõ được .
+{Đề xuất, negative}, {Hành vi, negative}
+
+#66
+sử dụng hợp lý thời gian lên lớp , giúp đỡ sinh viên nhiều hơn trong quá trình học trên lớp .
+{Hành vi, negative}, {Kỹ năng giảng dạy, negative}
+
+#67
+cô nhiệt tình , giảng bài kỹ .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#68
+thầy vui tính , giảng bài dễ hiểu , nhiệt tình .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#69
+cần cải cách lại nội dung các bài thực hành , một số kiến nội dung trong bài thực hành đã trở nên lỗi thời .
+{Đề xuất, negative}, {Bài tập, negative}
+
+#70
+giảng viên nhiệt tình , bài giảng thu hút .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#71
+nhiệt tình , tạo cách chủ động cho học sinh tiếp cận với môn học và tham gia các chương trình phong trào liên quan để nâng cao kỹ năng .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#72
+nếu có thì chỉ hướng dẫn bằng lý thuyết mà không làm bài tập mẫu cho sinh viên .
+{Kỹ năng giảng dạy, negative}, {Bài tập, negative}
+
+#73
+em không muốn nói gì nhưng mong thầy xem lại cách đánh giá sinh viên để công bằng hơn , cái sinh viên không biết không phải chỉ ở cúp tiết mà còn ở cách giảng dạy , truyền đạt ở giảng viên , ví dụ như cô wzjwz324 , rất dễ hiểu , tận tâm .
+{Đề xuất, negative}, {Kỹ năng giảng dạy, negative}
+
+#74
+môn học toàn kiến thức mới mẻ , giảng viên nên giảng chi tiết hơn .
+{Chương trình học, positive}, {Đề xuất, negative}
+
+#75
+cô quan tâm đến sinh viên và truyền đạt kiến thức rất bổ ích .
+{Hành vi, positive}, {Kiến thức, positive}
+
+#76
+dạy nhiệt tình , theo sát môn học .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#77
+hay kể các chuyện liên quan đến thực tiễn giúp bọn em tiếp thu nhanh hơn và cũng có hứng thú trong quá trình học .
+{Kinh nghiệm, positive}, {Kỹ năng giảng dạy, positive}
+
+#78
+cô thân thiện với học sinh , truyền cảm hứng , động lực tốt .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#79
+cần đặt mục tiêu rõ ràng nhất từ môn học và môn học cần được học ở sinh viên năm nhất , vì lúc vào sinh viên còn rất ngỡ ngàng với các khoa và các môn học sẽ học vì thế nên học trước để tạo tâm lý , cũng như sinh viên phải biết mình cần làm gì , tạo nên sự chủ động trong học tập và làm việc .
+{Đề xuất, negative}
+
+#80
+em muốn khi học môn này nên cho đồ án để áp dụng nhiều hơn vì em thấy môn này rất hay .
+{Đề xuất, negative}
+
+#81
+không đánh giá đúng khả năng của học sinh .
+{Chấm điểm, negative}
+
+#82
+giảng viên trình bày dễ hiểu , theo sát bài học .
+{Kỹ năng giảng dạy, positive}
+
+#83
+giáo viên tận tâm và nhiệt tình giúp đỡ học sinh trong quá trình học tập .
+{Hành vi, positive}
+
+#84
+thầy cũng ít quan tâm đến ý kiến của học sinh .
+{Hành vi, negative}
+
+#85
+đề nghị nhà trường sửa hoặc bổ sung mới để việc thực hành có hiệu quả .
+{Đề xuất, negative}
+
+#86
+giảng viên linh động cung cấp tài liệu cho sinh viên trong và ngoài hệ thống moodle .
+{Cung cấp tài liệu, positive}
+
+#87
+giảng viên giảng dạy hay .
+{Kỹ năng giảng dạy, positive}
+
+#88
+cập nhật slide mới , tài liệu slide cũ có nhiều điểm khác slide mới không cập nhât đúng thứ tự , ví dụ .
+{Cung cấp tài liệu, negative}
+
+#89
+cần áp đặt việc kiểm tra bài cũ và bài mới trên giờ học nhiều hơn .
+{Đề xuất, negative}
+
+#90
+đánh giá tính chuyên cần .
+{Chấm điểm, neutral}
+
+#91
+thời gian tăng từ 4 tiết lên đến 5 tiết khiến sinh viên mệt mỏi và thiếu tập trung ở cuối giờ học .
+{Nói chung, negative}
+
+#92
+điều này xảy ra ở mọi tiết học .
+{Nói chung, negative}
+
+#93
+bài tập nhiều , có nhiều câu hỏi hay .
+{Bài tập, positive}
+
+#94
+nhiệt tình , vui tính , hòa đồng , dễ gần gũi .
+{Hành vi, positive}
+
+#95
+cần nhiều hoạt động ngoại khóa .
+{Đề xuất, negative}
+
+#96
+mức độ quan tâm học sinh rất cao .
+{Hành vi, positive}
+
+#97
+thầy chỉ giảng những kiến thức có trong slide bài giảng , trong khi nội dung môn học có bài tập nhưng sinh viên không được hướng dẫn kỹ về cách làm bài .
+{Kỹ năng giảng dạy, negative}
+
+#98
+góp ý , nhắc nhở nhiệt tình , lưu ý sai sót cho sinh viên .
+{Hành vi, positive}
+
+#99
+tăng cường thêm thiết bị để môn học được hiệu quả .
+{Đề xuất, negative}
+
+#100
+hướng dẫn giải bài tập chi tiết .
+{Bài tập, positive}
+
+#101
+thầy dạy rất hăng say , nhiệt tình .
+{Hành vi, positive}
+
+#102
+tận tình với sinh viên .
+{Hành vi, positive}
+
+#103
+điều này khiến giảng viên khó xử .
+{Nói chung, neutral}
+
+#104
+kính mong các giảng viên mạch số upload tài liệu trước giờ học ít nhất 1 ngày để các bạn sinh viên có thể nghiên cứu trước ở nhà .
+{Đề xuất, negative}
+
+#105
+chấm đồ án : chấm không công bằng , không thể lấy lý do không thích tính cách của sinh viên mà không cho sinh viên đậu , mặc dù đồ án hoàn thành tốt .
+{Chấm điểm, negative}
+
+#106
+giảng viên ra đồ án cho sinh viên về làm để mở rộng kiến thức .
+{Bài tập, positive}
+
+#107
+thầy rất nhiệt tình và vui vẻ .
+{Hành vi, positive}
+
+#108
+bảo học sinh không chịu học là không đúng .
+{Nói chung, negative}
+
+#109
+các thầy có học vị cao ắt sẽ có nhiều kinh nghiệm quý báu hơn .
+{Kinh nghiệm, positive}
+
+#110
+một số bài tập không rõ , không đi sâu .
+{Bài tập, negative}
+
+#111
+giảng bài , hòa đồng .
+{Hành vi, positive}
+
+#112
+thầy tận tâm , luôn tạo động lực để học sinh làm bài , nhiệt tình giảng dạy .
+{Hành vi, positive}
+
+#113
+thầy hiểu tâm lý sinh viên .
+{Hành vi, positive}
+
+#114
+giữa các thầy cô nên thống nhất , tránh để sinh viên lao đao .
+{Đề xuất, negative}
+
+#115
+có nhiều hoạt động học tập sinh động giúp sinh viên thoải mái khi học .
+{Kỹ năng giảng dạy, positive}
+
+#116
+thầy có tạo điều kiện cho chúng em thuyết trình về đồ án môn học , nhưng khi chúng em thuyết trình về nội dung : " giới thiệu về hệ thống nhúng và vai trò cũng như các ngành ứng dụng hệ thống nhúng " .
+{Hành vi, positive}
+
+#117
+thầy không dạy thiếu micro nên nhiều lúc em phải đi mượn cho bằng được !
+{Hành vi, negative}
+
+#118
+thực trạng chung là giảng viên dạy thực hành ở trường chưa thật sự tận tâm giúp sinh viên nâng cao kỹ năng thực hành của môn học đó .
+{Hành vi, negative}
+
+#119
+xinh .
+{Nói chung, positive}
+
+#120
+các dụng cụ thực hành không được cung cấp đầy đủ .
+{Thiết bị dạy học, negative}
+
+#121
+nhiệt tình , dễ chịu .
+{Hành vi, positive}
+
+#122
+thầy dạy tốt , lập nhóm thuyết trình tạo không khí học tập tốt .
+{Kỹ năng giảng dạy, positive}
+
+#123
+giảng viên dạy kỹ .
+{Kỹ năng giảng dạy, positive}
+
+#124
+không biết thầy nào dạy chính thức , thầy nào dạy cũng nhiệt tình .
+{Hành vi, positive}
+
+#125
+thầy ít dạy cài đặt nên khó trong việc áp dụng cài đặt .
+{Kỹ năng giảng dạy, negative}
+
+#126
+đề nghị nhập chung cả 2 lớp lại học thực hành vì số lượng sinh viên quá ít .
+{Đề xuất, negative}
+
+#127
+giảng hay , trọng tâm .
+{Kỹ năng giảng dạy, positive}
+
+#128
+thầy dạy giỏi chu đáo .
+{Kỹ năng giảng dạy, positive}
+
+#129
+cô làm việc rất có trách nhiệm .
+{Hành vi, positive}
+
+#130
+chúc thầy vui và sống khỏe .
+{Nói chung, positive}
+
+#131
+cô vui tính , nhiệt tình .
+{Hành vi, positive}
+
+#132
+thầy ôn rất kỹ .
+{Kỹ năng giảng dạy, positive}
+
+#133
+giảng viên giải thích một số ví dụ mẫu chưa rõ ràng .
+{Kỹ năng giảng dạy, negative}
+
+#134
+giáo viên giao tiếp bình thường .
+{Hành vi, neutral}
+
+#135
+không ý kiến , phương pháp của thấy rất hài lòng ạ .
+{Kỹ năng giảng dạy, positive}
+
+#136
+hầu như không có vấn đề gì không hài lòng .
+{Nói chung, positive}
+
+#137
+để học sinh của mình không có gì sau kết thúc môn phải chăng đó không là thất bại !
+{Nói chung, negative}
+
+#138
+hoặc có thể cho cùng một giảng viên phụ trách lý thuyết và thực hành cho mỗi lớp .
+{Đề xuất, negative}
+
+#139
+thực sự phải học toán suốt 3 năm cấp 3 và chưa kể năm 12 , và lên đại học phải học toán thì là 1 cảm xúc khó tả , vừa ngán và vừa nản .
+{Chương trình học, negative}
+
+#140
+giảng bài rất hay .
+{Kỹ năng giảng dạy, positive}
+
+#141
+ngôn ngữ thực hành nên trang bị trước cho sinh viên .
+{Đề xuất, negative}
+
+#142
+thầy nghỉ không báo trước quá nhiều , số buổi lên lớp 50% .
+{Hành vi, negative}
+
+#143
+he's very funny .
+{Hành vi, positive}
+
+#144
+cách truyền đạt kiến thức vẫn chưa tốt .
+{Kỹ năng giảng dạy, negative}
+
+#145
+phòng thực hành có quá nhiều máy bị hỏng .
+{Thiết bị dạy học, negative}
+
+#146
+thầy có vẻ hơi có chịu .
+{Hành vi, negative}
+
+#147
+bài tập lớn mà thầy wzjwz74 đưa ra cũng khá là chung chung , không yêu cầu rõ ràng , cụ thể .
+{Bài tập, negative}
+
+#148
+giảng viên cần chú ý quan sát sinh viên hơn và hỏi xem sinh viên nào chưa hiểu .
+{Đề xuất, negative}
+
+#149
+thầy rất vui tính .
+{Hành vi, positive}
+
+#150
+cách giảng dạy còn hơi khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#151
+thực hành em không có học với giảng viên này , da có thể nhầm lẫn gì chăng .
+{Nói chung, negative}
+
+#152
+thầy ít hướng dẫn các bài tập , cách vận dụng kiến thức cần thiết vào bài tập thực tế .
+{Bài tập, negative}
+
+#153
+giảng quá nhanh với phần bài tập , không nắm bắt được các dạng bài làm nó như thế nào .
+{Bài tập, negative}
+
+#154
+cách truyền đạt qua lời nói khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#155
+rất hòa đồng .
+{Hành vi, positive}
+
+#156
+điều này gây mất công bằng và không đánh giá được đúng năng lực học tập của các bạn .
+{Hành vi, negative}
+
+#157
+nên tập trung cho sinh viên vào một phương pháp , một công cụ nào đó để làm bài tập , tránh tình trạng sinh viên không biết đường nào để làm .
+{Đề xuất, negative}
+
+#158
+thường xuyên đặt câu hỏi cho sinh viên trả lời .
+{Kỹ năng giảng dạy, positive}
+
+#159
+sau khi thi kỳ thi cuối kỳ vừa rồi .
+{Nói chung, neutral}
+
+#160
+buổi chiều nên học lúc 13h30 .
+{Đề xuất, negative}
+
+#161
+cô giảng dạy hay , dễ tiếp thu .
+{Kỹ năng giảng dạy, positive}
+
+#162
+cô rất tận tâm và nhiệt tình .
+{Hành vi, positive}
+
+#163
+công dụng nó là gì ?
+{Nói chung, negative}
+
+#164
+cô rất tận tình giúp đỡ chúng em trong học tập .
+{Hành vi, positive}
+
+#165
+thầy giảng chậm lại , từ dễ tới khó để học sinh tiếp thu tốt hơn .
+{Kỹ năng giảng dạy, negative}
+
+#166
+giáo viên tận tình , nhiệt tình trong việc cung cấp tài liệu và bài tập qua facebook .
+{Hành vi, positive}
+
+#167
+học bù cũng không hỏi ý kiến sinh viên có trùng với môn khác không , học bù lại còn điểm danh .
+{Hành vi, negative}
+
+#168
+cô cần cải thiện khả năng truyền đạt trên lớp để sinh viên có thêm hứng thú trong học tập .
+{Đề xuất, negative}
+
+#169
+dạy chán .
+{Kỹ năng giảng dạy, negative}
+
+#170
+thầy dạy nội dung ít liên quan tới bài học .
+{Kỹ năng giảng dạy, negative}
+
+#171
+rất hài lòng !
+{Nói chung, positive}
+
+#172
+chưa nhiều kiếm thức thêm , nâng cao ngoài cơ bản của môn học .
+{Kiến thức, negative}
+
+#173
+môn học còn khá nặng nề , không ứng dụng thực tiễn cũng như không phục vụ cho chuyên nghành , theo em nghĩ , môn giải tích thật sự không cần thiết lắm .
+{Chương trình học, negative}
+
+#174
+vui vẻ hài hước .
+{Hành vi, positive}
+
+#175
+môn học liên hệ thực tế , liên kết với đồ án hơn .
+{Đề xuất, negative}
+
+#176
+thầy nói ngoài lề hơi nhiều .
+{Kỹ năng giảng dạy, negative}
+
+#177
+giáo viên rất gần gũi với học sinh .
+{Hành vi, positive}
+
+#178
+thầy wzjwz263 dạy tận tâm lắm .
+{Hành vi, positive}
+
+#179
+giảng hơi chậm .
+{Kỹ năng giảng dạy, negative}
+
+#180
+thực hành luôn đi trước lý thuyết .
+{Chương trình học, negative}
+
+#181
+thầy rất tận tình , hướng dẫn cụ thể .
+{Hành vi, positive}
+
+#182
+giảng viên thân thiện với sinh viên .
+{Hành vi, positive}
+
+#183
+nói hơi nhiều .
+{Hành vi, negative}
+
+#184
+bài giảng không thu hút được học sinh .
+{Kỹ năng giảng dạy, negative}
+
+#185
+thầy hay khó chịu , không tận tâm , nhiệt tình .
+{Hành vi, negative}
+
+#186
+cách dạy của thầy như cưỡi ngựa xem hoa , 15 phút giảng xong một bài .
+{Kỹ năng giảng dạy, negative}
+
+#187
+không đảm bảo giờ giảng dạy .
+{Hành vi, negative}
+
+#188
+nội dung bài giảng hay , phù hợp và truyền đạt nội dung bài kết hợp ví dụ tuyệt vời !
+{Kỹ năng giảng dạy, positive}
+
+#189
+thầy hay chảy mồ hôi nhìn có cảm giác nóng nực dễ sợ luôn .
+{Nói chung, negative}
+
+#190
+thầy không thông báo rõ cho sinh viên về nội dung làm chiếm bao nhiêu .
+{Hành vi, negative}
+
+#191
+thầy giảng dạy rất có nguyên tắc .
+{Kỹ năng giảng dạy, positive}
+
+#192
+có nhiều bài tập về nhà .
+{Bài tập, positive}
+
+#193
+giảng viên chưa có khả năng truyền đạt , kinh nghiệm đứng lớp chưa có !
+{Kỹ năng giảng dạy, negative}
+
+#194
+nội dụng môn học không liên quan đến đề thi .
+{Chương trình học, negative}
+
+#195
+nên nêu rõ mục đích , yêu cầu của môn học khi bắt đầu dạy , để sinh viên nắm được mục đích yêu cầu môn học .
+{Đề xuất, negative}
+
+#196
+quá theo sách .
+{Kỹ năng giảng dạy, negative}
+
+#197
+đôi chỗ vẫn khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#198
+cô giảng với giọng quá nhỏ chả nghe gì cả .
+{Kỹ năng giảng dạy, negative}
+
+#199
+mong thầy dạy đúng số tiết mà môn đó quy định .
+{Đề xuất, negative}
+
+#200
+giảng viên nhiệt tình hướng dẫn học , giải các bài tập khó .
+{Bài tập, positive}
+
+#201
+cách truyền đạt của giảng viên chưa tốt .
+{Kỹ năng giảng dạy, negative}
+
+#202
+vui vẻ hòa đồng .
+{Hành vi, positive}
+
+#203
+tuy nhiên truyền đạt hơi khó hiểu cho sinh viên .
+{Kỹ năng giảng dạy, negative}
+
+#204
+chưa có nhiều trao đổi , tương tác với sinh viên trên các diễn đàn .
+{Hành vi, negative}
+
+#205
+lan man và hơi khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#206
+chưa ôn tập được nhiều kiến thức cơ bản của anh văn 1 .
+{Kỹ năng giảng dạy, negative}
+
+#207
+giảng hơi nhanh .
+{Kỹ năng giảng dạy, negative}
+
+#208
+giải chi tiết các bài tập , tiếp thu bài rất nhanh trong giờ giảng của thầy .
+{Kỹ năng giảng dạy, positive}
+
+#209
+lý do : vào 2 tuần cuối kỳ , sinh viên phải làm đồ án rất nhiều môn , phải ôn thi .
+{Nói chung, negative}
+
+#210
+học sinh yêu cầu giảng lại không giảng lại và bảo về tự xem lại .
+{Hành vi, negative}
+
+#211
+đào tạo thêm về cơ chế giảng dạy .
+{Nói chung, negative}
+
+#212
+giảng viên nhiệt tình ( và xinh ) .
+{Hành vi, positive}
+
+#213
+thầy nhiệt huyết tận tâm .
+{Hành vi, positive}
+
+#214
+môn này em học cải thiện nhưng mà nhà trường hủy môn em xong đăng tự ý đổi lớp lại , em không biết em không đi học nên chắc chắn em rớt .
+{Nói chung, negative}
+
+#215
+cô giáo dạy tiếng anh nói tiếng anh rất nhỏ và khó nghe nếu nói bằng micro hơn nữa cách dạy của cô khiến cho sinh viên không thể nào không buồn ngủ vì nó rất rất nhàm chán .
+{Kỹ năng giảng dạy, negative}
+
+#216
+máy chiếu trong phòng học quá mờ khiến sinh viên không nhìn rõ nội dung khi trình chiếu !
+{Thiết bị dạy học, negative}
+
+#217
+cơ sở vật chất chưa tốt để nghe tiếng anh .
+{Thiết bị dạy học, negative}
+
+#218
+lớp học của cô wzjwz25 có đặc điểm là trình độ tiếng anh quá chênh lệch giữa cách sinh viên trong cùng một lớp .
+{Nói chung, negative}
+
+#219
+cho học sinh thuyết trình , chủ động .
+{Kỹ năng giảng dạy, positive}
+
+#220
+luôn trả lời những thắc mắc của sinh viên , dạy tận tình .
+{Hành vi, positive}
+
+#221
+đặc biệt cần thông tin cụ thể về những dụng cụ nào nhà trường phải có trách nhiệm cấp cho sinh viên và giảng viên , ví dụ như có trường hợp bút lông viết bảng xài qua vài học kỳ đã khô hết mực , bút mờ không viết được nhưng giảng viên và sinh viên không biết đến đâu để đổi hay thay bút mới nên dẫn đến có giảng viên đành nói chay , không ghi chép được gì , hoặc phải tự đi mua bút viết bảng mới để viết .
+{Đề xuất, negative}
+
+#222
+cho học sinh tích cực thuyết trình bằng tiếng anh .
+{Kỹ năng giảng dạy, positive}
+
+#223
+giáo viên rất nhiệt tình với sinh viên .
+{Hành vi, positive}
+
+#224
+thầy tận tình , và thân thiện .
+{Hành vi, positive}
+
+#225
+dạy ít , sinh viên chủ yếu nghe sinh viên báo cáo .
+{Hành vi, negative}
+
+#226
+hơi nghiêm .
+{Hành vi, negative}
+
+#227
+cần phân bố lại thời gian lên lớp , đừng kéo dài thời gian khi đã hết buổi học .
+{Đề xuất, negative}
+
+#228
+ngoài việc cho bài tập ra , thầy nên giải đáp cho các học sinh các bài tập khó nữa .
+{Đề xuất, negative}
+
+#229
+cho làm bài tập vận dụng kiến thức thường xuyên .
+{Bài tập, positive}
+
+#230
+thầy hiền và nhiệt tình với sinh viên .
+{Hành vi, positive}
+
+#231
+thầy năng nổ , nhiệt tình .
+{Hành vi, positive}
+
+#232
+bồi dưỡng chuyên môn giáo viên phần phát âm , từ vựng .
+{Đề xuất, negative}
+
+#233
+như vậy thì quá bất công .
+{Nói chung, negative}
+
+#234
+không hoàn toàn hài lòng với cách giảng dạy của thầy .
+{Nói chung, negative}
+
+#235
+giảng viên thường hay đến lớp muộn 15 phút .
+{Hành vi, negative}
+
+#236
+cô giáo nhiệt tình .
+{Hành vi, positive}
+
+#237
+thầy nên nhiệt tình hướng dẫn hơn .
+{Hành vi, negative}
+
+#238
+thêm nhiều bài tập hay gặp khi thi học kỳ !
+{Đề xuất, negative}
+
+#239
+bài tập làm thêm .
+{Bài tập, positive}
+
+#240
+cho cái nhìn về môi trường bên ngoài doanh nghiệp .
+{Kinh nghiệm, positive}
+
+#241
+phòng thực hành khoa wzjwz70 máy hư tùm lum , không hiểu sao phòng thực hành mấy khoa khác như wzjwz71 , wzjwz72 đầu tư mới với tốt hơn nhiều .
+{Thiết bị dạy học, negative}
+
+#242
+thời lượng thi ít khiến nhiều câu bỏ trống .
+{Nói chung, negative}
+
+#243
+gây khó khăn cho việc làm bài thi .
+{Nói chung, negative}
+
+#244
+cách thầy dạy môn này trong kỳ trước em không được biết chỉ được nghe từ các bạnem đã cảm thấy vui khi được học với thầy .
+{Nói chung, positive}
+
+#245
+rất thích cách xét công tâm của cô .
+{Chấm điểm, positive}
+
+#246
+khi sinh viên nhờ thầy giải một bài tập để làm mẫu nhưng không nhận được bất kỳ bài giải nào từ thầy .
+{Bài tập, negative}
+
+#247
+em nghĩ nên thi thực hành thay vì lý thuyết cuối kỳ .
+{Đề xuất, negative}
+
+#248
+đi học hay không đi học cũng như nhau .
+{Nói chung, negative}
+
+#249
+thầy giúp sinh viên luyện tập rất nhiệt tình .
+{Hành vi, positive}
+
+#250
+bài thi phải sát hơn và thêm phần thi nói để kiểm tra và xếp loại đầu vào .
+{Đề xuất, negative}
+
+#251
+cô wzjwz195 thật tuyệt vời .
+{Nói chung, positive}
+
+#252
+không dạy vào trọng tâm chương trình , sử dụng giáo trình mà thường đi lan man .
+{Kỹ năng giảng dạy, negative}
+
+#253
+thời gian vào lớp đúng giờ .
+{Hành vi, positive}
+
+#254
+phương pháp dạy của thầy chưa hiệu quả .
+{Kỹ năng giảng dạy, negative}
+
+#255
+gần gũi , tận tình .
+{Hành vi, positive}
+
+#256
+cung cấp các slide , tài liệu liên quan quá ít .
+{Cung cấp tài liệu, negative}
+
+#257
+môn học cần đi vào thực tiễn để sinh viên có thể ứng dụng sau này .
+{Đề xuất, negative}
+
+#258
+thầy ít khi giảng bài , thường để sinh viên tự xem tài liệu là chủ yếu .
+{Hành vi, negative}
+
+#259
+thầy wzjwz182 dạy rất hay , rất dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#260
+sự thân thiện và tận tình .
+{Hành vi, positive}
+
+#261
+môn học cần có chút thay đổi về kiểm tra , phần thực hành cần được quan tâm và cần được hỗ trợ hoặc học sau khi đã học được lý thuyết để có nền tảng và cơ sở để thầy cô hướng dẫn sinh viên tốt hơn .
+{Đề xuất, negative}
+
+#262
+tận tình , vui tính <3 .
+{Hành vi, positive}
+
+#263
+đó là sự nhiệt tình của giảng viên .
+{Hành vi, positive}
+
+#264
+kiến thức của giáo viên rất tốt !
+{Kiến thức, positive}
+
+#265
+thực hành đa dạng , giúp sinh viên hiểu rõ vấn đề .
+{Kỹ năng giảng dạy, positive}
+
+#266
+thầy thân thiện , lắng nghe sinh viên .
+{Hành vi, positive}
+
+#267
+cô nhiệt tình và tâm huyết trong việc dạy học .
+{Hành vi, positive}
+
+#268
+giáo viên giảng dạy nhiệt tình .
+{Hành vi, positive}
+
+#269
+đủ những gì cần học không dài dòng .
+{Nói chung, positive}
+
+#270
+cần giảng kỹ hơn cho sinh viên hiểu bài và có kết hợp với nhiều ví dụ minh họa thực tế .
+{Đề xuất, negative}
+
+#271
+hơi nhanh .
+{Kỹ năng giảng dạy, negative}
+
+#272
+cô dạy hay nhưng hơi nhanh .
+{Kỹ năng giảng dạy, positive}
+
+#273
+các ví dụ đều có liên hệ đến bài tập .
+{Bài tập, positive}
+
+#274
+được rèn luyện kỹ năng giao tiếp tiếng anh cũng như cách tự học tốt ở nhà .
+{Kỹ năng giảng dạy, positive}
+
+#275
+chia nhỏ bài tập về nhà để cộng điểm cho sinh viên , vừa giúp sinh viên làm và hiểu nhuần nhuyễn và tránh tình trạng rớt đồng loạt .
+{Đề xuất, negative}
+
+#276
+cách giảng bài chi tiết vừa đủ và dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#277
+một số buổi dạy của giảng viên không hiệu quả về giờ giấc .
+{Kỹ năng giảng dạy, negative}
+
+#278
+nhiều lúc thầy nói nhanh quá nghe không kiệp .
+{Kỹ năng giảng dạy, negative}
+
+#279
+giảng viên rất nhiệt tình giảng dạy , rất sẵn lòng giải đáp thắc mắc của sinh viên .
+{Hành vi, positive}
+
+#280
+hài lòng hoàn toàn .
+{Nói chung, positive}
+
+#281
+cần phải có liên hệ thực tiễn trong quá trình giảng dạy để tạo sự ham thích cho người học .
+{Đề xuất, negative}
+
+#282
+cảm ơn .
+{Nói chung, positive}
+
+#283
+hình thức thực hành 2 dường như không có tác dụng với sinh viên .
+{Đề xuất, negative}
+
+#284
+thầy dạy hay và dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#285
+thầy cho bài tập luyện tập rất nhiều , thích hợp cho việc ôn tập lại kiến thức .
+{Bài tập, positive}
+
+#286
+thầy dạy không để ý xem sinh viên có nhận thức được hay không , chỉ dạy cho hết bài rôi về .
+{Kỹ năng giảng dạy, negative}
+
+#287
+cô vui vẻ , hay quan tâm sinh viên .
+{Hành vi, positive}
+
+#288
+giảng viên nên nhiệt tình hơn !
+{Đề xuất, negative}
+
+#289
+phòng thực hành tốt .
+{Thiết bị dạy học, positive}
+
+#290
+đầy đủ kiến thức .
+{Kiến thức, positive}
+
+#291
+thầy dạy dễ hiểu , sinh động .
+{Kỹ năng giảng dạy, positive}
+
+#292
+giảng bài dễ tiếp thu .
+{Kỹ năng giảng dạy, positive}
+
+#293
+tốt giỏi chu đáo .
+{Nói chung, positive}
+
+#294
+rất nhiệt tình với sinh viên .
+{Hành vi, positive}
+
+#295
+giảng viên tận tâm , nhiệt tình , hỗ trợ giải đáp thắc mắc môn học cho sinh viên .
+{Hành vi, positive}
+
+#296
+giảng viên rất hòa đồng vui vẻ , nhiệt tình trong giảng dạy .
+{Hành vi, positive}
+
+#297
+giáo viên chưa tạo được không khí vui vẻ trong lớp học .
+{Hành vi, negative}
+
+#298
+nhiều khi dạy quá thời gian .
+{Hành vi, negative}
+
+#299
+giảng viên biết cách truyền đạt , giảng rất hay và dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#300
+em nghĩ chỉ nên bắt buộc các bài tập có dạng căn bản , còn bài tập tương tự thì chỉ khuyến khích sinh viên làm thêm .
+{Đề xuất, negative}
+
+#301
+thầy bằng nhiệt tình tận tụy với sinh viên trong việc hướng dẫn đồ án .
+{Hành vi, positive}
+
+#302
+thầy quá bảo thủ , thầy luôn cho rằng ý kiến của thầy là đúng nhất , ngoài ra mọi ý kiến khác đều sai .
+{Hành vi, negative}
+
+#303
+em mong cô cũng như toàn thể các giảng viên hãy xem xét lại việc điểm danh vì đại học dù sao cũng là tự học chứ không phải như là phổ thông nữa .
+{Đề xuất, negative}
+
+#304
+kiến thức giảng dạy môn tiếng anh hầu như không giúp ích nhiều cho sinh viên trong việc tìm hiểu các tài liệu chuyên ngành .
+{Kiến thức, negative}
+
+#305
+giáo viên giảng hay dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#306
+đề thi thực hành cần nêu yêu cầu cụ thể , rõ ràng hơn .
+{Đề xuất, negative}
+
+#307
+nhiệt tình , dễ gần , truyền đạt tận tâm .
+{Hành vi, positive}
+
+#308
+thoải mái về thời gian .
+{Nói chung, positive}
+
+#309
+phòng thực hành nên nâng cấp máy tính .
+{Đề xuất, negative}
+
+#310
+cô nên tăng tốc độ giải bài hơn .
+{Đề xuất, negative}
+
+#311
+bàn ghế còn bụi .
+{Thiết bị dạy học, negative}
+
+#312
+thầy rất dễ gần .
+{Hành vi, positive}
+
+#313
+cần tăng thời gian học .
+{Đề xuất, negative}
+
+#314
+nên cải tiến hệ thống chấm điểm online , update bài tập cho tất cả học sinh làm rồi có bảng xếp hạng , như bên codefun của miền bắc .
+{Đề xuất, negative}
+
+#315
+dạy đúng trọng tâm .
+{Kỹ năng giảng dạy, positive}
+
+#316
+thầy wzjwz239 nói chuyện cọc lốc , không hiểu vấn đề gì hỏi thầy thì thầy lại như quát vào mặt , tạt nước lạnh , … nói chuyện xưng hô mày - tao ( có lúc thì xưng tớ - cậu nhưng lời nói đầy ẩn ý ) , hay nói móc và tìm cách bắt bẻ sinh viên .
+{Hành vi, negative}
+
+#317
+việc phân chia nhóm không hợp lý dẫn tới chất lượng học tập không tốt .
+{Kỹ năng giảng dạy, negative}
+
+#318
+giảng dạy nhiệt tình , quan tâm tới sinh viên .
+{Hành vi, positive}
+
+#319
+kiến thức thầy dạy rất hay và bổ ích .
+{Kinh nghiệm, positive}
+
+#320
+kiến thức đơn giản .
+{Kiến thức, positive}
+
+#321
+cần tuân thủ đúng và đủ giờ .
+{Đề xuất, negative}
+
+#322
+giáo viên giảng dạy sử dụng nhiều ví dụ thực tiễn .
+{Kinh nghiệm, positive}
+
+#323
+cung cấp và thường xuyên cập nhật thêm tài liệu về môn học nhiều hơn , sử dụng giờ lên lớp hiệu quả hơn .
+{Đề xuất, negative}
+
+#324
+cô vui vẻ , giúp lớp cùng nhau hoạt động sôi nổi .
+{Hành vi, positive}
+
+#325
+hạn chế cho ra ví dụ kiểu như 12 rồi cho bài tập kiểu như 245 .
+{Đề xuất, negative}
+
+#326
+cô dạy khá nhanh nên khó theo kịp bài giảng .
+{Kỹ năng giảng dạy, negative}
+
+#327
+hướng dẫn thực hành chưa tận tình , thời gian còn ít .
+{Hành vi, negative}
+
+#328
+thầy rất tận tâm và nhiệt tình chỉ dạy sinh viên .
+{Hành vi, positive}
+
+#329
+ida pro 64-bit hoàn toàn có thể phân tích các file thực thi 32-bit nhưng các thanh ghi phức tạp hơn nhiều thay cho ida pro 64-bit không phân tích được cái file thực thi 32-bit :) .
+{Nói chung, negative}
+
+#330
+có thể phần thực hành sinh viên sẽ có hai sự lựa chọn : tự xây dựng một chương trình phân loại văn bản , như vậy chương trình sẽ có thể không xử lý được những đoạn văn bản phức tạp hoặc lớn thế nên cách chấm điểm sẽ có phần nương tay đối với phần áp dụng này .
+{Đề xuất, negative}
+
+#331
+giảng viên tâm huyết , nhiệt tình , hiểu tâm lý học sinh .
+{Hành vi, positive}
+
+#332
+thầy trẻ trâu .
+{Nói chung, negative}
+
+#333
+nên tăng cường học nghe , nói .
+{Đề xuất, negative}
+
+#334
+lòng nhiệt tình .
+{Hành vi, positive}
+
+#335
+thầy rất tận tâm giảng dạy .
+{Hành vi, positive}
+
+#336
+ok hết .
+{Nói chung, positive}
+
+#337
+nhiệt tình và tâm huyết .
+{Hành vi, positive}
+
+#338
+đề thi quá khó so với bài tập trên lớp !
+{Bài tập, negative}
+
+#339
+truyền đạt nhiều kiến thức cần thiết .
+{Kiến thức, positive}
+
+#340
+giáo viên giỏi .
+{Kiến thức, positive}
+
+#341
+đầy đủ .
+{Nói chung, positive}
+
+#342
+bàn giáo viên rất dơ , quạt máy thì chạy như không có chạy , mở chỉ thêm tốn điện , không có mát .
+{Thiết bị dạy học, negative}
+
+#343
+em và các bạn thuộc các lớp phần mềm chất lượng cao hầu như không ai muốn đăng ký môn học game cơ bản do giảng viên này đảm nhận , nhưng kỳ vừa rồi nhà trường chỉ cung cấp cho chúng em duy nhất một sự lựa chọn là giảng viên này nên chúng em không còn cách nào khác .
+{Nói chung, negative}
+
+#344
+cần thêm nhiều tài liệu cho môn học .
+{Đề xuất, negative}
+
+#345
+không thực hành được buổi nào .
+{Nói chung, negative}
+
+#346
+cho làm nhiều bài test .
+{Hành vi, negative}
+
+#347
+làm bài tập nhiều mặc dù không hiểu lắm .
+{Bài tập, negative}
+
+#348
+chưa chuẩn bị kỹ bài giảng để có thể trả lời các thắc mắc của sinh viên trên lớp .
+{Kỹ năng giảng dạy, negative}
+
+#349
+ví dụ đề tài của em là : các nguyên lý cơ bản , bao gồm 7 nguyên tắc của bohm ( 1983 ) .
+{Nói chung, positive}
+
+#350
+giáo viên dạy rất tận tâm , nhiệt tình .
+{Hành vi, positive}
+
+#351
+cung cấp thêm trang thiết bị phục vụ nhu cầu môn học .
+{Đề xuất, negative}
+
+#352
+chỉ thông báo trên lớp sẽ khó tránh sai sót .
+{Nói chung, negative}
+
+#353
+giảng dạy rất chi tiết , dễ hiểu và dễ tiếp thu .
+{Kỹ năng giảng dạy, positive}
+
+#354
+cô viết ở góc bảng gần chổ bụt giảng khiến nhiều khi khó quan sát được ạ .
+{Kỹ năng giảng dạy, negative}
+
+#355
+cách truyền đạt của giáo viên chưa có sức hút đối với sinh viên nhiều cho lắm .
+{Kỹ năng giảng dạy, negative}
+
+#356
+hướng dẫn chi tiết về cách thực hành .
+{Hành vi, positive}
+
+#357
+có một số buổi không đi dạy .
+{Hành vi, negative}
+
+#358
+luôn gần gũi , tham khảo ý kiến sinh viên và thống nhất cũng sinh viên .
+{Hành vi, positive}
+
+#359
+giảng viên hoà đồng , vui vẻ , chỉ giảng tận tình sinh viên ham học hỏi .
+{Hành vi, positive}
+
+#360
+giáo viện nhiệt tình , tận tâm .
+{Hành vi, positive}
+
+#361
+chia sẻ .
+{Nói chung, positive}
+
+#362
+cung cấp kiến thức trọng tâm .
+{Kiến thức, positive}
+
+#363
+nói mở rộng nhiều vấn đề về môn học .
+{Kinh nghiệm, positive}
+
+#364
+slide chuẩn bị chưa tốt .
+{Cung cấp tài liệu, negative}
+
+#365
+thầy wzjwz127 dạy rất nhiệt tình .
+{Hành vi, positive}
+
+#366
+thời gian học tập luôn thiếu sót , giảng viên chưa nhiệt tình giảng dạy .
+{Hành vi, negative}
+
+#367
+thầy dạy bằng slide bài giảng hơi nhanh .
+{Kỹ năng giảng dạy, negative}
+
+#368
+giảng viên dạy rất nhiệt tình .
+{Hành vi, positive}
+
+#369
+các phần tiếng việt trong slide được ghi một cách khó hiểu và không rõ ràng , nhiều chỗ trong slide bài giảng có vẻ như được dịch bằng google dịch từ năm 2009 .
+{Cung cấp tài liệu, negative}
+
+#370
+thầy quá chuyên nghiệp .
+{Kỹ năng giảng dạy, positive}
+
+#371
+em mong phần thực hành được hỗ trợ nhiều hơn nữa từ phía giảng viên .
+{Đề xuất, negative}
+
+#372
+cách giảng dạy , tạo không khí sôi nổi trong lớp .
+{Kỹ năng giảng dạy, positive}
+
+#373
+thầy vui quá đi hi hi .
+{Hành vi, positive}
+
+#374
+giáo viên quá tốt .
+{Nói chung, positive}
+
+#375
+đôi khi học sinh nào bận muốn về trước thầy vẫn cho .
+{Hành vi, positive}
+
+#376
+mong thầy giảng giải và cho bài tập từng bước nhiều hơn .
+{Đề xuất, negative}
+
+#377
+mong rằng những môn có thực hành , giáo viên nên mở chat box và forum cho sinh viên dễ trao đổi với nhau , cũng như nhanh chóng nhận được lời giải đáp thắc mắc từ giáo viên .
+{Đề xuất, negative}
+
+#378
+chất lượng môn học phù hợp .
+{Chương trình học, positive}
+
+#379
+giáo viên dễ gần , tận tâm .
+{Hành vi, positive}
+
+#380
+đề nghị nên cho bài tập về nhà .
+{Đề xuất, negative}
+
+#381
+thầy dạy rất tốt .
+{Kỹ năng giảng dạy, positive}
+
+#382
+môn học với kiến thức không quá nặng .
+{Chương trình học, positive}
+
+#383
+thưa , không có ạ .
+{Nói chung, positive}
+
+#384
+nhiệt tình truyền đạt kiến thức cho sinh viên .
+{Hành vi, positive}
+
+#385
+thầy dạy quá tệ .
+{Kỹ năng giảng dạy, negative}
+
+#386
+giáo viên lên lớp muộn , nghe điện thoại trong lúc lên lớp thường xuyên , nghỉ dạy không thông báo .
+{Hành vi, negative}
+
+#387
+giảng quá khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#388
+giảng viên nhiệt tình , quan tâm đến học sinh .
+{Hành vi, positive}
+
+#389
+mong cô cung cấp nhiều tài liệu có hướng dẫn giải cụ thể các dạng toán để đáp ứng nhu cầu tự học .
+{Đề xuất, negative}
+
+#390
+giảng viên nhiệt tình , gần gũi với sinh viên .
+{Hành vi, positive}
+
+#391
+nên phát hành giáo trình chuẩn cho môn học .
+{Đề xuất, negative}
+
+#392
+giảng viên nhiệt tình , hỗ trợ sinh viên tốt .
+{Hành vi, positive}
+
+#393
+không tập trung vào giảng kiến thức cho học sinh hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#394
+giảng viên hay cho nghỉ học mà không báo trước .
+{Hành vi, negative}
+
+#395
+cô giáo nhiệt tình , vui tính , cố gắng truyền đạt cho sinh viên .
+{Hành vi, positive}
+
+#396
+sự nhiệt tình và tận tình của giáo viên .
+{Hành vi, positive}
+
+#397
+thêm nhiều kiến thức ngoài mới .
+{Kiến thức, positive}
+
+#398
+thường xuyên mời các bạn lên giải bài tập và giảng giải lại !
+{Kỹ năng giảng dạy, positive}
+
+#399
+cuối cùng , em xin cảm ơn vì thầy / cô đã đọc đến hết .
+{Nói chung, positive}
+
+#400
+rất thích phong cách dạy của thầy x .
+{Kỹ năng giảng dạy, positive}
+
+#401
+thầy giảng dạy tận tâm .
+{Hành vi, positive}
+
+#402
+đối với người lần đầu tìm hiểu directx với những yêu cầu đặt ra là rất khó .
+{Nói chung, negative}
+
+#403
+thầy cho chép nhiều .
+{Hành vi, negative}
+
+#404
+áp dụng bài học vào thực tế .
+{Kỹ năng giảng dạy, positive}
+
+#405
+em nghĩ nhà trường nên kiểm tra kỹ trình độ giảng viên trước khi bố trí để họ dạy một môn học nào đó .
+{Đề xuất, negative}
+
+#406
+thầy rất hiền và nhiệt tình trong từng tiết học .
+{Hành vi, positive}
+
+#407
+khả năng truyền đạt kiến thức sinh viên khó tiếp thu hết .
+{Kỹ năng giảng dạy, negative}
+
+#408
+cô dạy rất hay , cuốn hút .
+{Kỹ năng giảng dạy, positive}
+
+#409
+mong thầy cho thêm bài tập về nhà và share slide .
+{Đề xuất, negative}
+
+#410
+thầy quá tuyệt vời :3 .
+{Nói chung, positive}
+
+#411
+giảng viên nên giảng sâu vào chương trình học , tránh lan man , dài dòng .
+{Đề xuất, negative}
+
+#412
+nên đơn giản hóa với các phần không quan trọng .
+{Đề xuất, negative}
+
+#413
+cần cung cấp nhiều thông tin bài học hơn .
+{Đề xuất, positive}
+
+#414
+giảng viên ghi chép quá nhiều , tốn thời gian .
+{Kỹ năng giảng dạy, negative}
+
+#415
+ngôn ngữ thực hành các bài lab của từng bộ môn nên được trang bị trước cho sinh viên .
+{Đề xuất, negative}
+
+#416
+môn thực hành cần có bài tập về nhà , tài liệu cập nhật rõ ràng hơn .
+{Đề xuất, negative}
+
+#417
+tận tâm , quan tâm sinh viên !
+{Hành vi, positive}
+
+#418
+tiết học sinh động .
+{Kỹ năng giảng dạy, positive}
+
+#419
+không rõ " thu được gì " từ môn học này .
+{Nói chung, negative}
+
+#420
+giảng viên không sử dụng moodle làm kênh thông tin liên lạc với học sinh , không up slide tài liệu bài giảng lên gây khó khăn cho việc nắm bắt thông tin về yêu cầu môn học và khó khăn trong học tập .
+{Cung cấp tài liệu, negative}
+
+#421
+thầy dạy hơi nhanh , đa số sinh viên không theo kịp .
+{Kỹ năng giảng dạy, negative}
+
+#422
+đôi khi bị lố giờ giảng .
+{Hành vi, negative}
+
+#423
+nhiều tiết tự học do sinh viên tự thuyết trình .
+{Nói chung, positive}
+
+#424
+thầy rất tận tình với sinh viên .
+{Hành vi, positive}
+
+#425
+chấm điểm thiếu công bằng , thực hành tại máy trường mà chấm bài cài đặt phần mềm trên laptop .
+{Chấm điểm, negative}
+
+#426
+tôi và các bạn khác cùng bước vào , khi đó thầy yêu cầu đồng loạt mở hết code lên chạy demo để thầy chấm , và không may thay thầy đã tìm ra 2 bạn có source code y chang nhau , thầy bắt đầu tra hỏi lý thuyết về đề tài 'xxx' đối với 2 bạn đó .
+{Hành vi, positive}
+
+#427
+thầy cho chép nhiều quá .
+{Hành vi, negative}
+
+#428
+thầy truyền đạt tốt , giảng bài dễ hiểu .
+{Kỹ năng giảng dạy, positive}
+
+#429
+hài lòng tất cả .
+{Nói chung, positive}
+
+#430
+biết ứng dụng kiến thức đã học vào thực tiễn tạo hứng thú cho sinh viên .
+{Kỹ năng giảng dạy, positive}, {Kinh nghiệm, positive}
+
+#431
+tăng thời gian thực hành .
+{Đề xuất, negative}
+
+#432
+đa phần là tự học là chính , có thể là do chương trình đại học quốc gia .
+{Nói chung, negative}
+
+#433
+slide còn khó hiểu .
+{Cung cấp tài liệu, negative}
+
+#434
+quan tâm nhiều đến sinh viên .
+{Hành vi, positive}
+
+#435
+cô giảng dạy rất nhiệt tình !
+{Hành vi, positive}
+
+#436
+theo em thì không thể trách thầy wzjwz120 mà lỗi là do daa đưa lịch học thực hành quá chậm trễ .
+{Nói chung, negative}
+
+#437
+tăng cường ôn tập để kiểm tra như : cho sinh viên làm thử các đề kiểm tra .
+{Đề xuất, negative}
+
+#438
+mỗi lúc hết tiết sớm , thầy thường giảng cho các sinh viên những kiến thức môn bên ngoài như lập trình giúp sinh viên giải đáp một số thắc mắc hoặc một số bài tập nâng cao .
+{Kỹ năng giảng dạy, positive}
+
+#439
+chỉ cho sinh viên biết nhiều điều cốt lõi trong môn học mà ít ai biết .
+{Kỹ năng giảng dạy, positive}
+
+#440
+phòng máy có quá nhiều máy không sử dụng được .
+{Thiết bị dạy học, negative}
+
+#441
+giảng viên nên đi dạy thường xuyên hơn .
+{Đề xuất, negative}
+
+#442
+em rất thích những tiết sửa bài tập của cô .
+{Kỹ năng giảng dạy, positive}
+
+#443
+thời gian các buổi học , thông báo nghỉ chưa chính xác .
+{Hành vi, negative}
+
+#444
+em cảm ơn thầy <3 à còn cái thầy vui tính ghê , cười đùa nói chuyện thân thiện .
+{Hành vi, positive}
+
+#445
+giảng viên dạy dễ hiểu , dễ tiếp thu .
+{Kỹ năng giảng dạy, positive}
+
+#446
+nên để sinh viên tự tìm hiểu lý thuyết trước ở nhà đến trường giảng viên chỉ cần giải thích các vấn đề không rõ sau đó đi thẳng vào giải các bài tập .
+{Đề xuất, negative}
+
+#447
+thầy cần giao bài tập mỗi buổi lên lớp .
+{Đề xuất, negative}
+
+#448
+lý do : sinh viên mới bắt đầu tiếp cận môn học chưa hiểu rõ các từ chuyên nghành nên không hiểu nội dung bài giảng , dù giảng viên giải thích bằng tiếng việt .
+{Nói chung, negative}
+
+#449
+nội dung lan man , khó áp dụng vào thực tế .
+{Kỹ năng giảng dạy, negative}
+
+#450
+cô rất rất nhiệt tình và tận tâm , sẵn sàng giải thích các vấn đề thắc mắc cho sinh viên .
+{Hành vi, positive}
+
+#451
+đôi khi dạy hơi chán , không thu hút được chú ý của học sinh .
+{Kỹ năng giảng dạy, negative}
+
+#452
+nhiều kiến thức hơn .
+{Đề xuất, negative}
+
+#453
+mong nhà trường tạo điều kiện cho sinh viên chúng em được nghiên cứu nhiều hơn là phải làm theo .
+{Đề xuất, negative}
+
+#454
+cô dạy rất mơ hồ , không hứng thú , không nhiệt tình giúp đỡ sinh viên .
+{Hành vi, negative}, {Kỹ năng giảng dạy, negative}
+
+#455
+cô dạy rất nhiệt tình , giảng rất hay .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#456
+không sử dung tiếng anh trong lúc giảng bài lý thuyết để rồi cả slide bằng tiếng anh cũng không hiểu .
+{Kỹ năng giảng dạy, negative}, {Cung cấp tài liệu, negative}
+
+#457
+môn học cung cấp nhiều kiến thức cần thiết , đặc biệt là cô dạy rất tận tâm và hướng đến sinh viên .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive},{Kiến thức, positive}
+
+#458
+giảng viên tận tình , dạy hay .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#459
+nhiệt tình , khả năng truyền đạt tốt .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#460
+đi trễ , dạy chậm .
+{Hành vi, negative}, {Kỹ năng giảng dạy, negative}
+
+#461
+bài tập tại lớp còn hơi ít , hướng dẫn hơi nhanh !
+{Kỹ năng giảng dạy, negative}, {Bài tập, negative}
+
+#462
+dạy nhiệt tình , dễ hiểu .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#463
+dạy đầy đủ chương trình , tích cực kiểm tra học sinh .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#464
+giọng nói hơi khó nghe , ngoài ra không có gì không hài lòng .
+{Nói chung, positive}, {Hành vi, negative}
+
+#465
+truyền đạt tốt , nhiệt tình , thân thiện với sinh viên .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#466
+thầy dạy rất tận tâm , kiến thức chuyên môn cực tốt .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}, {Kiến thức, positive}
+
+#467
+giáo án ngắn gọn , dễ hiểu , dạy học nhiệt tình .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#468
+dạy dễ hiểu , nhiệt tình , vui tính .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#469
+nội dung giảng dạy còn mơ hồ .
+{Kiến thức, negative}
+
+#470
+nhìn chung tạo được cảm hứng rất nhiều cho sinh viên học tập hiệu quả .
+{Kỹ năng giảng dạy, positive}
+
+#471
+dạy hơi nhanh , sinh viên khó theo kịp .
+{Kỹ năng giảng dạy, negative}
+
+#472
+rất hài lòng , thầy dạy khá hay , cũng rất vui trong lúc học .
+{Kỹ năng giảng dạy, positive}
+
+#473
+cần phương pháp học môn này .
+{Kỹ năng giảng dạy, neutral}
+
+#474
+chia sẻ nhiều câu chuyện thú vị .
+{Kỹ năng giảng dạy, positive}
+
+#475
+phần bài làm trên moodle có nhiều sai sót gây ảnh hưởng đến điểm chuyên cần .
+{Bài tập, negative}
+
+#476
+nghỉ học thường xuyên .
+{Nói chung, negative}
+
+#477
+cô nhiệt tình , chu đáo .
+{Hành vi, positive}
+
+#478
+còn nhanh .
+{Nói chung, negative}
+
+#479
+thêm tiết sửa bài tập nhiều hơn .
+{Đề xuất, negative}
+
+#480
+kiến thức truyền tải nhiều , khó hiểu .
+{Kỹ năng giảng dạy, negative}
+
+#481
+em tiến bộ rất nhanh .
+{Nói chung, positive}
+
+#482
+không nên đề hình thức thực hành là số 2 gây nhàm chán cho sinh viên sau những ngày học lý thuyết thì sinh viên nên được thực hành trên phòng lab dưới sự hướng dẫn của giảng viên .
+{Đề xuất, negative}
+
+#483
+thân ái !
+{Nói chung, positive}
+
+#484
+sử dụng hiệu quả giờ học .
+{Kỹ năng giảng dạy, positive}
+
+#485
+giảng viên chưa bám sát sinh viên .
+{Hành vi, negative}
+
+#486
+nên cắt giảm bớt chương trình học môn lý a2 vì theo em thấy có một số phần không áp dụng vào trong thực tế ngày nay của it , chỉ có một số phần là có áp dụng vì thế nên giảm thiểu chương trình học .
+{Đề xuất, negative}
+
+#487
+chấm bài không nói lên tính khách quan .
+{Hành vi, negative}
+
+#488
+nhiệt tình , vui tính , thân thiện .
+{Hành vi, positive}
+
+#489
+thầy không có up tài liệu cũng như bài giảng lên moodle .
+{Cung cấp tài liệu, negative}
+
+#490
+giảng viên truyền đạt khó hiểu , có lúc nói nhanh , có lúc nói chậm , giọng khó nghe , hay bị ngọng .
+{Kỹ năng giảng dạy, negative}
+
+#491
+cô giảng hơi nhanh và khó nghe .
+{Kỹ năng giảng dạy, negative}
+
+#492
+giáo viên rất nhiệt tình và tận tâm .
+{Hành vi, positive}
+
+#493
+thầy trang bị cho những kỹ năng chuyên sâu và hướng mở của môn học .
+{Kỹ năng giảng dạy, positive}
+
+#494
+giảng viên nhiệt tình và giúp sinh viên hiểu thêm nhiều kiến thức .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#495
+giáo viên thân thiện và tích cực , đảm bảo nội dung học tập .
+{Kỹ năng giảng dạy, positive}, {Hành vi, positive}
+
+#496
+thầy dạy nhiệt tình , cung cấp một số kiến thức bổ ích cho sinh viên .
+{Hành vi, positive}, {Kiến thức, positive}
+
+#497
+thầy thường 8h mới bắt đầu dạy , lời giảng còn khó hiểu do không cho nhiều ví dụ cụ thể cũng như demo .
+{Hành vi, negative}, {Kỹ năng giảng dạy, negative}
+
+#498
+không có hoạt động nhóm , bài tập ít .
+{Bài tập, negative}, {Kỹ năng giảng dạy, negative}
+
+#499
+cô dạy nhiệt tình , kỹ và dễ hiểu .
+{Hành vi, positive}, {Kỹ năng giảng dạy, positive}
+
+#500
+giáo viên nói hơi nhỏ , rất khó nghe , và hiểu được bài .
+{Hành vi, negative}, {Kỹ năng giảng dạy, negative}

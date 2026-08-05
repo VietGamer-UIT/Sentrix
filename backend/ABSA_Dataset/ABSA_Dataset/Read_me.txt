@@ -1,0 +1,8 @@
+Danh sách các bài báo tương ứng với bộ dữ liệu:
+
+[1] Education: Ton Nu Thi Sau, Do Phuoc Sang, and Pham Thi Thu Trang. 2021. Aspect-based sentiment analysis on student’s feedback in Vietnamese. TNU J. Sci. Technol. 226, 18 (2021), 48–55.
+[2] Beauty: Quang-Linh Tran, Phan Thanh Dat Le, and Trong-Hop Do. 2022. Aspect-based sentiment analysis for Vietnamese reviews about beauty product on E-commerce websites. In Proceedings of the 36th Pacific Asia Conference on Language, Information and Computation. 767–776.
+[3] Phone: Luong Luc Phan, Phuc Huynh Pham, Kim Thi-Thanh Nguyen, Sieu Khai Huynh, Tham Thi Nguyen, Luan Thanh Nguyen, Tin Van Huynh, and Kiet Van Nguyen. 2021. SA2SL: From aspect-based sentiment analysis to so- cial listening system for business intelligence. In Knowledge Science, Engineering and Management, Han Qiu, Cheng Zhang, Zongming Fei, Meikang Qiu, and Sun-Yuan Kung (Eds.). Springer International Publishing, Cham, 647–658.
+[4] Mother and Technology: Binh Le-Minh, Thi-Phuong Le, Khanh-Hung Tran, Khanh-Huyen Bui, Hoang-Quynh Le, Duy-Cat Can, Hung Nguyen Chung Thanh, and Mai-Vu Tran. 2021. Aspect-based sentiment analysis using mini-window locating atten- tion for Vietnamese E-commerce reviews. In Proceedings of the 13th International Conference on Knowledge and Systems Engineering (KSE’21).
+[5] Restaurant and Hotel: Van Dang Thin, Ngan Luu-Thuy Nguyen, Tri Minh Truong, Lac Si Le, and Duy Tin Vo. 2021. Two new large corpora for Vietnamese aspect-based sentiment analysis at sentence level. ACM Trans. Asian Low-Resour. Lang. Inf. Process. 20, 4, Article 62 (May 2021), 22 pages.
+
