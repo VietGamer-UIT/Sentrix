@@ -7,7 +7,8 @@ Giai đoạn: 3 (nhận + validate + fraud filter)
            5: Librosa audio features
            6: ABSA + Dynamic Weighted Fusion
            7: RFMS + Churn Probability
-           8: Lưu Firestore multi-tenant (GIAI ĐOẠN NÀY)
+           8: Lưu Firestore multi-tenant
+           9: Webhook Zalo ZNS khi P_churn vượt ngưỡng (GIAI ĐOẠN NÀY)
 
 LUỒNG XỬ LÝ ĐẦY ĐỦ (Giai đoạn 8):
   1. Validate input (audio/text, MIME type, kích thước)
@@ -57,6 +58,10 @@ from backend.ai_pipeline.fusion import dynamic_weighted_fusion
 from backend.rfms_model.churn_model import (
     calculate_churn_full,
     DEFAULT_CHURN_ALERT_THRESHOLD,
+)
+from backend.webhooks.zalo_zns import (
+    send_zalo_zns_alert,
+    get_primary_complained_aspect,
 )
 from backend.db.firestore_ops import (
     save_feedback,
@@ -505,14 +510,69 @@ async def submit_feedback(
         # Pipeline chính (ABSA, RFMS) đã chạy xong, kết quả đã có trong response
 
     # -----------------------------------------------------------------------
-    # Bước 9 (Giai đoạn 9 — TODO): Zalo ZNS webhook nếu should_alert
+    # Bước 9 (Giai đoạn 9): Zalo ZNS webhook nếu P_churn vượt ngưỡng
     # -----------------------------------------------------------------------
-    if should_alert:
+    zns_result: Optional[dict] = None
+
+    if should_alert and customer_phone:
         logger.warning(
-            f"[Feedback] P_churn={p_churn:.4f} vuot nguong! "
-            f"[TODO-G9] Can trigger Zalo ZNS cho customer={customer_id}"
+            f"[Feedback] P_churn={p_churn:.4f} VUOT NGUONG — Trigger Zalo ZNS!"
         )
-        # Giai đoạn 9 sẽ implement hàm send_zalo_zns_alert() ở đây
+        try:
+            # Lấy khía cạnh bị phàn nàn nhiều nhất
+            primary_aspect = get_primary_complained_aspect(
+                fusion_result.get("aspects", []) if fusion_result else []
+            )
+
+            # Sinh voucher code đơn giản (production: lấy từ DB hoặc service riêng)
+            voucher_code = f"BACK{abs(hash(customer_phone + tenant_id)) % 90 + 10}"
+
+            # Gọi ZNS — hàm này KHÔNG raise exception, chỉ trả dict
+            zns_result = send_zalo_zns_alert(
+                customer_phone=customer_phone,
+                tenant_id=tenant_id,
+                aspect_complained=primary_aspect,
+                voucher_code=voucher_code,
+                p_churn=p_churn,
+            )
+
+            if zns_result["success"]:
+                logger.info(
+                    f"[Feedback] ZNS gui thanh cong | "
+                    f"tracking_id={zns_result['tracking_id']} | "
+                    f"zalo_msg_id={zns_result['zalo_message_id']}"
+                )
+                # Cập nhật zns_sent_at vào Firestore customer nếu có
+                if customer_id:
+                    try:
+                        from backend.db.firestore_ops import get_firestore_client
+                        from backend.db.firestore_client import get_firestore_client as _get_db
+                        from datetime import datetime, timezone
+                        db = _get_db()
+                        cust_ref = (
+                            db.collection("tenants").document(tenant_id)
+                            .collection("customers").document(customer_id)
+                        )
+                        cust_ref.update({
+                            "zns_sent_at":     datetime.now(timezone.utc),
+                            "zns_voucher_code": voucher_code,
+                        })
+                    except Exception as e_zns_update:
+                        logger.warning(f"[Feedback] Khong update zns_sent_at: {e_zns_update}")
+            else:
+                logger.warning(
+                    f"[Feedback] ZNS gui that bai: "
+                    f"{zns_result['error_type']}: {zns_result['error_detail'][:100]}"
+                )
+        except Exception as e_zns:
+            # Safety net — ZNS KHONG duoc crash pipeline chinh
+            logger.error(f"[Feedback] ZNS unexpected error (bo qua): {type(e_zns).__name__}: {e_zns}")
+
+    elif should_alert and not customer_phone:
+        logger.warning(
+            f"[Feedback] P_churn={p_churn:.4f} vuot nguong nhung KHONG co customer_phone "
+            "— khong gui ZNS. De gui ZNS, frontend can truyen customer_phone."
+        )
 
     # -----------------------------------------------------------------------
     # Trả response 202
