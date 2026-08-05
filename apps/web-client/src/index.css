@@ -1,0 +1,543 @@
+/* ============================================
+   SENTRIX — WEB CLIENT GLOBAL STYLES
+   Design system: Mobile-first, tối giản, UX frictionless
+   Theo design/ux-ui/01-customer-flow/user-flow.md
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+/* === CSS Variables — Design Tokens === */
+:root {
+  /* Brand Colors */
+  --color-primary: #00C2FF;
+  --color-primary-dark: #0095C8;
+  --color-primary-glow: rgba(0, 194, 255, 0.3);
+  --color-accent: #7C3AED;
+  --color-accent-light: #A78BFA;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Neutrals */
+  --color-bg: #0A0A0F;
+  --color-bg-card: #13131A;
+  --color-bg-elevated: #1C1C26;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-muted: rgba(255, 255, 255, 0.35);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 48px;
+
+  /* Shadows */
+  --shadow-glow: 0 0 40px rgba(0, 194, 255, 0.2);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 4px 20px rgba(0, 194, 255, 0.4);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* === CSS Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Base === */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport cho mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+p {
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* === Layout Utilities === */
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  z-index: 1;
+}
+
+/* === Background Glow Effects === */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow--primary {
+  width: 300px;
+  height: 300px;
+  background: rgba(0, 194, 255, 0.12);
+  top: -80px;
+  right: -80px;
+}
+
+.bg-glow--accent {
+  width: 250px;
+  height: 250px;
+  background: rgba(124, 58, 237, 0.1);
+  bottom: -60px;
+  left: -60px;
+}
+
+/* === Card Component === */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+/* === Button Components === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-base);
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  padding: 14px var(--spacing-xl);
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: #FFFFFF;
+  box-shadow: var(--shadow-button);
+}
+
+.btn--primary:not(:disabled):active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.btn--primary:not(:disabled):hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(0, 194, 255, 0.5);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn--secondary:not(:disabled):active {
+  background: var(--color-bg-elevated);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  width: auto;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* === Record Button (đặc biệt cho màn hình ghi âm) === */
+.btn-record {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  box-shadow: var(--shadow-button), var(--shadow-glow);
+}
+
+.btn-record:active,
+.btn-record--recording {
+  transform: scale(0.93);
+  box-shadow: 0 0 0 6px rgba(0, 194, 255, 0.2),
+              0 0 0 12px rgba(0, 194, 255, 0.1);
+}
+
+/* Pulse animation khi đang ghi âm */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.btn-record--recording::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(0, 194, 255, 0.4);
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+
+/* === Input === */
+.input-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.input-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input {
+  width: 100%;
+  padding: 14px var(--spacing-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg);
+  text-align: center;
+  letter-spacing: 0.1em;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15);
+}
+
+/* === Logo / Brand === */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.brand-logo-text {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.04em;
+}
+
+/* === Waveform Animation === */
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+}
+
+.waveform-bar {
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to top, var(--color-primary), var(--color-accent));
+  height: 100%;
+  transform: scaleY(0.3);
+  transform-origin: bottom;
+}
+
+.waveform--active .waveform-bar {
+  animation: wave 0.8s ease-in-out infinite;
+}
+
+.waveform-bar:nth-child(1) { animation-delay: 0s; }
+.waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+.waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+.waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+.waveform-bar:nth-child(5) { animation-delay: 0.15s; }
+.waveform-bar:nth-child(6) { animation-delay: 0.05s; }
+.waveform-bar:nth-child(7) { animation-delay: 0.25s; }
+
+/* === Countdown Timer === */
+.countdown {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+.countdown--warning {
+  color: var(--color-warning);
+  animation: blink 0.5s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* === Success Animation === */
+@keyframes check-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes circle-draw {
+  from { stroke-dashoffset: 283; }
+  to { stroke-dashoffset: 0; }
+}
+
+.success-icon circle {
+  stroke-dasharray: 283;
+  animation: circle-draw 0.6s ease forwards;
+}
+
+.success-icon path {
+  stroke-dasharray: 100;
+  animation: check-draw 0.4s ease 0.4s forwards;
+}
+
+/* === Spin Wheel === */
+.spin-wheel-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+}
+
+.spin-wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  will-change: transform;
+  border: 4px solid var(--color-bg-elevated);
+  box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
+}
+
+.spin-pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* === Voucher Card === */
+.voucher-card {
+  background: linear-gradient(135deg, #1C1C26, #16162A);
+  border: 1px dashed rgba(0, 194, 255, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.voucher-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+}
+
+.voucher-code {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--color-primary);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* === Textarea (text input alternative) === */
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  resize: none;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.15);
+}
+
+.textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* === Chip / Tag === */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chip--location {
+  background: rgba(0, 194, 255, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(0, 194, 255, 0.2);
+}
+
+/* === Fade-in Animation === */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.5s ease forwards;
+}
+
+.fade-up--delay-1 { animation-delay: 0.1s; opacity: 0; }
+.fade-up--delay-2 { animation-delay: 0.2s; opacity: 0; }
+.fade-up--delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+/* === Mobile Safe Area === */
+@supports (padding: max(0px)) {
+  .page {
+    padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
+    padding-top: max(var(--spacing-lg), env(safe-area-inset-top));
+  }
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
