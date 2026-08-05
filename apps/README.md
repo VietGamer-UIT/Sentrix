@@ -14,5 +14,5 @@ Nơi đây chứa 2 ứng dụng chính:
 ## 📝 CHECKLIST CÔNG VIỆC BẮT ĐẦU CỦA VIỆT
 - [ ] 1. Di chuyển vào `web-client` và chạy lệnh tạo project Next.js/React.
 - [ ] 2. Dọn dẹp code rác mặc định của React. Cài TailwindCSS.
-- [ ] 3. Di chuyển vào `dashboard` và thiết lập môi trường Streamlit.
+- [ ] 3. Di chuyển vào `dashboard` và thiết lập môi trường React (Vite).
 - [ ] 4. Test chạy thử cả 2 app ở localhost và chụp hình gửi Zalo khoe team.
