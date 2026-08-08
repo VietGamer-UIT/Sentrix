@@ -529,3 +529,19 @@ tr:hover td {
   color: var(--color-warning);
   border: 1px solid rgba(245,158,11,0.2);
 }
+
+/* ─── Animations ─────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease forwards;
+}
+
