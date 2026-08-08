@@ -1,0 +1,1392 @@
+[
+  {
+    "review": "Pin Sài tầm 50h cho pin 100/100. Camera ổn ... tất cả đều OK ... nhân viên thế giới di động trần văn thời cà mau nhiệt tình và vui vẻ ...chúc các ae sức khỏe tốt và phục ok hoài nha....",
+    "aspects": [
+      {
+        "phrase": "Pin Sài tầm 50h cho pin 100/",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "0. Camera",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "... tất c",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ều OK ... nhân viên thế giới di động trần văn thời cà mau nhiệt tình và vui vẻ ...chúc các",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Lag và hao pin là cái tóm tắt về máy. Sam làm tệ quá, không bằng mấy con tàu cùng phân khúc",
+    "aspects": [
+      {
+        "phrase": "Lag",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "hao pi",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "máy. Sam làm tệ quá, không bằng mấy con ta",
+        "category": "GENERAL",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Tất cả đều ổn ngoại trừ lúc máy nóng lên thì pin tụt nhanh hơn tụt quần haizz. Cam chụp cũng gọi là tầm trung. Nếu dùng lướt web bình thường thì có thể dùng được cả ngày",
+    "aspects": [
+      {
+        "phrase": "hơn tụt quần haizz. Cam c",
+        "category": "CAMERA",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "p cũng gọi là tầm trung. Nếu dùng lướt web b",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "i trừ lúc máy nóng lên thì pin tụ",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Ok mua máy ở TGDD chính sách đổi trả rất tốt,rất yên tâm khi mua ở TGDD,quản lý ở 15A đường bà hôm phường 13 quận 6 nhẹ nhàng và vui tính,nhiên viên ai cũng nhiệt tình, hài lòng về cách chăm sóc khách hàng của các bạn!.",
+    "aspects": [
+      {
+        "phrase": "DD chính sách đổi trả rất tốt,rất yên tâm khi mua ở TGDD,quản lý ở 15A đường bà hôm phường 13 quận 6 nhẹ nhàng và vui tính,nhiên viên ai cũng nhiệt tình, h",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "kiểu dáng thì đẹp,cầm chắc tay,nhưng loa nhỏ quá,nhân viên phục vụ rất nhiệt tình",
+    "aspects": [
+      {
+        "phrase": "kiểu dáng thì đẹp,cầm",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "tay,nhưng",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "loa nhỏ quá,nhân viên phụ",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy loa to ,bin trâu game lp tuy chỉ bựt đc fqf30 nhưng chơi game như bựt 60fqs ko bị mỏi mắt ngon hơn joy 3 chơi nhìn như kiểu bị lắc ko mượt như c3i .gét mỗi ko đc tự mở hộp mà máy bị bóc rồi mua máy mới mà như kiểu mua đã qua sử dụng",
+    "aspects": [
+      {
+        "phrase": "Máy loa t",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": ",bin tr",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "u game lp tuy chỉ bựt đc fqf30 nhưng chơi game như bựt 60fqs ko bị mỏi mắt ngon hơn joy 3 chơi nhìn như kiể",
+        "category": "CAMERA",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Hài lòng về sản phẩm. Mọi thứ đêu rât tốt nghe nhạc xem phim chơi game âm thanh to và hay",
+    "aspects": [
+      {
+        "phrase": "Hài lòng về sản phẩm. Mọi thứ",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "đêu rât tốt nghe nhạc xem phim chơi gam",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mua được 1 tuần thấy máy quá OKPin trâu , máy mượt , cảm biến vân tay nhạy , k nóng máy . Nhu cầu chơi game nên k cần gì hơn , liên quân vô nhanh gần ngang ip . Vs mức giá này mua con máy sài thấy quá hời luôn",
+    "aspects": [
+      {
+        "phrase": "thấy m",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "y quá",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "in trâu",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "máy mượt , cảm",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n vân tay nhạy , k nóng máy . Nhu cầu chơi game nên k cần gì hơn ,",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ên quân vô nhanh gần ngang ip . Vs mức gi",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy mượt . pin trâu",
+    "aspects": [
+      {
+        "phrase": "Máy mư",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "t . pin",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Gía này thì quá ổn so với cấu hình ! Gía rẻ như này các bạn còn có thể đòi hỏi thêm những gì nữa ?",
+    "aspects": [
+      {
+        "phrase": "Gía này thì qu",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "u hình ! Gí",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy màn hình lớn , nhận diện khuôn mặt nhanh ( trong đk trời sáng ) ,cấu hình tạm ổn cho các tác vụ cơ bản , pin trâu ,...NV TGDD Nhiệt Tình . Còn CTKM tặng tai nghe thì TGDD chưa làm tốt , ra mua máy thì chi nhánh tai nghe khg có hàng , phải đợi 10-15 ngày ( TGDD rút kinh nghiệm về các CTKM kiểu như vậy )",
+    "aspects": [
+      {
+        "phrase": "Máy màn hình",
+        "category": "SCREEN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n , nhận diện khuôn",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "trời sáng ) ,cấu hình tạm ổ",
+        "category": "PERFORMANCE",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "ho các",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "vụ cơ bản , pin trâu ,...NV TGDD Nhiệt Tình . Còn CTKM tặng tai nghe thì TGDD chưa làm tốt , ra mua máy thì chi nhá",
+        "category": "SER&ACC",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Mới mua sáng nay. Nhân viên phục vụ nhiệt tình. Test qua máy với tầm giá này thì ổn. Có điều gọi zalo 10 phút là máy nóng",
+    "aspects": [
+      {
+        "phrase": "y. Nhân viên phục vụ n",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "h. Test qua máy với t",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "y thì ổn. Có điều g",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy ok về mọi thứ.Camera thì ko nét lấm!Ae nên mua và trải nghiệm!Cũng tùy ng cảm nhận khác nhau th!!! Riêng tôi ok!",
+    "aspects": [
+      {
+        "phrase": "Máy ok về mọ",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "thứ.Camera thì ko",
+        "category": "CAMERA",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "nhận khác",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Thiết kế đẹp , kiểu dáng sang trọng. Nhất là pin, trâu lắm,tư vấn nhiệt tình. Tóm lại mới thứ đều ok",
+    "aspects": [
+      {
+        "phrase": "Thiết kế đẹp , kiểu dáng",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ng trọng. Nhất l",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "pin, trâu lắm",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ư vấn nhiệt tình",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Wifi hơi yếu, loa hơi nhỏ, chơi liên quân tạm ổn trung bình không nóng máy 1 trận nhiều nhất 6 %pin. Tốt trong tầm giá, sạc hơi nóng máy. Giá cả tốt rồi",
+    "aspects": [
+      {
+        "phrase": "Wifi hơi yếu, loa hơi",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "hỏ, chơi liên quân tạm ổn trung bình",
+        "category": "PERFORMANCE",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "không nóng máy 1 trậ",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "nhi",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "m giá, sạ",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "in. Tốt trong",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy dùng chán thật sự lỗi cảm ứng liên tục tắt màn hình rồi bật lên lại dc một lúc sau lại bị wifi vô cùng kém cách xa cục phát 3-4 mét là tịt luôn chắc lần sau ko dám sử dung điện thoại của hãng này nữa",
+    "aspects": [
+      {
+        "phrase": "Máy dùng chán th",
+        "category": "GENERAL",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "t sự lỗi cảm ứng liên tục tắt màn hình rồi bật lên lại dc một lúc sau lại bị wifi vô cùng kém",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "ChấT lượng sản phảm tuyệt vời, chế độ bảo hành tốt, nhân viên phục vụ chu đáo tận tình",
+    "aspects": [
+      {
+        "phrase": "ChấT lượng sản phảm",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "yệt vời, chế độ bảo hành tốt, nhân viên",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Rất tuyệt sài chơi game rất tốt à ko có mật khẩu vân tay thôi chụp hình cũng rát đẹp cầm cũng sướng tay",
+    "aspects": [
+      {
+        "phrase": "t sài chơi game r",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "t tốt à ko có mật kh",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "u vân tay thôi ch",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "p hình cũng rát",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mới mua máy, sản phẩm đẹp và bắt mắt. Nhân viên tư vấn nhiệt tình. Lại được giảm giá 650k nữa. Rất hài lòng.",
+    "aspects": [
+      {
+        "phrase": "y, sản phẩm đẹp",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "bắt mắt. Nhân viên",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "vấn nhiệt tình. L",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "được gi",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy ok nhưng thỉnh thoảng văng messages ra game mượt đề nghị cập nhật cảm ứng tốt hơn",
+    "aspects": [
+      {
+        "phrase": "Máy o",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "g thỉnh thoảng văng messages ra ga",
+        "category": "PERFORMANCE",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "e mượt đề nghị cập nh",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy dùng rất tốt, cam,cấu hình đều ổn. Nhưng nếu tải game trên web thì hay bị lỗi ứng dụng tự đóng,",
+    "aspects": [
+      {
+        "phrase": "Máy dùng rất",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ố",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": ", cam,cấu hì",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n. Nhưng nếu tải game trên web thì hay b",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mình mua xài đc 1 tháng, Chụp hình đẹp, lỗi độ sáng màn hình, mình có mang ra TGDD hỏi thì nv reset lại máy, vẫn bị lỗi, chắc tại máy, cảm ứng k nhạy. Tạm được",
+    "aspects": [
+      {
+        "phrase": "ng, Chụp h",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "h đẹp, lỗi đ",
+        "category": "SCREEN",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "vẫn bị l",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": ", chắc",
+        "category": "GENERAL",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Sản phẩm hút sóng yếu. Camara bị rò rỉ điện khi sạc thất vọng với sản phẩm này...",
+    "aspects": [
+      {
+        "phrase": "Sản phẩm hút só",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "yếu. Camara bị rò rỉ điện khi sạc thất v",
+        "category": "DESIGN",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy đẹp, camera chụp ảnh đẹp, vân tay siêu nhạy, mượt mà trong mọi thao tác, xuất sắc!",
+    "aspects": [
+      {
+        "phrase": "Máy đe",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "p, camera chụp ảnh",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ẹp, vân tay si",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "u nhạy, mượt mà trong",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "đã mua máy ở siêu thị ấp chánh,chợ đức lập máy đẹp,chơi game rất mượt,nhân viên rất nhiệt tình",
+    "aspects": [
+      {
+        "phrase": "hợ đ",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "c lập máy đ",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "p,chơi game rất mư",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mua ngay 8/3 xài tới nai tôt mình ko chơi game chỉ Zalo FB yutout wf mạnh lam 4 g khỏi chê luôn còn bin xài vừa vừa tới 2 ngai ae nên mua",
+    "aspects": [
+      {
+        "phrase": "Mua ngay 8/3 xài tới nai",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "e chỉ Zalo FB yutout wf mạnh lam 4 g kh",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "i chê luôn còn bin xài v",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "a vừa t",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Em mua đc gần tháng rồi loa ngoài lâu lâu nghe nhạc bì rè rè nghe khó chịu lắm vs pin tụt hơi nhanh.cn lại khá ổn.",
+    "aspects": [
+      {
+        "phrase": "rồi loa ngoài lâu lâu nghe nhạc bì rè rè ngh",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "ó chịu lắm v",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "pin tụt h",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mình mới mua hôm 07/03. Thấy ngon lành, tư vấn nhiệt tình, cảm ơn rối rít. Cũng cái thứ 4 oppo rồi. Dòng máy này mình rất hài lòng, nên mua. Có 3 suất mua khuyến mãi nữa, mà phải đồng hồ mới chịu! Sao không để khách tự chọn hoặc cái gì đó liên quan đến cái điện thoại vẫn hay hơn. Mình nghĩ vậy.",
+    "aspects": [
+      {
+        "phrase": "03. Thấy ngo",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "lành, tư vấn nhiệt tình, c",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Cái gì cũng tốt,nhất là pin trâu và thứ 2 là màn hình dài,tiếc thay đt màn hình chỉ dừng bị lại ở mức HD+",
+    "aspects": [
+      {
+        "phrase": "Cái gì cũng",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "t là",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "thứ 2 là màn hình dài,tiếc thay đt màn hình ch",
+        "category": "SCREEN",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "5tr5 cấu hình ngoại hình ko chê vào đâu được.may nóng ngày đầu thôi.qua ngày sau chơi ko thấy nóng nữa.camera chụp rất đẹp",
+    "aspects": [
+      {
+        "phrase": "5tr5",
+        "category": "PRICE",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "cấu h",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "nh ngoại hình ko chê vào",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "âu được.may nóng ngày đầu thôi.qua ngày sau",
+        "category": "PERFORMANCE",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "hơi ko thấy nón",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy xài dc mấy tháng rồi .Nhận diện vân tay tệ .. Nhận diện khuôn mặt lúc dc lúc k.. lỗi màn hình khi mở máy .. màn hình vẫn tối thui cho đến khi bấm nút nguồn 2 lần . Bật chế độ trong túi nhưng vẫn bị cảm biến mở màn hình.",
+    "aspects": [
+      {
+        "phrase": "rồi .Nhận diện vân tay tệ .. Nhận diện khu",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "mặt lúc dc lúc k.. lỗi màn hình khi mở máy .. màn hình vẫn tối",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy cũng ổn nhưng chơi game + quay vidieo cùng một lúc thì rất là đơ. Chắc chắn sẽ trả lại hàng và đổi sang máy oppo a3s",
+    "aspects": [
+      {
+        "phrase": "Máy cũng",
+        "category": "GENERAL",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "ưng chơi game + quay vidieo cùng một lúc th",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Nhân viên tư vấn nhiệt tình.Máy dùng khá là ok phù hợp với giá tiền mình bỏ ra.Máy ram1g không trách khỏi lag.",
+    "aspects": [
+      {
+        "phrase": "Nhân viên tư vấn nhi",
+        "category": "SER&ACC",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "t tình.Máy dùng",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "khá là ok phù hợp với gi",
+        "category": "PRICE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "tiền mình bỏ ra.Máy ra",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mình mới mua được 1 tuần cảm thấy tất cả đều ổn nhưng mà thắc mắc tí bạn mình mượn máy chơi không hiểu sao vân tay của nó lại mở được máy của mình luôn ấy không biết là do máy bị sao hay không ạ ???",
+    "aspects": [
+      {
+        "phrase": "1 tuần cảm thấy",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "nh mượn máy chơi không hiểu sao vân ta",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Màu sắc màn hình quá tệ, tẻ nhạt từ trước tôi giờ mới thấy. Đừng ai mua nữa mua rồi hối hận",
+    "aspects": [
+      {
+        "phrase": "Màu sắc màn hình quá tệ,",
+        "category": "SCREEN",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "không thể tin nổi, nó quá tệ đúng là đồ đồng nát. Vứt rồi phí tiền. Cạch ba đời không bao giờ dùng hãng này.",
+    "aspects": [
+      {
+        "phrase": "không thể tin nổi, nó quá tệ đúng là",
+        "category": "GENERAL",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "ồ đồng ná",
+        "category": "PRICE",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "Vứt rồi phí tiền. Cạch ba đ",
+        "category": "SER&ACC",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "mình vừa mua dùng chơi game thì khỏi nói nhưng còn về xem phim trên youtube bật SD rất mờ so với điện thoại khác bật SD",
+    "aspects": [
+      {
+        "phrase": "ng chơi game thì kh",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ng còn về xem phim trên youtube",
+        "category": "SCREEN",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy đẹp pin trâu, còn thiếu những tiện ích thông dụng trong cuộc sống, hđh dùng hơi rắc rối khi cài đặt phần mềm ngoài chplay. Máy ảnh đep",
+    "aspects": [
+      {
+        "phrase": "Máy đ",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "ẹp pin",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "âu, còn thiếu những tiện ích thông dụng trong cuộc sống, hđh dùng hơi rắc rối khi c",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "đặt ph",
+        "category": "CAMERA",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Ko hài lòg vì camera nắg gắt chụp mới đẹp còn bình thườg vào phòg chụp nó cứ mờ mờ ảo ảo kì lắm quay tik tok đen thui thua oppo f9 nua",
+    "aspects": [
+      {
+        "phrase": "ì camera nắg gắt chụp mới đẹp còn bình thườg vào phòg chụp nó cứ mờ mờ ảo ảo kì lắm q",
+        "category": "CAMERA",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mua lúc mới có hàng. Sài tới bây giờ. Máy ổn. Lên mạng nhanh. Game cũng ổn. Trong tầm giá. Oppo lên mạng ổn hơn samsung. Hàng điện tử nên Sài cũng hên xui. Mình hên nên chưa thấy gì bất thường ở điện thoại này. Trước sài samsung mà giờ đổi qua oppo thấy ok hơn nhiều.",
+    "aspects": [
+      {
+        "phrase": "ây gi",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": ". Máy ổn.",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n mạng nh",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n. Trong tầm giá. Oppo",
+        "category": "FEATURES",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Vân tay nhận diện lâu quá, Chơi game tí là nóng máy. Chán. Thua con nova 3i, chiến game chả thấy nóng gì cả.",
+    "aspects": [
+      {
+        "phrase": "Vân tay nhận diện l",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "quá, Chơi game tí là nóng máy. Chán. Thua con nova 3i, chiến game ch",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Sản phẩm tồi tệ nhất tôi từng mua..............cực kì thất vọng vói con máy nàyTệ quá xá tệ",
+    "aspects": [
+      {
+        "phrase": "Sản phẩm tồi tệ nhất tôi từng mua..............cực kì thất vọng vói co",
+        "category": "GENERAL",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Máy dùng quá chán chơi game lag camera thì cũng chỉ tàm tạm lần đầu mua của hàng và vĩnh viễn k có lần sau",
+    "aspects": [
+      {
+        "phrase": "Máy dùng quá c",
+        "category": "GENERAL",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "án chơi gam",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "lag camera thì cũng ch",
+        "category": "CAMERA",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Mua được một tuần.thế giới di động. Pin sạc lâu, hết pin cũng nhanh.tương đương con vivo y85 của vợ mình. Nhưng vivo pin có 3200.loa nghe hơi rè rè. Được cái thiết kế cũng đẹp với tầm giá",
+    "aspects": [
+      {
+        "phrase": "i di động. Pin sạc lâu, hê",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "oa nghe hơi rè rè",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "̉a vợ mi",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "nh. Nhưng vivo pi",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Mới mua được gần 1 tuần dùng tất cả đều thấy ok mỗi cái pin hơn 5000 mà thấy tụt nhanh hơn con oppo f9 pin thấp hơn con này trước mình dùng. Chỉ có cái thấy pin tụt hơi nhanh còn lại đều ok hết.",
+    "aspects": [
+      {
+        "phrase": "ần dùng tất c",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "u thấy ok mỗi cái pin hơn 5000 mà thấy tụt nhanh hơn con oppo f9 pin thấp hơn con này trước mình d",
+        "category": "BATTERY",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "ng. Chỉ có cá",
+        "category": "GENERAL",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Dùng đc một tuần. Thấy pin ngon. Thiết kế máy đẹp, màn to nhưng hơi tối và tái, Camera tầm Trung. Cảm ứng mượt, bắt wifi kém hơn các loại máy đang cùng xài. Tóm lại thích pin và thiết kế. Và cả thái độ phục vụ khách hàng trong mùa dịch.",
+    "aspects": [
+      {
+        "phrase": "ần. Thấy",
+        "category": "BATTERY",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "n ngon. Thiết",
+        "category": "DESIGN",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "máy đẹp, màn to nh",
+        "category": "SCREEN",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "g hơi tối và",
+        "category": "CAMERA",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "ái, Camera tầm Trung. Cảm ứng mượt, bắt wifi",
+        "category": "FEATURES",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Đáp ứng tốt với đại đa số các ứng dụng thông thường như Facebook, Zalo, Youtube...máy chạy trên nền Android One nên rất nhẹ, nhạy và mượt mà. Phù hợp cho những ai cần một chiếc máy sử dụng đơn giản, không yêu cầu cao về tuỳ biến giao diện và những tính năng đặc biệt.",
+    "aspects": [
+      {
+        "phrase": "Đáp ứng tốt với đại đa số các ứng dụng thông thường như Facebook, Zalo, Youtube...máy chạy trên nền Android On",
+        "category": "PERFORMANCE",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Vô đọc file pdf hay office trên Zalo hiện trì xem HTML xoay vòng vòng ko mở được",
+    "aspects": [
+      {
+        "phrase": "Vô đọc file pdf hay office trên Zalo hiện trì xem HTML xoay vòng vòng",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Vivo xài sóng 4g rất yếu và tệ đồ họa kém.moi xài được 40 ngày.. giá tiền cao mà xài thua hàng huawuay",
+    "aspects": [
+      {
+        "phrase": "Vivo xài sóng 4g rất",
+        "category": "FEATURES",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "u và tệ",
+        "category": "SCREEN",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "được 40",
+        "category": "PRICE",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "giá tiền cao",
+        "category": "SER&ACC",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Em mới dùng tầm 1 ngày thì bị màn hình đen chỉ hiện dòng chữ sam sung sau tầm 10 phút thì máy tự khởi động lại . Sau đó thì bình thường. Tới hôm nay thì lại tiếp tục bị vậy trong khi máy còn rất nhiều pin ạ .",
+    "aspects": [
+      {
+        "phrase": "hì bị màn hình đen chỉ hiện dòng chữ sam sung sau tầm 10 phút th",
+        "category": "PERFORMANCE",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Hàng đóng gói đẹp và chắc chắn, nhìn rất dễ thương và ưng bụng ạ!",
+    "aspects": [
+      {
+        "phrase": "Hàng đóng gói đẹp và chắc chắn",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Cảm giác son bên trong rất là ít luôn í, đóng gói cẩn thận, dịch nhưng mà giao hàng khá nhanh",
+    "aspects": [
+      {
+        "phrase": "Cảm giác son bên trong rất là ",
+        "category": "shipping",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Cảm giác son bên trong rất là ",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Son siêu đẹp luôn ý, mà y hình mà chụp có thể không giống lắm nhưng nhìn ngoài thì giống nha. Chất son mềm mướt nói chung là rất thíchhhh",
+    "aspects": [
+      {
+        "phrase": "Son siêu đẹp luôn ý, mà y hình",
+        "category": "texture",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Siu đẹp luôn \nShop đóng gói cẩn thận lắm luôn \nLại thêm cả quà nữa\nNói chung là thích lắm",
+    "aspects": [
+      {
+        "phrase": "Siu đẹp luôn \nShop đóng gói cẩ",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Aúhihđcyihb gfxxth jj bhgfzđE G GHVHBTCEETXUBBIYCZRZRTCVUUBYRZXGVBIINVUTXZRCTIBONONBUXTZRTVKNNOUVTXEecyuvknibtcrztxuvbubibijvcytdgunonobiyvdtrdfyyghuojpmibvytcdtvunomobuCYYVBIBIYCTXYVIONNIXTXTBUOJMOONBIYCXRTXVYBUINNONIBUCTTXTCYVIBONON",
+    "aspects": [
+      {
+        "phrase": "Aúhihđcyihb gfxxth jj bhgfzđE ",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Màu đep nên mua  vgfddfhjkkknbfdasfhjkklllkjvfdsaefhikokkkkhg",
+    "aspects": [
+      {
+        "phrase": "Màu đep nên mua  vgfddfhjkkknb",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Sao không có đi đâu mà không có đi đâu rồi đó rồ điên luôn r đi đâu mà",
+    "aspects": [
+      {
+        "phrase": "Sao không có đi đâu mà không c",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Dùng hơi khô nhưng với giá như vậy là ok rồi. Nên mua nên mua.... đánh giá caoooooooo. Dkdmamsbaajakakakk",
+    "aspects": [
+      {
+        "phrase": "Dùng hơi khô nhưng với giá như",
+        "category": "texture",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "Dùng hơi khô nhưng với giá như",
+        "category": "price",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Chất son lì màu cam siu đẹp nhma mà giao hàng khá lâu,  đặt hôm 12.12 nhưng đến 24.12 mới đến",
+    "aspects": [
+      {
+        "phrase": "Chất son lì màu cam siu đẹp nh",
+        "category": "stayingpower",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Chất son lì màu cam siu đẹp nh",
+        "category": "texture",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "Chất son lì màu cam siu đẹp nh",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Chất son lì màu cam siu đẹp nh",
+        "category": "shipping",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "hhsne. bẹdkkdndnemd",
+    "aspects": [
+      {
+        "phrase": "hhsne. bẹdkkdndnemd",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Màu 4 là đúng kiểu màu hồng tím, chất son mềm mịn, đánh nhạt làm nền, đánh đậm thì hợp bạn nào da trắng. Màu 6 không quá đậm, cũng khá đẹp. Ưng lắm. Cảm ơn shop",
+    "aspects": [
+      {
+        "phrase": "Màu 4 là đúng kiểu màu hồng tí",
+        "category": "texture",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Màu 4 là đúng kiểu màu hồng tí",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Son màu đẹp, mùi không thơm lắm . Đóng gói sản phẩm chắc chắn..",
+    "aspects": [
+      {
+        "phrase": "Son màu đẹp, mùi không thơm lắ",
+        "category": "smell",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Son màu đẹp, mùi không thơm lắ",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Son màu đẹp, mùi không thơm lắ",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Chất son mịn, lên màu đẹp lắm ý mà hơi khô môi một chút nên mn nhớ dưỡng trước khi thoa son nha.",
+    "aspects": [
+      {
+        "phrase": "Chất son mịn, lên màu đẹp lắm ",
+        "category": "texture",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "Chất son mịn, lên màu đẹp lắm ",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Công dụng: mịn môi,bám lâu, màu bền, đẹp, chim ưng\nKết cấu: kem lì\nĐộ bền màu: 8 tiếng cứ phải gọi là oske",
+    "aspects": [
+      {
+        "phrase": "Công dụng: mịn môi,bám lâu, mà",
+        "category": "stayingpower",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Công dụng: mịn môi,bám lâu, mà",
+        "category": "texture",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Công dụng: mịn môi,bám lâu, mà",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Giao hàng chậm. Shop giao đúng mẫu sp sài ok nên mua bla bla   mmm",
+    "aspects": [
+      {
+        "phrase": "Giao hàng chậm. Shop giao đúng",
+        "category": "shipping",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Đợi mãi cuối cùng cũng về. Mới toanh luôn, shop còn tặng quà nữa, yêu quá!!!!",
+    "aspects": [
+      {
+        "phrase": "Đợi mãi cuối cùng cũng về. Mới",
+        "category": "shipping",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "Đã nhận hàng\nSon mềm mịn nhưng k đúng tone màu cho lắm nên hơi tiếc xíu",
+    "aspects": [
+      {
+        "phrase": "Đã nhận hàng\nSon mềm mịn nhưng",
+        "category": "texture",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Đã nhận hàng\nSon mềm mịn nhưng",
+        "category": "colour",
+        "sentiment": "NEGATIVE"
+      }
+    ]
+  },
+  {
+    "review": "C cccvvggffffgggggfffffcccccccvvvvvvhhhhbbbbbbggghjjjjj bbbbbbbbb nó bbbbbbbbb bnnnnnnnnn nó hhhhhhhhjnnn nó bbbnnnnnn",
+    "aspects": [
+      {
+        "phrase": "C cccvvggffffgggggfffffccccccc",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Shop giao đủ hàng,đóng gói tốt..................................",
+    "aspects": [
+      {
+        "phrase": "Shop giao đủ hàng,đóng gói tốt",
+        "category": "shipping",
+        "sentiment": "NEUTRAL"
+      },
+      {
+        "phrase": "Shop giao đủ hàng,đóng gói tốt",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "eo son thơm vãiiii luôn ớ mụi người,nên mua nhaaa,son lên màu xinh xĩu luôn ớ hjhj",
+    "aspects": [
+      {
+        "phrase": "eo son thơm vãiiii luôn ớ mụi ",
+        "category": "smell",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "eo son thơm vãiiii luôn ớ mụi ",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Son xinh dùng đến thỏi t2 rồi vẫn rất ưng hìn ảnh chỉ mang tính chất nhận xu",
+    "aspects": [
+      {
+        "phrase": "Son xinh dùng đến thỏi t2 rồi ",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Màu son kh giống chuẩn 100% nhưng lên màu cũng đẹp. Điểm trừ duy nhất là son lên môi rất nhanh khô khó dàn đều",
+    "aspects": [
+      {
+        "phrase": "Màu son kh giống chuẩn 100% nh",
+        "category": "texture",
+        "sentiment": "NEGATIVE"
+      },
+      {
+        "phrase": "Màu son kh giống chuẩn 100% nh",
+        "category": "colour",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Son đẹp lắm luôn! Ở nước ngoài mà giao nhanh ý\nAndnfjfjfksksndbdbdndndjdnfndmss",
+    "aspects": [
+      {
+        "phrase": "Son đẹp lắm luôn! Ở nước ngoài",
+        "category": "shipping",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Tuyệt vời",
+    "aspects": [
+      {
+        "phrase": "Tuyệt vời",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Gói hàng chắc chắn, shipper dễ thưn 5 sao nhaaaaaaaaaaaaaaaa",
+    "aspects": [
+      {
+        "phrase": "Gói hàng chắc chắn, shipper dễ",
+        "category": "shipping",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Gói hàng chắc chắn, shipper dễ",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Phấn má hồng bị hơi ẩm nma lên màu đẹp phết còn phần bắt sáng thì phải tô 3,4 lần mới rõ \nSon thì chất mềm mịn, dễ tán, đánh lên môi thích cực \nNói chung là với giá như vậy là quá ưng rồiiiiii",
+    "aspects": [
+      {
+        "phrase": "Phấn má hồng bị hơi ẩm nma lên",
+        "category": "texture",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Phấn má hồng bị hơi ẩm nma lên",
+        "category": "price",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Son chưa dùng nên không biết thế nào, giao hành nhanh shipper vui tính",
+    "aspects": [
+      {
+        "phrase": "Son chưa dùng nên không biết t",
+        "category": "shipping",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Đóng gói ok, 02 mùi khá thơm, son ko đc đầy cho lắm, vs giá đó thì ko mong nhiều",
+    "aspects": [
+      {
+        "phrase": "Đóng gói ok, 02 mùi khá thơm, ",
+        "category": "smell",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Đóng gói ok, 02 mùi khá thơm, ",
+        "category": "price",
+        "sentiment": "POSITIVE"
+      },
+      {
+        "phrase": "Đóng gói ok, 02 mùi khá thơm, ",
+        "category": "packing",
+        "sentiment": "POSITIVE"
+      }
+    ]
+  },
+  {
+    "review": "Đã nhận được hàng rất ưng ý shop ạ,lần sau sẽ ủng hộ tiếp nhé....",
+    "aspects": [
+      {
+        "phrase": "Đã nhận được hàng rất ưng ý sh",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  },
+  {
+    "review": "Hdhjeheheehehejejebegejejegdjdbegeuehehehehehehhhh",
+    "aspects": [
+      {
+        "phrase": "Hdhjeheheehehejejebegejejegdjd",
+        "category": "others",
+        "sentiment": "NEUTRAL"
+      }
+    ]
+  }
+]

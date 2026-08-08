@@ -39,9 +39,11 @@ class SentimentAnalyzer:
         model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-3.1-flash-lite")
         self.model = genai.GenerativeModel(model_name)
         
-        # Load dữ liệu sạch
+        # Load dữ liệu sạch (Ưu tiên cleaned_absa_data.json ở local, fallback sang few_shot_examples.json khi deploy)
         if data_filepath is None:
-            data_filepath = os.path.join(os.path.dirname(__file__), "cleaned_absa_data.json")
+            primary_path = os.path.join(os.path.dirname(__file__), "cleaned_absa_data.json")
+            fallback_path = os.path.join(os.path.dirname(__file__), "few_shot_examples.json")
+            data_filepath = primary_path if os.path.exists(primary_path) else fallback_path
             
         self.examples_data: List[Dict[str, Any]] = []
         
