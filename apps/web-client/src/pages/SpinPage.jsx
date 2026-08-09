@@ -25,7 +25,7 @@ function SpinPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  const tenantId = searchParams.get('tenant_id') || 'demo_tenant'
+  const tenantId = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
   const location = searchParams.get('location') || 'Bàn 1'
 
   const [phone, setPhone] = useState('')
