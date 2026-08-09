@@ -22,3 +22,12 @@ env/
 
 # AI Pipeline
 backend/ai_pipeline/cleaned_absa_data.json
+
+# Ignore docs and images
+*.pdf
+*.docx
+*.jpeg
+*.png
+!assets/logo/*.png
+!apps/dashboard/public/*.png
+!apps/web-client/public/*.png

@@ -39,19 +39,7 @@ function LandingPage() {
 
         {/* Logo Sentrix nhỏ phía trên */}
         <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00C2FF"/>
-                <stop offset="100%" stopColor="#7C3AED"/>
-              </linearGradient>
-            </defs>
-            <rect width="64" height="64" rx="16" fill="url(#lg1)"/>
-            <rect x="26" y="14" width="12" height="20" rx="6" fill="white"/>
-            <path d="M18 32c0 7.7 6.3 14 14 14s14-6.3 14-14" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <line x1="32" y1="46" x2="32" y2="52" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-            <line x1="26" y1="52" x2="38" y2="52" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-          </svg>
+          <img src="/sentrix-logo.png" alt="Sentrix Logo" width="28" height="28" style={{ borderRadius: '8px' }} />
           <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', fontWeight: 600 }}>
             Sentrix
           </span>
