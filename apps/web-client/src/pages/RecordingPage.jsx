@@ -35,6 +35,9 @@ function RecordingPage() {
   const [textContent, setTextContent] = useState('')
   const [showText, setShowText] = useState(mode === 'text')
   const [recordStartTime, setRecordStartTime] = useState(null)
+  // Giai đoạn 7: SĐT tùy chọn để backend tính RFMS
+  const [customerPhone, setCustomerPhone] = useState('')
+  const [showPhoneInput, setShowPhoneInput] = useState(false)
 
   // === Refs ===
   const mediaRecorderRef = useRef(null)
@@ -136,14 +139,20 @@ function RecordingPage() {
     // Optimistic UI: chuyển sang màn hình xác nhận NGAY — đúng user-flow.md Bước 4
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
 
-    // Gửi API ngầm sau khi đã navigate (fire-and-forget)
+    // Gửi API ngầm (fire-and-forget) — Giai đoạn 7: thêm customerPhone + totalSpending
     submitFeedback({
       tenantId,
       location: decodeURIComponent(location),
       audioBlob: audioBlob || null,
-      textContent: textContent.trim() || null
+      textContent: textContent.trim() || null,
+      customerPhone: customerPhone.trim() || null,
+      totalSpending: 0, // Giai đoạn tương lai: lấy từ POS/input
+    }).then(result => {
+      // Lưu kết quả AI vào sessionStorage để ConfirmationPage hiển thị insight
+      try {
+        sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
+      } catch { /* ignore */ }
     }).catch(err => {
-      // Lỗi ngầm — log để debug, không ảnh hưởng UX
       console.error('[Sentrix] Feedback submit failed silently:', err)
     })
   }
@@ -251,6 +260,13 @@ function RecordingPage() {
             {/* Sau khi có audio blob */}
             {audioBlob && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+                {/* Input SĐT tùy chọn */}
+                <PhoneInputSection
+                  customerPhone={customerPhone}
+                  setCustomerPhone={setCustomerPhone}
+                  showPhoneInput={showPhoneInput}
+                  setShowPhoneInput={setShowPhoneInput}
+                />
                 <button id="btn-submit-audio" className="btn btn--primary" onClick={handleSubmit}>
                   🚀 Gửi phản hồi
                 </button>
@@ -302,6 +318,14 @@ function RecordingPage() {
               </p>
             )}
 
+            {/* Input SĐT tùy chọn — Giai đoạn 7: để backend tính RFMS personalized */}
+            <PhoneInputSection
+              customerPhone={customerPhone}
+              setCustomerPhone={setCustomerPhone}
+              showPhoneInput={showPhoneInput}
+              setShowPhoneInput={setShowPhoneInput}
+            />
+
             <button
               id="btn-submit-text"
               className="btn btn--primary"
@@ -329,3 +353,84 @@ function RecordingPage() {
 }
 
 export default RecordingPage
+
+/**
+ * PhoneInputSection — Input SĐT tùy chọn (Giai đoạn 7)
+ *
+ * Mục đích: để backend hash SĐT và tính RFMS cá nhân hóa.
+ * Hiển thị dạng collapsible — không bắt buộc, không gây friction.
+ * Backend sẽ hash SĐT (SHA-256 + salt) trước khi lưu Firestore.
+ */
+function PhoneInputSection({ customerPhone, setCustomerPhone, showPhoneInput, setShowPhoneInput }) {
+  const validatePhone = (val) => /^(0|\+84)[0-9]{8,10}$/.test(val.replace(/\s/g, ''))
+
+  return (
+    <div style={{ marginBottom: 'var(--spacing-sm)' }}>
+      {!showPhoneInput ? (
+        <button
+          type="button"
+          onClick={() => setShowPhoneInput(true)}
+          style={{
+            background: 'none', border: 'none',
+            color: 'var(--color-text-muted)',
+            fontSize: 'var(--font-size-xs)',
+            cursor: 'pointer', textDecoration: 'underline',
+            padding: '4px 0', fontFamily: 'var(--font-family)',
+          }}
+        >
+          📱 Nhận ưu đãi cá nhân? Thêm số điện thoại (tùy chọn)
+        </button>
+      ) : (
+        <div style={{
+          padding: 'var(--spacing-md)',
+          background: 'rgba(0,194,255,0.04)',
+          border: '1px solid rgba(0,194,255,0.12)',
+          borderRadius: 'var(--radius-md)',
+        }}>
+          <label style={{
+            display: 'block', fontSize: 'var(--font-size-xs)',
+            color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 600
+          }}>
+            📱 Số điện thoại (tùy chọn)
+          </label>
+          <input
+            type="tel"
+            inputMode="numeric"
+            placeholder="0901 234 567"
+            value={customerPhone}
+            onChange={e => setCustomerPhone(e.target.value)}
+            maxLength={15}
+            style={{
+              width: '100%', padding: '10px 12px',
+              background: 'rgba(255,255,255,0.06)',
+              border: `1px solid ${customerPhone && !validatePhone(customerPhone) ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--color-text-primary)',
+              fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family)',
+              boxSizing: 'border-box',
+            }}
+          />
+          {customerPhone && !validatePhone(customerPhone) && (
+            <p style={{ fontSize: '0.68rem', color: 'var(--color-danger)', marginTop: 4 }}>
+              SĐT không hợp lệ (ví dụ đúng: 0901234567)
+            </p>
+          )}
+          <p style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', marginTop: 6, lineHeight: 1.5 }}>
+            🔒 SĐT được mã hóa (hash) trước khi lưu. Không chia sẻ với bên thứ ba.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setShowPhoneInput(false); setCustomerPhone('') }}
+            style={{
+              background: 'none', border: 'none',
+              color: 'var(--color-text-muted)', fontSize: '0.68rem',
+              cursor: 'pointer', padding: '2px 0', fontFamily: 'var(--font-family)',
+            }}
+          >
+            ✕ Bỏ qua
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
