@@ -131,7 +131,7 @@ class TestAnalyzeABSA:
         """LLM trả về JSON hợp lệ (tích cực) → aspects đầy đủ."""
         mock_output = '[{"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon lắm"}]'
         with patch.dict("os.environ", self._mock_env()):
-            with patch("backend.ai_pipeline.absa_llm.genai.Client") as mock_cls:
+            with patch("google.genai.Client") as mock_cls:
                 mock_cls.return_value = self._mock_client(mock_output)
                 result = analyze_absa("Món ăn ngon lắm")
         assert result["is_spam"] is False
@@ -142,7 +142,7 @@ class TestAnalyzeABSA:
         """LLM trả về {is_spam: true} → is_spam=True."""
         mock_output = '{"is_spam": true, "aspects": []}'
         with patch.dict("os.environ", self._mock_env()):
-            with patch("backend.ai_pipeline.absa_llm.genai.Client") as mock_cls:
+            with patch("google.genai.Client") as mock_cls:
                 mock_cls.return_value = self._mock_client(mock_output)
                 result = analyze_absa("aaaa bbb 123 xz")
         assert result["is_spam"] is True
@@ -152,7 +152,7 @@ class TestAnalyzeABSA:
         """LLM bọc trong ```json ... ``` → vẫn parse được."""
         mock_output = '```json\n[{"aspect": "Giá cả", "sentiment": "Trung lập", "reason": "Hơi đắt"}]\n```'
         with patch.dict("os.environ", self._mock_env()):
-            with patch("backend.ai_pipeline.absa_llm.genai.Client") as mock_cls:
+            with patch("google.genai.Client") as mock_cls:
                 mock_cls.return_value = self._mock_client(mock_output)
                 result = analyze_absa("Giá hơi đắt")
         assert len(result["aspects"]) == 1
@@ -173,7 +173,7 @@ class TestAnalyzeABSA:
             return mock_resp
 
         with patch.dict("os.environ", self._mock_env()):
-            with patch("backend.ai_pipeline.absa_llm.genai.Client") as mock_cls:
+            with patch("google.genai.Client") as mock_cls:
                 mock_client = MagicMock()
                 mock_cls.return_value = mock_client
                 mock_client.models.generate_content.side_effect = mock_generate
@@ -185,7 +185,7 @@ class TestAnalyzeABSA:
     def test_invalid_json_both_retries_fail_raises(self):
         """Cả 2 lần đều trả JSON sai → ABSAParseError."""
         with patch.dict("os.environ", self._mock_env()):
-            with patch("backend.ai_pipeline.absa_llm.genai.Client") as mock_cls:
+            with patch("google.genai.Client") as mock_cls:
                 mock_client = MagicMock()
                 mock_cls.return_value = mock_client
                 mock_resp = MagicMock()
