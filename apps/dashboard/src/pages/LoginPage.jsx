@@ -72,19 +72,7 @@ export default function LoginPage() {
       }}>
         {/* Logo */}
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <svg width="56" height="56" viewBox="0 0 64 64" fill="none" style={{ marginBottom: 'var(--spacing-md)' }}>
-            <defs>
-              <linearGradient id="lg-login" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00C2FF"/>
-                <stop offset="100%" stopColor="#7C3AED"/>
-              </linearGradient>
-            </defs>
-            <rect width="64" height="64" rx="16" fill="url(#lg-login)"/>
-            <rect x="26" y="14" width="12" height="20" rx="6" fill="white"/>
-            <path d="M18 32c0 7.7 6.3 14 14 14s14-6.3 14-14" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            <line x1="32" y1="46" x2="32" y2="52" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-            <line x1="26" y1="52" x2="38" y2="52" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-          </svg>
+          <img src="/sentrix-logo.png" alt="Sentrix Logo" width="56" height="56" style={{ marginBottom: 'var(--spacing-md)', borderRadius: '12px' }} />
 
           <h1 style={{
             fontSize: '1.75rem',
