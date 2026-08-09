@@ -6,12 +6,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
-/* === CSS Variables — Design Tokens === */
+/* === CSS Variables — Design Tokens (Light Theme) === */
 :root {
-  /* Brand Colors */
-  --color-primary: #00C2FF;
-  --color-primary-dark: #0095C8;
-  --color-primary-glow: rgba(0, 194, 255, 0.3);
+  /* Brand Colors — giữ nguyên */
+  --color-primary: #007AFF;
+  --color-primary-dark: #0062CC;
+  --color-primary-glow: rgba(0, 122, 255, 0.2);
   --color-accent: #7C3AED;
   --color-accent-light: #A78BFA;
 
@@ -20,14 +20,14 @@
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
 
-  /* Neutrals */
-  --color-bg: #0A0A0F;
-  --color-bg-card: #13131A;
-  --color-bg-elevated: #1C1C26;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: rgba(255, 255, 255, 0.6);
-  --color-text-muted: rgba(255, 255, 255, 0.35);
+  /* Light Neutrals */
+  --color-bg: #F5F7FA;
+  --color-bg-card: #FFFFFF;
+  --color-bg-elevated: #EEF1F6;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #9CA3AF;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -53,16 +53,17 @@
   --font-size-2xl: 32px;
   --font-size-3xl: 48px;
 
-  /* Shadows */
-  --shadow-glow: 0 0 40px rgba(0, 194, 255, 0.2);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-button: 0 4px 20px rgba(0, 194, 255, 0.4);
+  /* Shadows — tinh tế hơn cho light mode */
+  --shadow-glow: 0 0 30px rgba(0, 122, 255, 0.15);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
+  --shadow-button: 0 4px 16px rgba(0, 122, 255, 0.35);
 
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 300ms ease;
   --transition-slow: 500ms ease;
 }
+
 
 /* === CSS Reset === */
 *, *::before, *::after {
@@ -144,7 +145,7 @@ p {
 .bg-glow--primary {
   width: 300px;
   height: 300px;
-  background: rgba(0, 194, 255, 0.12);
+  background: rgba(0, 122, 255, 0.07);
   top: -80px;
   right: -80px;
 }
@@ -152,7 +153,7 @@ p {
 .bg-glow--accent {
   width: 250px;
   height: 250px;
-  background: rgba(124, 58, 237, 0.1);
+  background: rgba(124, 58, 237, 0.06);
   bottom: -60px;
   left: -60px;
 }
@@ -164,7 +165,7 @@ p {
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   width: 100%;
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
 }
 
 /* === Button Components === */
@@ -211,13 +212,13 @@ p {
 }
 
 .btn--secondary {
-  background: transparent;
+  background: var(--color-bg-elevated);
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
 }
 
 .btn--secondary:not(:disabled):active {
-  background: var(--color-bg-elevated);
+  background: #E5E7EB;
 }
 
 .btn--ghost {
@@ -430,8 +431,8 @@ p {
 
 /* === Voucher Card === */
 .voucher-card {
-  background: linear-gradient(135deg, #1C1C26, #16162A);
-  border: 1px dashed rgba(0, 194, 255, 0.4);
+  background: linear-gradient(135deg, #F0F9FF, #F5F0FF);
+  border: 2px dashed rgba(0, 122, 255, 0.35);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   text-align: center;
@@ -445,20 +446,21 @@ p {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #007AFF, #7C3AED, transparent);
 }
 
 .voucher-code {
   font-size: var(--font-size-xl);
   font-weight: 800;
   letter-spacing: 0.15em;
-  color: var(--color-primary);
-  background: var(--color-bg-elevated);
+  color: #007AFF;
+  background: rgba(0, 122, 255, 0.08);
   border-radius: var(--radius-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   margin: var(--spacing-md) 0;
   font-variant-numeric: tabular-nums;
+  border: 1px solid rgba(0, 122, 255, 0.15);
 }
 
 /* === Textarea (text input alternative) === */

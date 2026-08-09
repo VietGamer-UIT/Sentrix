@@ -41,9 +41,6 @@ function Layout() {
           <div style={{ fontWeight: 700, color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
             {tenantName}
           </div>
-          <div style={{ textTransform: 'capitalize' }}>
-            Gói {tenantPlan} · {tenant?.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
-          </div>
         </div>
 
         <div className="nav-separator" />
