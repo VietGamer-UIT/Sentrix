@@ -54,7 +54,7 @@ export function useFeedbacks(tenantId = TENANT_ID) {
 
     // Thật: onSnapshot realtime
     const ref = collection(db, `tenants/${tenantId}/feedbacks`)
-    const q   = query(ref, orderBy('timestamp', 'desc'), limit(100))
+    const q   = query(ref, orderBy('timestamp', 'desc'), limit(50))
 
     const unsub = onSnapshot(
       q,
@@ -96,7 +96,7 @@ export function useCustomers(tenantId = TENANT_ID) {
     }
 
     const ref = collection(db, `tenants/${tenantId}/customers`)
-    const q   = query(ref, orderBy('p_churn', 'desc'), limit(50))
+    const q   = query(ref, orderBy('p_churn', 'desc'), limit(30))
 
     const unsub = onSnapshot(
       q,

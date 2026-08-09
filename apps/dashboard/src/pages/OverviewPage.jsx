@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, PieChart, Pie
@@ -148,7 +149,7 @@ export default function OverviewPage() {
           <div className="kpi-value" style={{ color: sarcasmCount > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>
             {sarcasmCount}
           </div>
-          <div className="kpi-sub">AI Fusion phát hiện sarcasm</div>
+          <div className="kpi-sub">AI phát hiện mỉa mai</div>
         </div>
       </div>
 
@@ -156,7 +157,7 @@ export default function OverviewPage() {
       <div className="grid-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
         <div className="card">
           <div className="card-header">
-            <span className="card-title">📊 Cảm xúc theo khía cạnh</span>
+            <span className="card-title">Cảm xúc theo khía cạnh</span>
             <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
               {doneFeedbacks.length} phản hồi
             </span>
@@ -186,7 +187,7 @@ export default function OverviewPage() {
         </div>
 
         <div className="card">
-          <div className="card-header"><span className="card-title">🎯 Phân bổ cảm xúc</span></div>
+          <div className="card-header"><span className="card-title">Phân bổ cảm xúc</span></div>
           {pieData.length === 0 ? (
             <div className="empty-state"><div className="empty-state-icon">📭</div><p>Chưa có dữ liệu</p></div>
           ) : (
@@ -217,8 +218,8 @@ export default function OverviewPage() {
       {/* Recent Feedbacks */}
       <div className="card">
         <div className="card-header">
-          <span className="card-title">🔔 Phản hồi mới nhất</span>
-          <a href="/feedbacks" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none' }}>Xem tất cả →</a>
+          <span className="card-title">Phản hồi mới nhất</span>
+          <Link to="/feedbacks" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none' }}>Xem tất cả</Link>
         </div>
         {recentFeedbacks.length === 0 ? (
           <div className="empty-state">

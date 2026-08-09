@@ -44,7 +44,8 @@ export const SPIN_PRIZES = [
   },
   {
     id: 'uong_mien_phi',
-    label: 'Uống miễn phí',
+    label: 'Voucher\nuống', // Hiện trên wheel: 2 dòng
+    prizeLabel: 'Voucher uống miễn phí lần sau',
     color: '#EF4444',
     probability: 0.05,
     voucherTemplate: (phone) => `SENTRIX-FREE-${phone.slice(-4).toUpperCase()}`

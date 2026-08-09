@@ -276,7 +276,7 @@ body {
 .kpi-value {
   font-size: var(--font-size-2xl);
   font-weight: 800;
-  color: var(--color-text-primary);
+  color: #FFFFFF;
   line-height: 1.1;
 }
 

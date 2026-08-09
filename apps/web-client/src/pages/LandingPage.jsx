@@ -1,133 +1,178 @@
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import RecordingOverlay from '../components/RecordingOverlay.jsx'
 
 /**
  * LandingPage — Bước 2 trong user-flow.md
  *
- * UX Requirements (từ user-flow.md):
- * - Hiển thị tên quán + vị trí (đọc từ QR query params)
- * - Single primary action: NÚT GHI ÂM lớn ở trung tâm
- * - Nút gõ text là secondary action (nhỏ hơn)
- * - Không yêu cầu đăng nhập, không cần tải app
- * - Tải dưới 2 giây, giao diện tối giản
- *
- * Rủi ro (user-flow.md): QR không nổi bật, không có CTA đủ hấp dẫn
- * Giải pháp: Thông điệp kích thích "10 giây", gamification hint
- *
- * TODO: Khi Tuyền implement GET /api/tenants/{tenant_id}/info
- *       → fetch businessName thật thay vì fallback hard-code
+ * Giai đoạn BUG FIX:
+ * - KHÔNG redirect sang /record — mở overlay thu âm ngay tại trang này
+ * - Copywriting chuẩn: "Nhấn để nói", "15 giây", ngắt dòng đúng
+ * - Logo SVG inline chất lượng cao
+ * - Bỏ bớt icon thừa
+ * - Anti-spam: đọc sessionStorage để block spin nếu is_suspicious
  */
 function LandingPage() {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const [showOverlay, setShowOverlay] = useState(false)
+  const [overlayMode, setOverlayMode] = useState('audio')
 
-  const tenantId = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
-  const location = searchParams.get('location') || 'Bàn 1'
-
-  // TODO: Fetch từ API khi có endpoint. Hiện tại hard-code tên demo.
+  const tenantId  = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
+  const location  = searchParams.get('location') || 'Bàn 1'
   const businessName = 'Phở Bà Lan'
 
-  const goToRecord = (mode) => {
-    navigate(`/record?tenant_id=${tenantId}&location=${encodeURIComponent(location)}&mode=${mode}`)
+  // Xóa kết quả API cũ khi vào trang mới
+  useEffect(() => {
+    sessionStorage.removeItem('sentrix_api_result')
+    sessionStorage.removeItem('sentrix_is_suspicious')
+  }, [])
+
+  const openOverlay = (mode) => {
+    setOverlayMode(mode)
+    setShowOverlay(true)
   }
 
   return (
-    <div className="page">
-      <div className="bg-glow bg-glow--primary" />
-      <div className="bg-glow bg-glow--accent" />
+    <>
+      <div className="page">
+        <div className="bg-glow bg-glow--primary" />
+        <div className="bg-glow bg-glow--accent" />
 
-      <div className="page-content">
+        <div className="page-content">
 
-        {/* Logo Sentrix nhỏ phía trên */}
-        <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/sentrix-logo.png" alt="Sentrix Logo" width="28" height="28" style={{ borderRadius: '8px' }} />
-          <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', fontWeight: 600 }}>
-            Sentrix
-          </span>
-        </div>
-
-        {/* Tên quán + Vị trí */}
-        <div style={{ textAlign: 'center' }} className="fade-up fade-up--delay-1">
-          <h1 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 10 }}>
-            {businessName}
-          </h1>
-          <span className="chip chip--location">📍 {decodeURIComponent(location)}</span>
-        </div>
-
-        {/* Card CTA chính */}
-        <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
-
-          {/* Headline kích thích */}
-          <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
-            <p style={{
+          {/* Logo Sentrix */}
+          <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <SentrixLogoSVG size={32} />
+            <span style={{
               fontSize: 'var(--font-size-lg)',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)',
-              lineHeight: 1.4,
-              marginBottom: 6
+              fontWeight: 800,
+              background: 'linear-gradient(135deg, #007AFF, #7C3AED)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.03em',
             }}>
-              Cảm nhận của bạn hôm nay? 😊
-            </p>
-            <p style={{ fontSize: 'var(--font-size-sm)' }}>
-              Chỉ <strong style={{ color: 'var(--color-primary)' }}>10 giây</strong>{' '}
-              — có cơ hội nhận{' '}
-              <strong style={{ color: '#F59E0B' }}>voucher miễn phí</strong> ngay!
-            </p>
+              Sentrix
+            </span>
           </div>
 
-          {/* Nút ghi âm — Primary Action lớn ở trung tâm */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+          {/* Tên quán + Vị trí */}
+          <div style={{ textAlign: 'center' }} className="fade-up fade-up--delay-1">
+            <h1 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 10, color: 'var(--color-text-primary)' }}>
+              {businessName}
+            </h1>
+            <span className="chip chip--location">{decodeURIComponent(location)}</span>
+          </div>
+
+          {/* Card CTA chính */}
+          <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
+
+            {/* Headline — ngắt dòng đúng theo UX spec */}
+            <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
+              <p style={{
+                fontSize: 'var(--font-size-lg)',
+                fontWeight: 700,
+                color: 'var(--color-text-primary)',
+                lineHeight: 1.4,
+                marginBottom: 8
+              }}>
+                Cảm nhận của bạn hôm nay?
+              </p>
+              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
+                Chỉ <strong style={{ color: 'var(--color-primary)' }}>15 giây</strong> — có cơ hội nhận ngay<br />
+                <strong style={{ color: '#F59E0B', fontSize: 'var(--font-size-base)' }}>VOUCHER MIỄN PHÍ!</strong>
+              </p>
+            </div>
+
+            {/* Nút ghi âm — Primary Action */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+              <button
+                id="btn-record-voice"
+                className="btn-record"
+                onClick={() => openOverlay('audio')}
+                aria-label="Nhấn để ghi âm phản hồi"
+              >
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                  stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                  <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+              </button>
+              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: 4 }}>
+                Nhấn để nói — tối đa 15 giây
+              </p>
+            </div>
+
+            {/* Divider */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)',
+              margin: 'var(--spacing-lg) 0'
+            }}>
+              <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
+              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>HOẶC</span>
+              <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
+            </div>
+
+            {/* Nút gõ text — Secondary */}
             <button
-              id="btn-record-voice"
-              className="btn-record"
-              onClick={() => goToRecord('audio')}
-              aria-label="Bấm để ghi âm phản hồi"
+              id="btn-input-text"
+              className="btn btn--secondary"
+              onClick={() => openOverlay('text')}
             >
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                   stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="23"/>
-                <line x1="8" y1="23" x2="16" y2="23"/>
-              </svg>
+              Thích gõ hơn? Gõ tại đây
             </button>
-            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
-              Bấm và nói (tối đa 15 giây)
-            </p>
           </div>
 
-          {/* Divider */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)',
-            margin: 'var(--spacing-lg) 0'
+          {/* Cam kết bảo mật — tách dòng rõ */}
+          <p className="fade-up fade-up--delay-3" style={{
+            fontSize: 'var(--font-size-xs)',
+            color: 'var(--color-text-muted)',
+            textAlign: 'center',
+            lineHeight: 2,
           }}>
-            <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>HOẶC</span>
-            <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-          </div>
+            Không cần đăng nhập · Không cần tải app<br/>
+            Phản hồi hoàn toàn ẩn danh<br/>
+            Không chia sẻ thông tin cho bên thứ ba
+          </p>
 
-          {/* Nút gõ text — Secondary Action */}
-          <button
-            id="btn-input-text"
-            className="btn btn--secondary"
-            onClick={() => goToRecord('text')}
-          >
-            ✍️&nbsp; Thích gõ hơn? Gõ tại đây
-          </button>
         </div>
-
-        {/* Cam kết bảo mật — giải tỏa lo ngại về privacy */}
-        <p className="fade-up fade-up--delay-3" style={{
-          fontSize: 'var(--font-size-xs)',
-          color: 'var(--color-text-muted)',
-          textAlign: 'center',
-          lineHeight: 1.8
-        }}>
-          🔒 Không cần đăng nhập · Không cần tải app
-          <br/>Phản hồi hoàn toàn ẩn danh
-        </p>
-
       </div>
-    </div>
+
+      {/* Recording Overlay — hiển thị đè lên trang, không redirect */}
+      {showOverlay && (
+        <RecordingOverlay
+          tenantId={tenantId}
+          location={location}
+          initialMode={overlayMode}
+          onClose={() => setShowOverlay(false)}
+        />
+      )}
+    </>
+  )
+}
+
+/** Logo SVG inline — chuẩn chất lượng cao */
+export function SentrixLogoSVG({ size = 32 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <defs>
+        <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#007AFF"/>
+          <stop offset="100%" stopColor="#7C3AED"/>
+        </linearGradient>
+      </defs>
+      <rect width="64" height="64" rx="16" fill="url(#logo-grad)"/>
+      {/* Mic body */}
+      <rect x="26" y="12" width="12" height="22" rx="6" fill="white"/>
+      {/* Mic stand arc */}
+      <path d="M18 30c0 7.7 6.3 14 14 14s14-6.3 14-14"
+        stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+      {/* Stand line + base */}
+      <line x1="32" y1="44" x2="32" y2="50" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="25" y1="50" x2="39" y2="50" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+    </svg>
   )
 }
 
