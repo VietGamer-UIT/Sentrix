@@ -53,8 +53,8 @@ Không tự sáng tác thêm tính năng. Đây là nguồn sự thật duy nh�
 ## ✅ CHECKLIST CÔNG VIỆC (Tuấn)
 
 - [x] Giai đoạn 1: Cập nhật tài liệu minh bạch về thay đổi phân công
-- [ ] Giai đoạn 2: Dựng khung React (Vite) cho `web-client/`
-- [ ] Giai đoạn 3: Build đủ 5 màn hình `web-client/` theo `user-flow.md`
-- [ ] Giai đoạn 4: Nối `web-client/` với `POST /api/v1/feedback` thật
-- [ ] Giai đoạn 5: Build `dashboard/` với mock data khớp schema Firestore
-- [ ] Giai đoạn 6: Nối `dashboard/` với Firestore thật (chờ Tuyền báo sẵn sàng)
+- [x] Giai đoạn 2: Dựng khung React (Vite) cho `web-client/`
+- [x] Giai đoạn 3: Build đủ 5 màn hình `web-client/` theo `user-flow.md`
+- [x] Giai đoạn 4: Nối `web-client/` với `POST /api/v1/feedback` thật
+- [x] Giai đoạn 5: Build `dashboard/` với mock data khớp schema Firestore
+- [x] Giai đoạn 6: Kết nối `dashboard/` Firebase thật — onSnapshot Firestore, Google Sign-In, `sentrix-demo-164`
