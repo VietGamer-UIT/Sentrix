@@ -168,21 +168,21 @@ export default function OverviewPage() {
               <p>Chưa có dữ liệu phân tích</p>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={aspectData} layout="vertical" margin={{ left: 10, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis type="number" domain={[-1, 1]} tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11 }} tickFormatter={v => v.toFixed(1)} />
-                <YAxis type="category" dataKey="label" tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 11 }} width={95} />
-                <Tooltip
-                  contentStyle={{ background: '#141720', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}
-                  formatter={(val) => [val.toFixed(2), 'Điểm TB']}
-                />
-                <Bar dataKey="avgScore" radius={[0, 4, 4, 0]}>
-                  {aspectData.map((entry, i) => <Cell key={i} fill={scoreToColor(entry.avgScore)} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={aspectData} layout="vertical" margin={{ left: 10, right: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                  <XAxis type="number" domain={[-1, 1]} tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} tickFormatter={v => v.toFixed(1)} />
+                  <YAxis type="category" dataKey="label" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} width={95} />
+                  <Tooltip
+                    contentStyle={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}
+                    labelStyle={{ color: 'var(--color-text-primary)', fontWeight: 700 }}
+                    formatter={(val) => [val.toFixed(2), 'Điểm TB']}
+                  />
+                  <Bar dataKey="avgScore" radius={[0, 4, 4, 0]}>
+                    {aspectData.map((entry, i) => <Cell key={i} fill={scoreToColor(entry.avgScore)} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
           )}
         </div>
 
@@ -196,17 +196,17 @@ export default function OverviewPage() {
                 <PieChart>
                   <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} innerRadius={45} dataKey="value" paddingAngle={3}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={{ stroke: 'rgba(255,255,255,0.2)' }}>
+                    labelLine={{ stroke: 'rgba(0,0,0,0.15)' }}>
                     {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#141720', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }} formatter={(val) => [`${val} phản hồi`]} />
+                  <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }} formatter={(val) => [`${val} phản hồi`]} />
                 </PieChart>
               </ResponsiveContainer>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-md)', flexWrap: 'wrap' }}>
                 {pieData.map(d => (
                   <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--font-size-xs)' }}>
                     <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color }} />
-                    <span style={{ color: 'var(--color-text-secondary)' }}>{d.name}: <strong>{d.value}</strong></span>
+                    <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{d.name}: <strong style={{ color: 'var(--color-text-primary)' }}>{d.value}</strong></span>
                   </div>
                 ))}
               </div>
@@ -231,11 +231,11 @@ export default function OverviewPage() {
             {recentFeedbacks.map(fb => {
               const sl = sentimentLabel(fb.sentiment_score ?? 0)
               return (
-                <div key={fb.feedback_id} style={{
-                  display: 'flex', gap: 'var(--spacing-md)', alignItems: 'flex-start',
-                  padding: 'var(--spacing-md)', borderRadius: 'var(--radius-md)',
-                  background: 'rgba(255,255,255,0.025)', border: '1px solid var(--color-border)'
-                }}>
+                  <div key={fb.feedback_id} style={{
+                    display: 'flex', gap: 'var(--spacing-md)', alignItems: 'flex-start',
+                    padding: 'var(--spacing-md)', borderRadius: 'var(--radius-md)',
+                    background: '#FAFBFF', border: '1px solid var(--color-border)'
+                  }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: scoreToColor(fb.sentiment_score ?? 0), marginTop: 6, flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', flexWrap: 'wrap', marginBottom: 6 }}>

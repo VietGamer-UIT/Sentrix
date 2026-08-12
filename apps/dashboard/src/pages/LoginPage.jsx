@@ -1,14 +1,13 @@
 /**
  * LoginPage.jsx — Màn hình đăng nhập Dashboard Sentrix
  *
- * Giai đoạn 6: Demo Google Sign-In để bảo vệ dashboard
- * Sau khi đăng nhập, user sẽ được redirect về / (OverviewPage)
- *
- * Design: Dark mode, glassmorphism — khớp với index.css
+ * Light Theme: card trắng, nền #F5F6FA, accent #4880FF
+ * Logo: SVG inline (không cần file ảnh)
  */
 
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
+import { SentrixOwlSVG } from '../components/Layout.jsx'
 
 export default function LoginPage() {
   const { loginWithGoogle } = useAuth()
@@ -20,7 +19,6 @@ export default function LoginPage() {
     setError(null)
     try {
       await loginWithGoogle()
-      // onAuthStateChanged trong AuthContext sẽ tự cập nhật user → App.jsx redirect
     } catch (err) {
       console.error('[Login] Lỗi đăng nhập:', err)
       if (err.code === 'auth/popup-closed-by-user') {
@@ -40,22 +38,24 @@ export default function LoginPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--color-bg-main)',
+      background: 'var(--color-bg)',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Background glow decorations */}
+      {/* Background decorations — nhẹ nhàng phong cách DashStack */}
       <div style={{
-        position: 'absolute', top: '15%', left: '20%',
-        width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(0,194,255,0.08) 0%, transparent 70%)',
+        position: 'absolute', top: '10%', right: '10%',
+        width: 300, height: 300,
+        background: 'radial-gradient(circle, rgba(72,128,255,0.07) 0%, transparent 70%)',
         pointerEvents: 'none',
+        borderRadius: '50%',
       }} />
       <div style={{
-        position: 'absolute', bottom: '20%', right: '15%',
-        width: 300, height: 300,
-        background: 'radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)',
+        position: 'absolute', bottom: '15%', left: '10%',
+        width: 250, height: 250,
+        background: 'radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)',
         pointerEvents: 'none',
+        borderRadius: '50%',
       }} />
 
       {/* Login Card */}
@@ -67,28 +67,30 @@ export default function LoginPage() {
         background: 'var(--color-bg-card)',
         border: '1px solid var(--color-border)',
         borderRadius: 'var(--radius-lg)',
-        boxShadow: '0 32px 80px rgba(0,0,0,0.4)',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
         textAlign: 'center',
       }}>
         {/* Logo */}
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 72, height: 72, objectFit: 'contain', marginBottom: 'var(--spacing-md)' }} />
-
-          <h1 style={{
-            fontSize: '1.75rem',
-            fontWeight: 800,
-            background: 'linear-gradient(135deg, #00C2FF 0%, #7C3AED 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            margin: 0,
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: 12, marginBottom: 'var(--spacing-md)',
           }}>
-            Sentrix Dashboard
-          </h1>
+            <SentrixOwlSVG size={56} />
+            <h1 style={{
+              fontSize: '2rem',
+              fontWeight: 800,
+              color: 'var(--color-primary)',
+              margin: 0,
+              letterSpacing: '-0.02em',
+            }}>
+              Sentrix
+            </h1>
+          </div>
           <p style={{
-            marginTop: 'var(--spacing-sm)',
             color: 'var(--color-text-muted)',
             fontSize: 'var(--font-size-sm)',
+            fontWeight: 600,
           }}>
             Phân tích phản hồi khách hàng · AI-powered
           </p>
@@ -105,6 +107,7 @@ export default function LoginPage() {
           fontSize: 'var(--font-size-sm)',
           color: 'var(--color-text-secondary)',
           marginBottom: 'var(--spacing-lg)',
+          fontWeight: 500,
         }}>
           Đăng nhập để xem báo cáo và quản lý phản hồi
         </p>
@@ -114,12 +117,13 @@ export default function LoginPage() {
           <div style={{
             padding: 'var(--spacing-md)',
             marginBottom: 'var(--spacing-md)',
-            background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.3)',
+            background: 'rgba(239,68,68,0.06)',
+            border: '1px solid rgba(239,68,68,0.2)',
             borderRadius: 'var(--radius-md)',
             fontSize: 'var(--font-size-xs)',
             color: 'var(--color-danger)',
             textAlign: 'left',
+            fontWeight: 600,
           }}>
             ⚠️ {error}
           </div>
@@ -127,6 +131,7 @@ export default function LoginPage() {
 
         {/* Google Sign-In Button */}
         <button
+          id="btn-login-google"
           onClick={handleLogin}
           disabled={loading}
           style={{
@@ -136,24 +141,25 @@ export default function LoginPage() {
             justifyContent: 'center',
             gap: 'var(--spacing-md)',
             padding: '14px var(--spacing-lg)',
-            background: loading ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)',
+            background: loading ? '#F0F2F5' : '#FFFFFF',
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-md)',
             color: loading ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
             fontSize: 'var(--font-size-sm)',
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: loading ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--font-family)',
             transition: 'all 0.2s ease',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
           }}
-          onMouseOver={e => { if (!loading) e.currentTarget.style.background = 'rgba(255,255,255,0.12)' }}
-          onMouseOut={e => { if (!loading) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+          onMouseOver={e => { if (!loading) { e.currentTarget.style.background = '#F5F6FA'; e.currentTarget.style.borderColor = 'var(--color-primary)' } }}
+          onMouseOut={e => { if (!loading) { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = 'var(--color-border)' } }}
         >
           {loading ? (
             <>
               <span style={{
                 width: 18, height: 18,
-                border: '2px solid rgba(255,255,255,0.2)',
+                border: '2px solid var(--color-border)',
                 borderTopColor: 'var(--color-primary)',
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
@@ -178,7 +184,7 @@ export default function LoginPage() {
         {/* Footer note */}
         <p style={{
           marginTop: 'var(--spacing-xl)',
-          fontSize: '0.7rem',
+          fontSize: '0.68rem',
           color: 'var(--color-text-muted)',
           lineHeight: 1.6,
         }}>
@@ -189,10 +195,10 @@ export default function LoginPage() {
         {/* AISC badge */}
         <div style={{
           marginTop: 'var(--spacing-lg)',
-          padding: '6px 12px',
+          padding: '5px 12px',
           display: 'inline-block',
-          background: 'linear-gradient(135deg, rgba(0,194,255,0.1), rgba(124,58,237,0.1))',
-          border: '1px solid rgba(0,194,255,0.2)',
+          background: 'rgba(72,128,255,0.06)',
+          border: '1px solid rgba(72,128,255,0.15)',
           borderRadius: 20,
           fontSize: '0.65rem',
           color: 'var(--color-primary)',

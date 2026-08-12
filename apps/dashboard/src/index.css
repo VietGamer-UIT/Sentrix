@@ -1,44 +1,52 @@
 /* ============================================================
-   Sentrix Dashboard — Design System
-   Dark mode. Professional. Data-dense.
+   Sentrix Dashboard — Design System (Light Theme)
+   Phong cách DashStack: nền sáng, sidebar trắng, accent #4880FF
+   Giữ nguyên nội dung KPI, charts, AI analysis của Sentrix
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
-/* === CSS Variables (Design Tokens) === */
+/* === CSS Variables (Light Theme — DashStack inspired) === */
 :root {
-  /* Colors */
-  --color-bg:           #0D0F14;
-  --color-bg-card:      #141720;
-  --color-bg-card-hover:#181C26;
-  --color-bg-sidebar:   #10131A;
-  --color-border:       rgba(255,255,255,0.07);
-  --color-border-focus: rgba(0,194,255,0.4);
+  /* === Màu nền (Light) === */
+  --color-bg:           #F5F6FA;
+  --color-bg-card:      #FFFFFF;
+  --color-bg-elevated:  #FBFCFF;
+  --color-bg-sidebar:   #FFFFFF;
+  --color-border:       #E0E0E0;
+  --color-border-light: #D5D5D5;
+  --color-border-focus: rgba(72, 128, 255, 0.4);
 
-  --color-primary:   #00C2FF;
+  /* === Accent màu sắc (DashStack #4880FF) === */
+  --color-primary:   #4880FF;
+  --color-primary-dark: #3368E0;
+  --color-primary-light: rgba(72, 128, 255, 0.08);
   --color-accent:    #7C3AED;
-  --color-success:   #10B981;
-  --color-warning:   #F59E0B;
+
+  /* === Sentiment / Trạng thái === */
+  --color-success:   #00B69B;
+  --color-warning:   #FFA412;
   --color-danger:    #EF4444;
-  --color-neutral:   #6B7280;
+  --color-neutral:   #9CA3AF;
 
-  /* Sentiment colors */
-  --color-positive:  #10B981;
+  /* === Sentiment (phân tích AI) === */
+  --color-positive:  #00B69B;
   --color-negative:  #EF4444;
-  --color-neutral-s: #6B7280;
+  --color-neutral-s: #9CA3AF;
 
-  /* Churn risk colors */
+  /* === Churn risk === */
   --color-risk-high:   #EF4444;
-  --color-risk-medium: #F59E0B;
-  --color-risk-low:    #10B981;
+  --color-risk-medium: #FFA412;
+  --color-risk-low:    #00B69B;
 
-  /* Text */
-  --color-text-primary:   rgba(255,255,255,0.92);
-  --color-text-secondary: rgba(255,255,255,0.60);
-  --color-text-muted:     rgba(255,255,255,0.35);
+  /* === Text (Light mode) === */
+  --color-text-primary:   #202224;
+  --color-text-secondary: #404040;
+  --color-text-muted:     #808080;
+  --color-text-disabled:  #BCBCBC;
 
-  /* Typography */
-  --font-family:     'Be Vietnam Pro', system-ui, sans-serif;
+  /* === Typography === */
+  --font-family:     'Nunito Sans', 'Be Vietnam Pro', system-ui, sans-serif;
   --font-size-xs:    0.70rem;
   --font-size-sm:    0.82rem;
   --font-size-base:  0.93rem;
@@ -47,7 +55,7 @@
   --font-size-xl:    1.50rem;
   --font-size-2xl:   2.00rem;
 
-  /* Spacing */
+  /* === Spacing === */
   --spacing-xs:  4px;
   --spacing-sm:  8px;
   --spacing-md:  16px;
@@ -55,14 +63,19 @@
   --spacing-xl:  32px;
   --spacing-2xl: 48px;
 
-  /* Layout */
-  --sidebar-width: 230px;
-  --header-height: 60px;
+  /* === Layout === */
+  --sidebar-width: 240px;
+  --header-height: 64px;
   --radius-sm:  6px;
   --radius-md:  10px;
   --radius-lg:  16px;
 
-  /* Transitions */
+  /* === Shadows (Light mode) === */
+  --shadow-card:    0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-sidebar: 2px 0 12px rgba(0, 0, 0, 0.06);
+  --shadow-button:  0 4px 16px rgba(72, 128, 255, 0.35);
+
+  /* === Transitions === */
   --transition: 0.18s ease;
 }
 
@@ -93,6 +106,7 @@ body {
   min-height: 100vh;
   background: var(--color-bg-sidebar);
   border-right: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sidebar);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -111,11 +125,10 @@ body {
 }
 
 .sidebar-logo-text {
-  font-size: var(--font-size-lg);
+  font-size: 1.25rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
 }
 
 .sidebar-nav {
@@ -129,12 +142,12 @@ body {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 10px var(--spacing-md);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition);
@@ -142,20 +155,21 @@ body {
   background: none;
   width: 100%;
   text-align: left;
+  letter-spacing: 0.02em;
 }
 
 .nav-item:hover {
-  background: rgba(0,194,255,0.07);
-  color: var(--color-text-primary);
+  background: rgba(72, 128, 255, 0.06);
+  color: var(--color-primary);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(0,194,255,0.12), rgba(124,58,237,0.08));
-  color: var(--color-primary);
-  border: 1px solid rgba(0,194,255,0.15);
+  background: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(72, 128, 255, 0.3);
 }
 
-.nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+.nav-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
 
 .nav-separator {
   height: 1px;
@@ -175,8 +189,9 @@ body {
 /* === Top Header === */
 .top-header {
   height: var(--header-height);
-  background: var(--color-bg-sidebar);
+  background: var(--color-bg-card);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -210,8 +225,8 @@ body {
   align-items: center;
   gap: 6px;
   padding: 3px 10px;
-  background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.25);
+  background: rgba(0, 182, 155, 0.1);
+  border: 1px solid rgba(0, 182, 155, 0.25);
   border-radius: 20px;
   font-size: var(--font-size-xs);
   color: var(--color-success);
@@ -248,27 +263,28 @@ body {
   gap: var(--spacing-xs);
   position: relative;
   overflow: hidden;
-  transition: border-color var(--transition), transform var(--transition);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-card);
 }
 
 .kpi-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-  opacity: 0.5;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), #7C3AED);
 }
 
 .kpi-card:hover {
-  border-color: rgba(0,194,255,0.2);
+  border-color: rgba(72, 128, 255, 0.3);
   transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .kpi-label {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -276,7 +292,7 @@ body {
 .kpi-value {
   font-size: var(--font-size-2xl);
   font-weight: 800;
-  color: #FFFFFF;
+  color: var(--color-text-primary);
   line-height: 1.1;
 }
 
@@ -294,6 +310,7 @@ body {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .card-header {
@@ -308,6 +325,7 @@ body {
 .card-title {
   font-size: var(--font-size-md);
   font-weight: 700;
+  color: var(--color-text-primary);
 }
 
 /* === Table === */
@@ -326,11 +344,12 @@ th {
   padding: var(--spacing-sm) var(--spacing-md);
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
+  background: #FAFBFF;
 }
 
 td {
@@ -343,7 +362,7 @@ td {
 tr:last-child td { border-bottom: none; }
 
 tr:hover td {
-  background: rgba(0,194,255,0.025);
+  background: rgba(72, 128, 255, 0.03);
   color: var(--color-text-primary);
 }
 
@@ -352,28 +371,28 @@ tr:hover td {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 20px;
   font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .sentiment-badge--positive {
-  background: rgba(16,185,129,0.12);
+  background: rgba(0, 182, 155, 0.10);
   color: var(--color-positive);
-  border: 1px solid rgba(16,185,129,0.2);
+  border: 1px solid rgba(0, 182, 155, 0.2);
 }
 
 .sentiment-badge--negative {
-  background: rgba(239,68,68,0.10);
+  background: rgba(239, 68, 68, 0.08);
   color: var(--color-negative);
-  border: 1px solid rgba(239,68,68,0.2);
+  border: 1px solid rgba(239, 68, 68, 0.15);
 }
 
 .sentiment-badge--neutral {
-  background: rgba(107,114,128,0.12);
+  background: rgba(156, 163, 175, 0.10);
   color: var(--color-neutral);
-  border: 1px solid rgba(107,114,128,0.2);
+  border: 1px solid rgba(156, 163, 175, 0.2);
 }
 
 /* === Churn Risk Badge === */
@@ -390,46 +409,47 @@ tr:hover td {
 }
 
 .risk-badge--high {
-  background: rgba(239,68,68,0.12);
+  background: rgba(239, 68, 68, 0.10);
   color: var(--color-risk-high);
-  border: 1px solid rgba(239,68,68,0.25);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   animation: risk-pulse 2s ease-in-out infinite;
 }
 
 .risk-badge--medium {
-  background: rgba(245,158,11,0.10);
+  background: rgba(255, 164, 18, 0.10);
   color: var(--color-risk-medium);
-  border: 1px solid rgba(245,158,11,0.2);
+  border: 1px solid rgba(255, 164, 18, 0.2);
 }
 
 .risk-badge--low {
-  background: rgba(16,185,129,0.08);
+  background: rgba(0, 182, 155, 0.08);
   color: var(--color-risk-low);
-  border: 1px solid rgba(16,185,129,0.15);
+  border: 1px solid rgba(0, 182, 155, 0.15);
 }
 
 @keyframes risk-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.25); }
-  50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
 }
 
 /* === Status Badge === */
-.status-badge--done       { color: var(--color-success); }
-.status-badge--processing { color: var(--color-warning); }
+.status-badge--done       { color: var(--color-success); font-weight: 600; }
+.status-badge--processing { color: var(--color-warning); font-weight: 600; }
 .status-badge--pending    { color: var(--color-text-muted); }
-.status-badge--error      { color: var(--color-danger); }
+.status-badge--error      { color: var(--color-danger); font-weight: 600; }
 
 /* === Aspect Chip === */
 .aspect-chip {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
-  font-weight: 500;
-  background: rgba(255,255,255,0.06);
+  font-weight: 600;
+  background: #F0F4FF;
   color: var(--color-text-secondary);
+  border: 1px solid #E0E8FF;
   margin: 2px;
 }
 
@@ -443,7 +463,7 @@ tr:hover td {
 .score-bar-track {
   flex: 1;
   height: 6px;
-  background: rgba(255,255,255,0.08);
+  background: var(--color-border);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -460,6 +480,7 @@ tr:hover td {
   font-weight: 700;
   min-width: 40px;
   text-align: right;
+  color: var(--color-text-primary);
 }
 
 /* === Buttons === */
@@ -471,7 +492,7 @@ tr:hover td {
   border-radius: var(--radius-sm);
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
   border: none;
@@ -479,10 +500,11 @@ tr:hover td {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: var(--color-primary);
   color: white;
+  box-shadow: var(--shadow-button);
 }
-.btn--primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn--primary:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
 
 .btn--ghost {
   background: transparent;
@@ -492,19 +514,20 @@ tr:hover td {
 .btn--ghost:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 /* === Grid Layouts === */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacing-lg); }
 
-/* === Scrollbar === */
+/* === Scrollbar (Light mode) === */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,194,255,0.25); }
+::-webkit-scrollbar-track { background: var(--color-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #C0C0C0; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
 
-/* === Fade in animation === */
+/* === Animations === */
 .fade-in { animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
@@ -521,27 +544,31 @@ tr:hover td {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   font-weight: 600;
-  background: rgba(245,158,11,0.12);
+  background: rgba(255, 164, 18, 0.10);
   color: var(--color-warning);
-  border: 1px solid rgba(245,158,11,0.2);
+  border: 1px solid rgba(255, 164, 18, 0.2);
 }
 
-/* ─── Animations ─────────────────────────────── */
+/* ─── Pulse animation ─── */
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.5; transform: scale(0.85); }
 }
 
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* === Recharts override (Light mode) === */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 0, 0, 0.06) !important;
 }
 
-.fade-in {
-  animation: fade-in 0.3s ease forwards;
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #FFFFFF !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  color: var(--color-text-primary) !important;
 }
-
