@@ -72,7 +72,7 @@ export default function LoginPage() {
       }}>
         {/* Logo */}
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-          <img src="/sentrix-logo.png" alt="Sentrix Logo" width="56" height="56" style={{ marginBottom: 'var(--spacing-md)', borderRadius: '12px' }} />
+          <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 72, height: 72, objectFit: 'contain', marginBottom: 'var(--spacing-md)' }} />
 
           <h1 style={{
             fontSize: '1.75rem',
