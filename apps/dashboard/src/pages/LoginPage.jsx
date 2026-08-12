@@ -7,7 +7,6 @@
 
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
-import { SentrixOwlSVG } from '../components/Layout.jsx'
 
 export default function LoginPage() {
   const { loginWithGoogle } = useAuth()
@@ -74,18 +73,9 @@ export default function LoginPage() {
         <div style={{ marginBottom: 'var(--spacing-xl)' }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: 12, marginBottom: 'var(--spacing-md)',
+            marginBottom: 'var(--spacing-md)',
           }}>
-            <SentrixOwlSVG size={56} />
-            <h1 style={{
-              fontSize: '2rem',
-              fontWeight: 800,
-              color: 'var(--color-primary)',
-              margin: 0,
-              letterSpacing: '-0.02em',
-            }}>
-              Sentrix
-            </h1>
+            <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 160, height: 'auto', objectFit: 'contain' }} />
           </div>
           <p style={{
             color: 'var(--color-text-muted)',
