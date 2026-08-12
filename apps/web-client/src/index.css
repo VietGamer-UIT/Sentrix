@@ -8,12 +8,12 @@
 
 /* === CSS Variables — Design Tokens (Light Theme) === */
 :root {
-  /* Brand Colors — giữ nguyên */
-  --color-primary: #007AFF;
-  --color-primary-dark: #0062CC;
-  --color-primary-glow: rgba(0, 122, 255, 0.2);
-  --color-accent: #7C3AED;
-  --color-accent-light: #A78BFA;
+  /* Brand Colors — Khớp với tone màu cú xanh của logo Sentrix.png */
+  --color-primary: #0688A6;
+  --color-primary-dark: #04657B;
+  --color-primary-glow: rgba(6, 136, 166, 0.2);
+  --color-accent: #2CD9E5;
+  --color-accent-light: #79E6E6;
 
   /* Semantic Colors */
   --color-success: #10B981;
