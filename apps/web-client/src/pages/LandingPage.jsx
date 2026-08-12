@@ -40,24 +40,20 @@ function LandingPage() {
 
         <div className="page-content">
 
-          {/* Logo Sentrix */}
+          {/* Logo Sentrix — SVG inline, không cần file ảnh */}
           <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img
-            src="/sentrix-logo.png"
-            alt="Sentrix"
-            style={{ width: 36, height: 36, objectFit: 'contain', flexShrink: 0 }}
-          />
-          <span style={{
-            fontSize: 'var(--font-size-lg)',
-            fontWeight: 800,
-            background: 'linear-gradient(135deg, #007AFF, #7C3AED)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            letterSpacing: '-0.03em',
-          }}>
-            Sentrix
-          </span>
+            <SentrixOwlSVG size={36} />
+            <span style={{
+              fontSize: 'var(--font-size-lg)',
+              fontWeight: 800,
+              background: 'linear-gradient(135deg, #007AFF, #7C3AED)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.03em',
+            }}>
+              Sentrix
+            </span>
           </div>
 
           {/* Tên quán + Vị trí */}
@@ -154,6 +150,47 @@ function LandingPage() {
         />
       )}
     </>
+  )
+}
+
+/** SentrixOwlSVG — Logo cú Sentrix dạng vector inline, không cần file ảnh */
+export function SentrixOwlSVG({ size = 32 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wc-owl-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#007AFF"/>
+          <stop offset="100%" stopColor="#7C3AED"/>
+        </linearGradient>
+      </defs>
+      {/* Body */}
+      <circle cx="32" cy="36" r="22" fill="url(#wc-owl-grad)" />
+      {/* Tai */}
+      <path d="M20 18 L16 8 L26 16 Z" fill="url(#wc-owl-grad)" />
+      <path d="M44 18 L48 8 L38 16 Z" fill="url(#wc-owl-grad)" />
+      {/* Mặt */}
+      <ellipse cx="32" cy="34" rx="16" ry="14" fill="rgba(255,255,255,0.13)" />
+      {/* Mắt trái */}
+      <circle cx="23" cy="29" r="8" fill="white" />
+      <circle cx="23" cy="29" r="4.5" fill="#1E3A8A" />
+      <circle cx="23" cy="29" r="2.5" fill="#000D1F" />
+      <circle cx="25" cy="27" r="1.2" fill="rgba(255,255,255,0.9)" />
+      {/* Mắt phải */}
+      <circle cx="41" cy="29" r="8" fill="white" />
+      <circle cx="41" cy="29" r="4.5" fill="#1E3A8A" />
+      <circle cx="41" cy="29" r="2.5" fill="#000D1F" />
+      <circle cx="43" cy="27" r="1.2" fill="rgba(255,255,255,0.9)" />
+      {/* Mỏ */}
+      <path d="M29 36 L32 40 L35 36 Z" fill="#FFA412" />
+      {/* Chân */}
+      <path d="M25 56 L22 52 L27 52 Z" fill="#FFA412" />
+      <path d="M39 56 L36 52 L41 52 Z" fill="#FFA412" />
+      {/* Network dots */}
+      <circle cx="6" cy="12" r="2" fill="rgba(255,255,255,0.4)" />
+      <circle cx="58" cy="12" r="2" fill="rgba(255,255,255,0.4)" />
+      <line x1="6" y1="12" x2="14" y2="18" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+      <line x1="58" y1="12" x2="50" y2="18" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+    </svg>
   )
 }
 
