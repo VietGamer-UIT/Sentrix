@@ -19,8 +19,8 @@ function Layout() {
   const { user, logout } = useAuth()
   const { tenant }       = useTenant()
 
-  const tenantName = tenant?.business_name ?? '...'
-  const tenantPlan = tenant?.plan ?? '...'
+  const tenantName = tenant?.business_name ?? 'Đang tải...'
+
 
   const currentPage = navItems.find(n =>
     n.end ? location.pathname === '/' : location.pathname.startsWith('/' + n.to.slice(1))
@@ -32,13 +32,13 @@ function Layout() {
       <aside className="sidebar">
         {/* Logo */}
         <div className="sidebar-logo">
-          <img src="/sentrix-logo.png" alt="Sentrix Logo" width="28" height="28" style={{ borderRadius: '8px' }} />
+          <img src="/sentrix-logo.png" alt="Sentrix" width="32" height="32" style={{ borderRadius: '8px', objectFit: 'contain', flexShrink: 0 }} />
           <span className="sidebar-logo-text">Sentrix</span>
         </div>
 
         {/* Tên quán */}
         <div style={{ padding: '0 var(--spacing-lg) var(--spacing-md)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-          <div style={{ fontWeight: 700, color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+          <div style={{ fontWeight: 600, color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {tenantName}
           </div>
         </div>

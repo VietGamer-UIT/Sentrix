@@ -42,18 +42,22 @@ function LandingPage() {
 
           {/* Logo Sentrix */}
           <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <SentrixLogoSVG size={32} />
-            <span style={{
-              fontSize: 'var(--font-size-lg)',
-              fontWeight: 800,
-              background: 'linear-gradient(135deg, #007AFF, #7C3AED)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              letterSpacing: '-0.03em',
-            }}>
-              Sentrix
-            </span>
+          <img
+            src="/sentrix-logo.png"
+            alt="Sentrix"
+            style={{ width: 36, height: 36, objectFit: 'contain', flexShrink: 0 }}
+          />
+          <span style={{
+            fontSize: 'var(--font-size-lg)',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #007AFF, #7C3AED)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.03em',
+          }}>
+            Sentrix
+          </span>
           </div>
 
           {/* Tên quán + Vị trí */}
@@ -150,29 +154,6 @@ function LandingPage() {
         />
       )}
     </>
-  )
-}
-
-/** Logo SVG inline — chuẩn chất lượng cao */
-export function SentrixLogoSVG({ size = 32 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <defs>
-        <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#007AFF"/>
-          <stop offset="100%" stopColor="#7C3AED"/>
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="16" fill="url(#logo-grad)"/>
-      {/* Mic body */}
-      <rect x="26" y="12" width="12" height="22" rx="6" fill="white"/>
-      {/* Mic stand arc */}
-      <path d="M18 30c0 7.7 6.3 14 14 14s14-6.3 14-14"
-        stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-      {/* Stand line + base */}
-      <line x1="32" y1="44" x2="32" y2="50" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="25" y1="50" x2="39" y2="50" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
   )
 }
 
