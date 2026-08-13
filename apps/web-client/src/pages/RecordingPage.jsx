@@ -4,6 +4,44 @@ import { submitFeedback } from '../api/feedback.js'
 
 const MAX_DURATION_SEC = 15
 
+// ─── Client-side fraud pre-check (mirrors backend/api/middleware/fraud_filter.py)
+// Chạy trước khi gửi API — bắt spam ngay lập tức, không chờ backend
+// ────────────────────────────────────────────────────────────────────────────
+const TEXT_MIN_CHARS = 3
+const TEXT_MAX_REPEAT_RATIO = 0.7
+const AUDIO_MIN_BYTES_ESTIMATE = 800 // ~1s WebM Opus @8kbps
+
+function clientFraudCheck(audioBlob, textContent) {
+  // Audio: quá ngắn (< 800 bytes ≈ < 1 giây)
+  if (audioBlob && audioBlob.size < AUDIO_MIN_BYTES_ESTIMATE) {
+    return 'Ghi âm quá ngắn (dưới 1 giây). Vui lòng nói rõ hơn hoặc gõ văn bản.'
+  }
+  // Text: rỗng
+  if (!audioBlob && textContent !== null) {
+    const trimmed = textContent.trim()
+    if (!trimmed) return 'Vui lòng nhập nội dung phản hồi.'
+    if (trimmed.length < TEXT_MIN_CHARS) return 'Phản hồi quá ngắn. Vui lòng viết thêm.'
+    // Text lặp ký tự (aaaaaaa, asdasd)
+    const lower = trimmed.toLowerCase()
+    const charCounts = {}
+    for (const ch of lower) charCounts[ch] = (charCounts[ch] || 0) + 1
+    const maxChar = Object.values(charCounts).reduce((a, b) => Math.max(a, b), 0)
+    if (maxChar / lower.length >= TEXT_MAX_REPEAT_RATIO) {
+      return 'Nội dung có dấu hiệu spam (ký tự lặp lại). Vui lòng nhập phản hồi thật.'
+    }
+    // Pattern lặp (asdaasdaasd)
+    for (let pLen = 1; pLen <= Math.floor(lower.length / 2); pLen++) {
+      const pat = lower.slice(0, pLen)
+      const reps = Math.floor(lower.length / pLen)
+      if (reps >= 3 && pat.repeat(reps) === lower.slice(0, pLen * reps)) {
+        return 'Nội dung có dấu hiệu spam (cụm từ lặp lại). Vui lòng nhập phản hồi thật.'
+      }
+    }
+  }
+  return null // Hợp lệ
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 /**
  * RecordingPage — Bước 3 trong user-flow.md
  *
@@ -136,6 +174,16 @@ function RecordingPage() {
       return
     }
 
+    // === Client-side fraud pre-check (chạy ngay lập tức, không chờ backend) ===
+    const fraudErr = clientFraudCheck(
+      audioBlob || null,
+      showText ? textContent : null,
+    )
+    if (fraudErr) {
+      setError(fraudErr)
+      return // Dừng lại — không navigate, không gửi API
+    }
+
     // Optimistic UI: chuyển sang màn hình xác nhận NGAY — đúng user-flow.md Bước 4
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
 
@@ -146,7 +194,7 @@ function RecordingPage() {
       audioBlob: audioBlob || null,
       textContent: textContent.trim() || null,
       customerPhone: customerPhone.trim() || null,
-      totalSpending: 0, // Giai đoạn tương lai: lấy từ POS/input
+      totalSpending: 0,
     }).then(result => {
       // Lưu kết quả AI vào sessionStorage để ConfirmationPage hiển thị insight
       try {
