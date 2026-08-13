@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react'
 import { useFeedbacks, timeAgo } from '../mocks/useFirestore.js'
 
 const ASPECT_LABELS = {
-  nhan_vien: '👨‍💼 Nhân viên', mon_an: '🍜 Món ăn',
-  khong_gian: '🏠 Không gian', gia_ca: '💰 Giá cả',
-  toc_do_phuc_vu: '⚡ Tốc độ', ve_sinh: '🧹 Vệ sinh', khac: '❓ Khác'
+  nhan_vien: 'Nhân viên', mon_an: 'Món ăn',
+  khong_gian: 'Không gian', gia_ca: 'Giá cả',
+  toc_do_phuc_vu: 'Tốc độ', ve_sinh: 'Vệ sinh', khac: 'Khác'
 }
 
 function scoreToColor(s) {
@@ -81,9 +81,9 @@ export default function FeedbacksPage() {
         </select>
         <select value={filterType} onChange={e => setFilterType(e.target.value)} style={selectStyle}>
           <option value="all">Audio & Text</option>
-          <option value="audio">🎙️ Ghi âm</option>
-          <option value="text">✍️ Văn bản</option>
-          <option value="audio_and_text">🎙️✍️ Cả hai</option>
+          <option value="audio">Ghi âm</option>
+          <option value="text">Văn bản</option>
+          <option value="audio_and_text">Cả hai</option>
         </select>
         <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
           {filtered.length} / {feedbacks.length} kết quả
@@ -130,8 +130,8 @@ export default function FeedbacksPage() {
                       <td style={{ whiteSpace: 'nowrap', color: 'var(--color-text-muted)', fontSize: 'var(--font-size-xs)' }}>
                         {timeAgo(fb.timestamp)}
                       </td>
-                      <td style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-xs)' }}>📍 {fb.location}</td>
-                      <td style={{ fontSize: 'var(--font-size-lg)' }}>{fb.input_type === 'audio' ? '🎙️' : fb.input_type === 'audio_and_text' ? '🎙️✍️' : '✍️'}</td>
+                      <td style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-xs)' }}>{fb.location}</td>
+                      <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>{fb.input_type === 'audio' ? 'Ghi âm' : fb.input_type === 'audio_and_text' ? 'Âm + Chữ' : 'Văn bản'}</td>
                       <td style={{ maxWidth: 280 }}>
                         {fb.processing_status === 'processing' ? (
                           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--font-size-xs)' }}>⏳ Đang phân tích...</span>
@@ -162,7 +162,7 @@ export default function FeedbacksPage() {
                       </td>
                       <td>
                         <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600 }}>
-                          {fb.processing_status === 'done' ? '✅ Xong' : fb.processing_status === 'processing' ? '⏳ Xử lý' : fb.processing_status === 'error' ? '❌ Lỗi' : '⏸️ Chờ'}
+                          {fb.processing_status === 'done' ? 'Xong' : fb.processing_status === 'processing' ? 'Xử lý...' : fb.processing_status === 'error' ? 'Lỗi' : 'Chờ'}
                         </span>
                       </td>
                     </tr>
