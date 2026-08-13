@@ -22,6 +22,11 @@ const ASPECT_LABELS = {
   gia_ca: 'Giá cả', toc_do_phuc_vu: 'Tốc độ PV', ve_sinh: 'Vệ sinh', khac: 'Khác'
 }
 
+const ASPECT_ICONS = {
+  nhan_vien: '👩‍🍳', mon_an: '🍲', khong_gian: '🏪',
+  gia_ca: '💰', toc_do_phuc_vu: '⚡', ve_sinh: '✨', khac: '📌'
+}
+
 function scoreToColor(score) {
   if (score >= 0.3) return 'var(--color-positive)'
   if (score <= -0.3) return 'var(--color-negative)'
