@@ -14,6 +14,25 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
+// ─── Env guard: crash sớm với thông báo rõ ràng thay vì lỗi ngầm ───────────
+const REQUIRED_VARS = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+]
+
+const missing = REQUIRED_VARS.filter(k => !import.meta.env[k])
+if (missing.length > 0) {
+  throw new Error(
+    `[Sentrix] Thiếu biến môi trường Firebase:\n  ${missing.join('\n  ')}\n` +
+    'Kiểm tra file .env tại apps/dashboard/.env (xem .env.example)'
+  )
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
