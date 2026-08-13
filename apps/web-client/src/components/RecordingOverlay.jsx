@@ -26,6 +26,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   const [audioDurationSec, setAudioDurationSec] = useState(0)
   const [error, setError]                     = useState(null)
   const [textContent, setTextContent]         = useState('')
+  // Fix bug double-click: chặn submit 2 lần → duplicate Firestore document
+  const [isSubmitting, setIsSubmitting]       = useState(false)
 
   // SpeechRecognition realtime transcript
   const [liveTranscript, setLiveTranscript]   = useState('')
@@ -148,16 +150,19 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   }
 
   const handleSubmit = () => {
+    if (isSubmitting) return  // chặn double-click
     if (!audioBlob && !textContent.trim()) {
       setError('Vui lòng ghi âm hoặc gõ phản hồi trước khi gửi.')
       return
     }
 
+    setIsSubmitting(true)
+
     // Optimistic: navigate ngay sang /done
     const decodedLocation = decodeURIComponent(location)
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
 
-    // Gửi API ngầm
+    // Gửi API ngầm — isSubmitting không cần reset vì đã navigate đi
     submitFeedback({
       tenantId,
       location: decodedLocation,
@@ -168,7 +173,6 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     }).then(result => {
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
-        // Lưu is_suspicious để SpinPage kiểm tra anti-spam
         if (result.is_suspicious) {
           sessionStorage.setItem('sentrix_is_suspicious', 'true')
         }
@@ -328,12 +332,20 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
             {/* Sau khi có audio */}
             {audioBlob && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 8 }}>
-                <button id="btn-submit-audio" className="btn btn--primary" onClick={handleSubmit}>
-                  Gửi phản hồi
+                <button
+                  id="btn-submit-audio"
+                  className="btn btn--primary"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                >
+                  {isSubmitting ? 'Đang gửi...' : 'Gửi phản hồi'}
                 </button>
-                <button id="btn-retry-record" className="btn btn--secondary" onClick={handleRetry}>
-                  Ghi lại
-                </button>
+                {!isSubmitting && (
+                  <button id="btn-retry-record" className="btn btn--secondary" onClick={handleRetry}>
+                    Ghi lại
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -360,9 +372,10 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
               id="btn-submit-text"
               className="btn btn--primary"
               onClick={handleSubmit}
-              disabled={textContent.trim().length < 2}
+              disabled={textContent.trim().length < 2 || isSubmitting}
+              style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
             >
-              Gửi phản hồi
+              {isSubmitting ? 'Đang gửi...' : 'Gửi phản hồi'}
             </button>
           </div>
         )}
