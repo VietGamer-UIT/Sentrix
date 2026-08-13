@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "firebase-admin": "^14.2.0"
+  }
+}

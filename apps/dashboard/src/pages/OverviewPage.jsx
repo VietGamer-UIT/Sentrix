@@ -19,11 +19,7 @@ import { useFeedbacks, useCustomers, timeAgo, tsToDate } from '../mocks/useFires
 
 const ASPECT_LABELS = {
   nhan_vien: 'Nhân viên', mon_an: 'Món ăn', khong_gian: 'Không gian',
-  gia_ca: 'Giá cả', toc_do_phuc_vu: 'Tốc độ phục vụ', ve_sinh: 'Vệ sinh', khac: 'Khác'
-}
-const ASPECT_ICONS = {
-  nhan_vien: '👨‍💼', mon_an: '🍜', khong_gian: '🏠',
-  gia_ca: '💰', toc_do_phuc_vu: '⚡', ve_sinh: '🧹', khac: '❓'
+  gia_ca: 'Giá cả', toc_do_phuc_vu: 'Tốc độ PV', ve_sinh: 'Vệ sinh', khac: 'Khác'
 }
 
 function scoreToColor(score) {
@@ -243,9 +239,9 @@ export default function OverviewPage() {
                         {sl.label} {(fb.sentiment_score ?? 0) >= 0 ? '+' : ''}{(fb.sentiment_score ?? 0).toFixed(2)}
                       </span>
                       {fb.is_sarcasm && <span className="sarcasm-flag">⚠️ Mỉa mai</span>}
-                      <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>📍 {fb.location}</span>
+                      <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{fb.location}</span>
                       <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                        {fb.input_type === 'audio' ? '🎙️' : '✍️'} {timeAgo(fb.timestamp)}
+                        {fb.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'} · {timeAgo(fb.timestamp)}
                       </span>
                     </div>
                     <p style={{ fontSize: 'var(--font-size-sm)', color: fb.processing_status === 'processing' ? 'var(--color-text-muted)' : 'var(--color-text-secondary)', fontStyle: fb.processing_status === 'processing' ? 'italic' : 'normal', marginBottom: (fb.aspects?.length) ? 6 : 0 }}>
@@ -255,7 +251,7 @@ export default function OverviewPage() {
                       <div>
                         {(fb.aspects || []).map((a, i) => (
                           <span key={i} className="aspect-chip">
-                            {ASPECT_ICONS[a.aspect]} {ASPECT_LABELS[a.aspect]}
+                            {ASPECT_LABELS[a.aspect] || a.aspect}
                             {' '}<span style={{ color: scoreToColor(a.score ?? 0) }}>{a.sentiment === 'positive' ? '▲' : a.sentiment === 'negative' ? '▼' : '–'}</span>
                           </span>
                         ))}
