@@ -8,7 +8,7 @@
 #
 # Deploy thủ công (nếu không dùng Blueprint):
 #   Build command: pip install -r backend/requirements.txt
-#   Start command: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT
+#   Start command: gunicorn backend.api.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
 
 services:
   - type: web
@@ -16,7 +16,7 @@ services:
     runtime: python
     rootDir: .                  # từ root repo (không phải thư mục backend/)
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT
+    startCommand: gunicorn backend.api.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     plan: free
     region: singapore           # gần nhất với VN để giảm latency
     healthCheckPath: /health
