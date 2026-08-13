@@ -30,7 +30,7 @@ git checkout -b feature/ten-cua-ban-viec-se-lam
 *Giải thích: Lệnh này giúp bạn tạo ra một nhánh mới từ `main` và nhảy sang đó luôn. Từ giờ bạn sửa code thì chỉ ảnh hưởng trên nhánh này, `main` vẫn an toàn.*
 
 ### Bước 3: Làm việc trong LÃNH ĐỊA của bạn
-Hãy nhớ: Tuyền chỉ code trong `backend/`, Việt chỉ code trong `apps/`, Tuấn làm trong `design/`. 
+Hãy nhớ: Tuyền chỉ code trong `backend/`, Tuấn code trong `apps/` và `design/`, Việt quản lý cấu hình `deploy/` và bao quát toàn hệ thống.
 Code xong một đoạn nhỏ (ví dụ: xong cái nút bấm, xong 1 hàm API), hãy lưu lại (Commit).
 ```bash
 git add .

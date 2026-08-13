@@ -1,16 +1,13 @@
-# 👑 LÃNH ĐỊA FRONTEND & DASHBOARD
+# 🎨 LÃNH ĐỊA FRONTEND & DASHBOARD (TUẤN)
 
-> **📝 Cập nhật 2026-08-05:** Theo quyết định của trưởng nhóm **Việt**, frontend (`apps/`) hiện do **Tuấn** đảm nhận code trong giai đoạn này.
-> Việt sẽ tiếp quản lại sau khi backend (Tuyền) và frontend (Tuấn) đã có hình hài hoàn chỉnh.
-
-**Người code hiện tại:** Nguyễn Quốc Tuấn (`nguyenquoctuangm-code`)
-**Người cai quản gốc:** Đoàn Hoàng Việt (Trưởng nhóm) — sẽ tiếp quản lại sau giai đoạn này.
+**Người phụ trách chính:** Nguyễn Quốc Tuấn (`nguyenquoctuangm-code`)
+**DevOps & Hỗ trợ:** Đoàn Hoàng Việt (Trưởng nhóm)
 
 ---
 
 ## 📌 QUY TẮC CỦA LÃNH ĐỊA NÀY
 
-1. **Chỉ Tuấn (tạm thời) và Việt (sau này) được sửa code ở đây.** Tuyền nếu cần thay đổi gì liên quan đến frontend thì nhắn Zalo cho Tuấn.
+1. **Tuấn chịu trách nhiệm toàn bộ code giao diện (React).** Việt chỉ can thiệp khi cần thiết lập cấu hình deploy, biến môi trường, hoặc sửa lỗi phức tạp. Tuyền nếu cần thay đổi gì liên quan đến frontend thì nhắn Zalo cho Tuấn.
 2. Code Frontend phải chia Component rõ ràng, không viết nguyên 1 file 1000 dòng.
 3. Tuân thủ tuyệt đối thiết kế Figma và tài liệu UX/UI mà Tuấn đã chốt trong `design/ux-ui/`. Nếu thấy thiết kế vô lý, cập nhật `design/ux-ui/` trước, code theo sau.
 4. **KHÔNG được đụng vào `backend/`** dù chỉ để "tiện tay sửa" — chỉ được đọc để lấy thông tin API/schema.
