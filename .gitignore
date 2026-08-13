@@ -32,3 +32,6 @@ backend/ai_pipeline/cleaned_absa_data.json
 *.jpg
 *.png
 *.svg
+!assets/logo/*.png
+!apps/dashboard/public/*.png
+!apps/web-client/public/*.png

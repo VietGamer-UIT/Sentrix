@@ -9,76 +9,6 @@ const navItems = [
   { to: '/customers', icon: '👥', label: 'Khách hàng' },
 ]
 
-/**
- * SentrixOwlSVG — Logo cú Sentrix dạng SVG inline
- * Không cần file ảnh, scale mọi kích thước, không bị méo/mờ
- */
-export function SentrixOwlSVG({ size = 32 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="owl-body-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#4880FF"/>
-          <stop offset="100%" stopColor="#7C3AED"/>
-        </linearGradient>
-        <linearGradient id="owl-eye-l" x1="16" y1="22" x2="28" y2="34" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF"/>
-          <stop offset="100%" stopColor="#E0E8FF"/>
-        </linearGradient>
-        <linearGradient id="owl-eye-r" x1="36" y1="22" x2="48" y2="34" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF"/>
-          <stop offset="100%" stopColor="#E0E8FF"/>
-        </linearGradient>
-      </defs>
-
-      {/* Body tròn nền gradient */}
-      <circle cx="32" cy="36" r="22" fill="url(#owl-body-grad)" />
-
-      {/* Tai (ear tufts) */}
-      <path d="M20 18 L16 8 L26 16 Z" fill="url(#owl-body-grad)" />
-      <path d="M44 18 L48 8 L38 16 Z" fill="url(#owl-body-grad)" />
-
-      {/* Mặt trắng (facial disc) */}
-      <ellipse cx="32" cy="34" rx="16" ry="14" fill="rgba(255,255,255,0.15)" />
-
-      {/* Mắt trái — vòng ngoài */}
-      <circle cx="23" cy="29" r="8" fill="url(#owl-eye-l)" />
-      <circle cx="23" cy="29" r="8" fill="none" stroke="rgba(72,128,255,0.3)" strokeWidth="1" />
-      {/* Đồng tử trái */}
-      <circle cx="23" cy="29" r="4.5" fill="#1E3A8A" />
-      <circle cx="23" cy="29" r="2.5" fill="#000D1F" />
-      {/* Ánh sáng mắt */}
-      <circle cx="25" cy="27" r="1.2" fill="rgba(255,255,255,0.9)" />
-
-      {/* Mắt phải — vòng ngoài */}
-      <circle cx="41" cy="29" r="8" fill="url(#owl-eye-r)" />
-      <circle cx="41" cy="29" r="8" fill="none" stroke="rgba(72,128,255,0.3)" strokeWidth="1" />
-      {/* Đồng tử phải */}
-      <circle cx="41" cy="29" r="4.5" fill="#1E3A8A" />
-      <circle cx="41" cy="29" r="2.5" fill="#000D1F" />
-      {/* Ánh sáng mắt */}
-      <circle cx="43" cy="27" r="1.2" fill="rgba(255,255,255,0.9)" />
-
-      {/* Mỏ */}
-      <path d="M29 36 L32 40 L35 36 Z" fill="#FFA412" />
-
-      {/* Ngực — lông vũ nhẹ */}
-      <ellipse cx="32" cy="44" rx="10" ry="7" fill="rgba(255,255,255,0.12)" />
-
-      {/* Chân */}
-      <path d="M25 56 L22 52 L27 52 Z" fill="#FFA412" />
-      <path d="M39 56 L36 52 L41 52 Z" fill="#FFA412" />
-
-      {/* Vòng ngoài mạng lưới (network dots — đặc trưng Sentrix AI) */}
-      <circle cx="6" cy="12" r="2" fill="rgba(255,255,255,0.5)" />
-      <circle cx="58" cy="12" r="2" fill="rgba(255,255,255,0.5)" />
-      <circle cx="6" cy="52" r="2" fill="rgba(255,255,255,0.5)" />
-      <circle cx="58" cy="52" r="2" fill="rgba(255,255,255,0.5)" />
-      <line x1="6" y1="12" x2="14" y2="18" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-      <line x1="58" y1="12" x2="50" y2="18" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-    </svg>
-  )
-}
 
 /**
  * Layout — App shell: sidebar trái + header + <Outlet>
@@ -100,9 +30,8 @@ function Layout() {
       {/* === Sidebar === */}
       <aside className="sidebar">
         {/* Logo */}
-        <div className="sidebar-logo">
-          <SentrixOwlSVG size={32} />
-          <span className="sidebar-logo-text">Sentrix</span>
+        <div className="sidebar-logo" style={{ padding: 'var(--spacing-md) 0' }}>
+          <img src="/sentrix-logo.png" alt="Sentrix" width="140" height="auto" style={{ objectFit: 'contain', flexShrink: 0 }} />
         </div>
 
         {/* Tên quán */}

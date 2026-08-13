@@ -17,11 +17,11 @@
   --color-border-light: #D5D5D5;
   --color-border-focus: rgba(72, 128, 255, 0.4);
 
-  /* === Accent màu sắc (DashStack #4880FF) === */
-  --color-primary:   #4880FF;
-  --color-primary-dark: #3368E0;
-  --color-primary-light: rgba(72, 128, 255, 0.08);
-  --color-accent:    #7C3AED;
+  /* === Accent màu sắc (Khớp với màu Cyan/Teal của cú Sentrix) === */
+  --color-primary:   #0688A6;
+  --color-primary-dark: #04657B;
+  --color-primary-light: rgba(6, 136, 166, 0.08);
+  --color-accent:    #2CD9E5;
 
   /* === Sentiment / Trạng thái === */
   --color-success:   #00B69B;
@@ -166,7 +166,7 @@ body {
 .nav-item.active {
   background: var(--color-primary);
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(72, 128, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(6, 136, 166, 0.3);
 }
 
 .nav-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
