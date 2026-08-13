@@ -1,0 +1,55 @@
+# render.yaml — Sentrix Backend (Render.com Infrastructure as Code)
+# Tài liệu: https://render.com/docs/blueprint-spec
+#
+# Cách dùng:
+#   1. Kết nối repo GitHub với Render
+#   2. Render tự detect file này → tạo service tự động
+#   3. Vào Dashboard → Environment để nhập các secret (KHÔNG để trong file này)
+#
+# Deploy thủ công (nếu không dùng Blueprint):
+#   Build command: pip install -r backend/requirements.txt
+#   Start command: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT
+
+services:
+  - type: web
+    name: sentrix-backend
+    runtime: python
+    rootDir: .                  # từ root repo (không phải thư mục backend/)
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    region: singapore           # gần nhất với VN để giảm latency
+    healthCheckPath: /health
+
+    envVars:
+      # ── Secrets: ĐIỀN TRỰC TIẾP trên Render Dashboard, KHÔNG ghi vào đây ──
+
+      # OpenAI Whisper STT
+      - key: OPENAI_API_KEY
+        sync: false
+
+      # Google Gemini ABSA
+      - key: GEMINI_API_KEY
+        sync: false
+
+      # Firebase Admin SDK (3 vars riêng thay vì file JSON — xem firestore_client.py)
+      # FIREBASE_PRIVATE_KEY: paste toàn bộ key kể cả dòng -----BEGIN/END-----
+      #   Lưu ý: trên Render phải giữ nguyên newlines (không escape \n)
+      - key: FIREBASE_PROJECT_ID
+        value: "sentrix-demo-164"     # project ID (không nhạy cảm, OK để hardcode)
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false                   # firebase-adminsdk-xxx@sentrix-demo-164.iam.gserviceaccount.com
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false                   # -----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
+
+      # Zalo ZNS webhook (nếu có)
+      - key: ZALO_ACCESS_TOKEN
+        sync: false
+
+      # ── CORS ──
+      - key: ALLOWED_ORIGINS
+        value: "https://sentrix-coral.vercel.app,https://sentrix-dashboard-eta.vercel.app"
+
+      # ── Runtime ──
+      - key: PYTHON_VERSION
+        value: "3.11.0"
