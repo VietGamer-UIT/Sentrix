@@ -125,9 +125,8 @@ function LandingPage() {
             textAlign: 'center',
             lineHeight: 2,
           }}>
-            Không cần đăng nhập · Không cần tải app<br/>
-            Phản hồi hoàn toàn ẩn danh<br/>
-            Không chia sẻ thông tin cho bên thứ ba
+            Sentrix: AI-Powered Customer Experience Platform<br/>
+            © Copyright 2026 Sentrix. All rights reserved.
           </p>
 
         </div>

@@ -448,8 +448,8 @@ async def submit_feedback(
     try:
         logger.info(f"[Feedback] [8] Luu Firestore ...")
 
-        # 8a. Lấy/tạo customer nếu có phone
-        if customer_phone:
+        # 8a. Lấy/tạo customer nếu có phone và KHÔNG phải rác
+        if customer_phone and not is_suspicious_flag:
             customer_doc = get_or_create_customer(tenant_id, customer_phone)
             customer_id = customer_doc["customer_id"]
 

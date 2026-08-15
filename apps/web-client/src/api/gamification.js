@@ -59,35 +59,32 @@ export const SPIN_PRIZES = [
   }
 ]
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
 /**
- * Giả lập spin API — trả về prize ngẫu nhiên theo xác suất
- * Delay 2.5s để giả lập network latency
+ * Gọi spin API — nhận prize, voucher và backend tự cập nhật feedback
  */
-export function mockSpinAPI(tenantId, customerPhone) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Chọn prize theo xác suất
-      const rand = Math.random()
-      let cumulative = 0
-      let selectedPrize = SPIN_PRIZES[SPIN_PRIZES.length - 1] // fallback
+export async function submitSpinAPI(tenantId, customerPhone, feedbackId) {
+  const formData = new FormData()
+  formData.append('tenant_id', tenantId)
+  formData.append('customer_phone', customerPhone)
+  if (feedbackId) {
+    formData.append('feedback_id', feedbackId)
+  }
 
-      for (const prize of SPIN_PRIZES) {
-        cumulative += prize.probability
-        if (rand < cumulative) {
-          selectedPrize = prize
-          break
-        }
-      }
+  let response
+  try {
+    response = await fetch(`${API_BASE_URL}/api/v1/gamification/spin`, {
+      method: 'POST',
+      body: formData,
+    })
+  } catch (networkErr) {
+    throw new Error('Không kết nối được tới server. Vui lòng thử lại sau.')
+  }
 
-      const voucherCode = selectedPrize.voucherTemplate(customerPhone || '0000')
-      resolve({
-        prize: selectedPrize.id,
-        prize_label: selectedPrize.label,
-        voucher_code: voucherCode,
-        message: voucherCode
-          ? `Chúc mừng bạn nhận được: ${selectedPrize.label}!`
-          : 'Cảm ơn bạn đã tham gia! Chúc bạn may mắn lần sau.'
-      })
-    }, 2500)
-  })
+  if (response.ok) {
+    return response.json()
+  }
+
+  throw new Error('Lỗi từ server khi quay thưởng')
 }

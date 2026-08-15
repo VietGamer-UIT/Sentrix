@@ -132,6 +132,35 @@ def save_feedback(
     return feedback_id
 
 
+def update_feedback_gamification(
+    tenant_id: str,
+    feedback_id: str,
+    customer_id: str,
+    prize: str,
+    voucher_code: str,
+) -> None:
+    """
+    Cập nhật dữ liệu gamification (số điện thoại / customer_id, giải thưởng)
+    vào document feedback hiện có.
+    """
+    db = get_firestore_client()
+    feedback_ref = db.collection("tenants").document(tenant_id).collection("feedbacks").document(feedback_id)
+    
+    # Kiểm tra xem feedback có tồn tại không
+    if not feedback_ref.get().exists:
+        raise ValueError(f"Feedback {feedback_id} không tồn tại")
+        
+    feedback_ref.update({
+        "customer_id": customer_id,
+        "gamification_prize": prize,
+        "gamification_voucher": voucher_code,
+        "gamification_updated_at": _now_utc()
+    })
+    
+    logger.info(
+        f"[Firestore] Đã cập nhật voucher {voucher_code} cho feedback {feedback_id}"
+    )
+
 # ---------------------------------------------------------------------------
 # Quản lý customer (get-or-create pattern)
 # ---------------------------------------------------------------------------

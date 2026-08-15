@@ -59,7 +59,7 @@ export default function CustomersPage() {
       {/* Risk Summary */}
       <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--spacing-xl)' }}>
         {[
-          { key: 'high',   color: 'var(--color-risk-high)',   emoji: '🔴', label: 'Rủi ro cao',    sub: 'Nguy cơ > 85% — gửi ZNS ngay' },
+          { key: 'high',   color: 'var(--color-risk-high)',   emoji: '🔴', label: 'Rủi ro cao',    sub: 'Nguy cơ > 85% — gửi tin nhắn Zalo ngay' },
           { key: 'medium', color: 'var(--color-risk-medium)', emoji: '🟡', label: 'Rủi ro TB',     sub: 'Nguy cơ 50-85% — theo dõi' },
           { key: 'low',    color: 'var(--color-risk-low)',    emoji: '🟢', label: 'Rủi ro thấp',  sub: 'Nguy cơ < 50% — ổn định' },
         ].map(({ key, color, emoji, label, sub }) => (
@@ -178,8 +178,8 @@ export default function CustomersPage() {
                       </td>
                       <td>
                         {c.churn_risk_level === 'high' ? (
-                          <button className="btn btn--ghost" style={{ padding: '4px 10px', fontSize: '0.72rem' }} title="Gửi Zalo ZNS — Giai đoạn 9">
-                            📨 Gửi ZNS
+                          <button className="btn btn--ghost" style={{ padding: '4px 10px', fontSize: '0.72rem' }} title="Gửi Tin nhắn Zalo — Giai đoạn 9">
+                            Tin nhắn Zalo
                           </button>
                         ) : (
                           <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>—</span>

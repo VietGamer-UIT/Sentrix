@@ -16,9 +16,13 @@ import VoucherPage from './pages/VoucherPage.jsx'
  * Query params từ QR code: ?tenant_id=...&location=...
  * Các params này được truyền qua từng route bằng URL search params
  */
+import DarkModeToggle from './components/DarkModeToggle.jsx'
+
 function App() {
   return (
-    <Routes>
+    <>
+      <DarkModeToggle />
+      <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/record" element={<RecordingPage />} />
       <Route path="/done" element={<ConfirmationPage />} />
@@ -27,6 +31,7 @@ function App() {
       {/* Fallback: mọi route lạ đều về trang chủ */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
 

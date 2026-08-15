@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { mockSpinAPI, SPIN_PRIZES } from '../mocks/gamification.js'
+import { submitSpinAPI, SPIN_PRIZES } from '../api/gamification.js'
 
 /**
  * SpinPage — Bước 5 trong user-flow.md
@@ -50,12 +50,24 @@ function SpinPage() {
     setIsSpinning(true)
     setPhoneError(null)
 
-    // ⚠️ MOCK
-    const result = await mockSpinAPI(tenantId, phone)
-    const prizeIndex = SPIN_PRIZES.findIndex(p => p.id === result.prize)
+    // === Lấy feedback_id từ sessionStorage
+    let feedbackId = null
+    try {
+      const stored = sessionStorage.getItem('sentrix_api_result')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        feedbackId = parsed.feedback_id
+      }
+    } catch (err) {
+      console.error('Failed to parse sentrix_api_result', err)
+    }
 
-    /**
-     * Fix góc quay: Pointer ở TOP (12 giờ = -90° trong toán học)
+    try {
+      const result = await submitSpinAPI(tenantId, phone, feedbackId)
+      const prizeIndex = SPIN_PRIZES.findIndex(p => p.id === result.prize)
+
+      /**
+       * Fix góc quay: Pointer ở TOP (12 giờ = -90° trong toán học)
      * Segment i chiếm góc [i * segmentAngle, (i+1) * segmentAngle]
      * Tâm segment i (tính từ top) = (i + 0.5) * segmentAngle
      * Để pointer (top) trỏ vào tâm segment i, wheel phải xoay sao cho
@@ -76,7 +88,12 @@ function SpinPage() {
         `&message=${encodeURIComponent(result.message)}`
       )
     }, 4500)
+    } catch (err) {
+      setIsSpinning(false)
+      setPhoneError(err.message || 'Có lỗi xảy ra, vui lòng thử lại')
+    }
   }
+
 
   const handleSkip = () => {
     navigate(`/voucher?tenant_id=${tenantId}&location=${encodeURIComponent(location)}&skipped=true`)

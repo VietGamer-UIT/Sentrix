@@ -37,6 +37,32 @@ function clientFraudCheck(audioBlob, textContent) {
         return 'Nội dung có dấu hiệu spam (cụm từ lặp lại). Vui lòng nhập phản hồi thật.'
       }
     }
+    
+    // Rule 1: Từ quá dài không có khoảng trắng (>= 8 chars)
+    if (lower.length >= 8 && !lower.includes(' ')) {
+      return 'Nội dung có dấu hiệu spam (gõ bừa bàn phím). Vui lòng nhập phản hồi thật.'
+    }
+
+    // Rule 2: Home-row mashing
+    if (lower.length >= 5 && (/^[asdfghjkl;]+$/.test(lower) || /^[qwertyuiop]+$/.test(lower) || /^[zxcvbnm,./]+$/.test(lower))) {
+      return 'Nội dung có dấu hiệu spam (gõ bừa bàn phím). Vui lòng nhập phản hồi thật.'
+    }
+
+    // Keyboard mash (gõ bừa) - 5 phụ âm liên tiếp
+    const vowels = "aeiouyáàãảạâấầẫẩậăắằẵẳặéèẽẻẹêếềễểệíìĩỉịóòõỏọôốồỗổộơớờỡởợúùũủụưứừữửựýỳỹỷỵ"
+    let maxStreak = 0;
+    let currentStreak = 0;
+    for (const ch of lower) {
+      if (ch.match(/[a-zà-ỹ]/i) && !vowels.includes(ch)) {
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+      } else {
+        currentStreak = 0;
+      }
+    }
+    if (maxStreak >= 5) {
+      return 'Nội dung có dấu hiệu spam (gõ bừa bàn phím). Vui lòng nhập phản hồi thật.'
+    }
   }
   return null // Hợp lệ
 }

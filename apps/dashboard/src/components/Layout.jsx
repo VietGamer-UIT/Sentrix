@@ -244,8 +244,20 @@ function Layout() {
         </header>
 
         {/* Page outlet */}
-        <main className="page-content fade-in">
-          <Outlet />
+        <main className="page-content fade-in" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 64px)' }}>
+          <div style={{ flex: 1 }}>
+            <Outlet />
+          </div>
+          <footer style={{ 
+            textAlign: "center", 
+            marginTop: "var(--spacing-xl)", 
+            paddingBottom: "var(--spacing-md)", 
+            color: "var(--color-text-muted)",
+            fontSize: "var(--font-size-xs)"
+          }}>
+            Sentrix: AI-Powered Customer Experience Platform <br/>
+            © Copyright 2026 Sentrix. All rights reserved.
+          </footer>
         </main>
       </div>
     </div>

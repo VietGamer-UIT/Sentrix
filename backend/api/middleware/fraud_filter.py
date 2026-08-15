@@ -114,6 +114,49 @@ def _check_special_char_ratio(text: str) -> tuple[bool, str]:
     return False, ""
 
 
+def _check_keyboard_mash(text: str) -> tuple[bool, str]:
+    """
+    Kiểm tra có gõ bừa trên bàn phím hay không (dựa trên chuỗi phụ âm liên tiếp dài).
+    Ví dụ: 'adcadfasdf' sẽ có 7 phụ âm liên tiếp. Trong tiếng Việt hiếm khi > 3.
+    """
+    if not text:
+        return False, ""
+    
+    text_lower = text.lower().strip()
+    
+    # Các nguyên âm trong tiếng Việt (có dấu và không dấu)
+    vowels = set("aeiouyáàãảạâấầẫẩậăắằẵẳặéèẽẻẹêếềễểệíìĩỉịóòõỏọôốồỗổộơớờỡởợúùũủụưứừữửựýỳỹỷỵ")
+    
+    max_streak = 0
+    current_streak = 0
+    
+    # Rule 1: Từ quá dài không có khoảng trắng (>= 8 chars)
+    if len(text_lower) >= 8 and ' ' not in text_lower:
+        return True, "Chữ quá dài không có khoảng trắng (nghi ngờ gõ bừa)"
+        
+    # Rule 2: Home-row mashing (chỉ chứa các phím liền kề asdf, qwer, zxcv)
+    import re
+    if re.match(r'^[asdfghjkl;]+$', text_lower) and len(text_lower) >= 5:
+        return True, "Gõ bừa hàng phím giữa (home-row mashing)"
+    if re.match(r'^[qwertyuiop]+$', text_lower) and len(text_lower) >= 5:
+        return True, "Gõ bừa hàng phím trên"
+    if re.match(r'^[zxcvbnm,./]+$', text_lower) and len(text_lower) >= 5:
+        return True, "Gõ bừa hàng phím dưới"
+
+    # Rule 3: Quá 4 phụ âm liên tiếp
+    for ch in text_lower:
+        if ch.isalpha() and ch not in vowels:
+            current_streak += 1
+            max_streak = max(max_streak, current_streak)
+        else:
+            current_streak = 0
+            
+    if max_streak >= 5:
+        return True, f"Phát hiện {max_streak} phụ âm liên tiếp, nghi ngờ gõ bừa"
+        
+    return False, ""
+
+
 def basic_fraud_filter(
     audio_bytes: int | None = None,
     text_content: str | None = None,
@@ -189,6 +232,16 @@ def basic_fraud_filter(
             return FraudFilterResult(
                 is_suspicious=True,
                 reason=f"Nghi ngờ spam: {special_reason}",
+                should_reject=False,
+            )
+
+        # Kiểm tra gõ bừa (keyboard mash)
+        is_mash, mash_reason = _check_keyboard_mash(text_stripped)
+        if is_mash:
+            logger.warning(f"[FraudFilter] Text nghi ngờ gõ bừa: {mash_reason}")
+            return FraudFilterResult(
+                is_suspicious=True,
+                reason=f"Nghi ngờ spam: {mash_reason}",
                 should_reject=False,
             )
 

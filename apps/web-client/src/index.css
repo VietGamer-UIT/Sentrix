@@ -92,13 +92,27 @@ body {
 }
 
 #root {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  --z-index-base: 1;
+  --z-index-nav: 10;
+  --z-index-overlay: 100;
+  --z-index-modal: 1000;
 }
 
-/* === Typography === */
+/* === Dark Theme Variables === */
+html.dark {
+  /* Dark Neutrals */
+  --color-bg: #111827;
+  --color-bg-card: #1F2937;
+  --color-bg-elevated: #374151;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-muted: #9CA3AF;
+  
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* === Reset & Base Typography === */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
