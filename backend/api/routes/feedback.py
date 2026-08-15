@@ -385,48 +385,59 @@ async def submit_feedback(
     should_alert: bool = False
     rfms_normalized: dict = {}
 
-    try:
-        logger.info(f"[Feedback] [7] Tinh RFMS + P_churn ...")
+    is_spam = (absa_result or {}).get("is_spam", False)
+    is_suspicious_flag = fraud_result.is_suspicious or is_spam
 
-        # Đọc cấu hình tenant để lấy churn_threshold tuỳ chỉnh nếu có
-        tenant_config = None
+    if is_suspicious_flag:
+        logger.warning(f"[Feedback] Phat hien SPAM/NONSENSE -> Bo qua RFMS va Churn")
+        sentiment_score = None
+        overall_sentiment = "Spam"
+        p_churn = 0.0
+        churn_risk_level = "none"
+        should_alert = False
+    else:
         try:
-            tenant_config = get_tenant_config(tenant_id)
-        except Exception:
-            pass  # Không crash nếu không đọc được config
+            logger.info(f"[Feedback] [7] Tinh RFMS + P_churn ...")
 
-        churn_threshold = DEFAULT_CHURN_ALERT_THRESHOLD
-        if tenant_config and "churn_threshold" in tenant_config:
-            churn_threshold = float(tenant_config["churn_threshold"])
+            # Đọc cấu hình tenant để lấy churn_threshold tuỳ chỉnh nếu có
+            tenant_config = None
+            try:
+                tenant_config = get_tenant_config(tenant_id)
+            except Exception:
+                pass  # Không crash nếu không đọc được config
 
-        # Recency: nếu có phone → sẽ lấy từ last_feedback_at trong DB
-        # Đơn giản hoá MVP: dùng giá trị mặc định, customer tự cập nhật sau
-        recency_days = GUEST_RECENCY_DAYS_DEFAULT
-        if customer_phone:
-            # Sẽ lấy chính xác sau khi get_or_create_customer
-            # Tạm dùng 1 ngày (khách vừa gửi) → sẽ tinh chỉnh sau
-            recency_days = 1.0
+            churn_threshold = DEFAULT_CHURN_ALERT_THRESHOLD
+            if tenant_config and "churn_threshold" in tenant_config:
+                churn_threshold = float(tenant_config["churn_threshold"])
 
-        churn_result = calculate_churn_full(
-            recency_days=recency_days,
-            frequency=1,           # Mỗi feedback = 1 lần giao dịch; tích luỹ dần qua DB
-            monetary=total_spending,
-            sentiment_score=sentiment_score,
-            churn_threshold=churn_threshold,
-        )
+            # Recency: nếu có phone → sẽ lấy từ last_feedback_at trong DB
+            # Đơn giản hoá MVP: dùng giá trị mặc định, customer tự cập nhật sau
+            recency_days = GUEST_RECENCY_DAYS_DEFAULT
+            if customer_phone:
+                # Sẽ lấy chính xác sau khi get_or_create_customer
+                # Tạm dùng 1 ngày (khách vừa gửi) → sẽ tinh chỉnh sau
+                recency_days = 1.0
 
-        p_churn = churn_result["p_churn"]
-        churn_risk_level = churn_result["risk_level"].lower()
-        should_alert = churn_result["should_alert"]
-        rfms_normalized = {k: churn_result[k] for k in ("R", "F", "M", "S")}
+            churn_result = calculate_churn_full(
+                recency_days=recency_days,
+                frequency=1,           # Mỗi feedback = 1 lần giao dịch; tích luỹ dần qua DB
+                monetary=total_spending,
+                sentiment_score=sentiment_score,
+                churn_threshold=churn_threshold,
+            )
 
-        logger.info(
-            f"[Feedback] RFMS: P_churn={p_churn:.4f} "
-            f"({churn_risk_level}) | alert={should_alert}"
-        )
+            p_churn = churn_result["p_churn"]
+            churn_risk_level = churn_result["risk_level"].lower()
+            should_alert = churn_result["should_alert"]
+            rfms_normalized = {k: churn_result[k] for k in ("R", "F", "M", "S")}
 
-    except Exception as e:
-        logger.error(f"[Feedback] Loi tinh RFMS/Churn: {e}")
+            logger.info(
+                f"[Feedback] RFMS: P_churn={p_churn:.4f} "
+                f"({churn_risk_level}) | alert={should_alert}"
+            )
+
+        except Exception as e:
+            logger.error(f"[Feedback] Loi tinh RFMS/Churn: {e}")
 
     # -----------------------------------------------------------------------
     # Bước 8: Lưu Firestore multi-tenant
@@ -478,7 +489,7 @@ async def submit_feedback(
             "rfms_f":             rfms_normalized.get("F"),
             "rfms_m":             rfms_normalized.get("M"),
             "rfms_s":             rfms_normalized.get("S"),
-            "is_suspicious":      fraud_result.is_suspicious,
+            "is_suspicious":      is_suspicious_flag,
             "suspicious_reason":  fraud_result.reason if fraud_result.is_suspicious else None,
             "processing_status":  "done",
             "error_message":      None,
@@ -488,8 +499,8 @@ async def submit_feedback(
         feedback_id = save_feedback(tenant_id, feedback_doc)
         logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id}")
 
-        # 8c. Cập nhật RFMS cho customer nếu có
-        if customer_id:
+        # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam)
+        if customer_id and not is_suspicious_flag:
             update_customer_rfms(
                 tenant_id=tenant_id,
                 customer_id=customer_id,
@@ -498,7 +509,7 @@ async def submit_feedback(
                 M=rfms_normalized.get("M", 0.0),
                 S=rfms_normalized.get("S", 0.5),
                 p_churn=p_churn,
-                sentiment_score_raw=sentiment_score,
+                sentiment_score_raw=sentiment_score or 0.5,
             )
 
     except EnvironmentError as e:

@@ -175,7 +175,7 @@ function Layout() {
       <div
         className="main-content"
         style={{
-          marginLeft: 0,
+          marginLeft: sidebarWidth,
           transition: 'margin-left 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}
       >

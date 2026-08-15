@@ -451,6 +451,21 @@ async function seed() {
   console.log(`\n🌱 Bắt đầu seed Firestore: ${process.env.FIREBASE_PROJECT_ID}`)
   console.log(`   Tenant: ${TENANT_ID}\n`)
 
+  // 0. Xóa data cũ
+  console.log('🗑️  Đang dọn dẹp dữ liệu cũ...')
+  const feedbacksRef = db.collection(`tenants/${TENANT_ID}/feedbacks`)
+  const fbDocs = await feedbacksRef.get()
+  const deleteFbBatch = db.batch()
+  fbDocs.forEach(doc => deleteFbBatch.delete(doc.ref))
+  await deleteFbBatch.commit()
+
+  const customersRef = db.collection(`tenants/${TENANT_ID}/customers`)
+  const cuDocs = await customersRef.get()
+  const deleteCuBatch = db.batch()
+  cuDocs.forEach(doc => deleteCuBatch.delete(doc.ref))
+  await deleteCuBatch.commit()
+  console.log('✅ Xóa sạch data cũ')
+
   // 1. Tenant document
   await db.doc(`tenants/${TENANT_ID}`).set(tenantData, { merge: true })
   console.log('✅ Tenant document')
