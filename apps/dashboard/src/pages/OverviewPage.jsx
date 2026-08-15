@@ -46,7 +46,7 @@ export default function OverviewPage() {
   today.setHours(0, 0, 0, 0)
 
   const doneFeedbacks = useMemo(() =>
-    feedbacks.filter(f => f.processing_status === 'done'), [feedbacks])
+    feedbacks.filter(f => f.processing_status === 'done' && !f.is_suspicious), [feedbacks])
 
   const todayFeedbacks = useMemo(() =>
     doneFeedbacks.filter(f => tsToDate(f.timestamp) >= today), [doneFeedbacks])

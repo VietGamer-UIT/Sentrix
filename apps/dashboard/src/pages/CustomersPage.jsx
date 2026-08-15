@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useCustomers, useFeedbacks, timeAgo } from '../mocks/useFirestore.js'
+import CustomerHistoryModal from '../components/CustomerHistoryModal.jsx'
 
 /**
  * CustomersPage — Danh sách khách hàng + P_churn risk
@@ -14,6 +15,7 @@ export default function CustomersPage() {
 
   const [filterRisk, setFilterRisk] = useState('all')
   const [sortBy, setSortBy]         = useState('p_churn')
+  const [selectedCustomer, setSelectedCustomer] = useState(null)
 
   const riskStats = useMemo(() => ({
     high:   customers.filter(c => c.churn_risk_level === 'high').length,
@@ -134,7 +136,7 @@ export default function CustomersPage() {
                   ]
 
                   return (
-                    <tr key={c.customer_id}>
+                    <tr key={c.customer_id} onClick={() => setSelectedCustomer(c)} style={{ cursor: 'pointer' }}>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}>
                           {c.phone_masked || c.customer_id?.slice(0, 12) + '...'}
@@ -193,6 +195,14 @@ export default function CustomersPage() {
             </table>
           </div>
         </div>
+      )}
+
+      {selectedCustomer && (
+        <CustomerHistoryModal 
+          customer={selectedCustomer} 
+          feedbacks={feedbacks} 
+          onClose={() => setSelectedCustomer(null)} 
+        />
       )}
     </div>
   )

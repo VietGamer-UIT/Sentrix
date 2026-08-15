@@ -143,7 +143,11 @@ export default function FeedbacksPage() {
                         {fb.is_sarcasm && <span className="sarcasm-flag" style={{ marginTop: 4, display: 'inline-flex' }}>⚠️ Mỉa mai</span>}
                       </td>
                       <td style={{ textAlign: 'center' }}>
-                        {fb.processing_status === 'done' ? (
+                        {fb.is_suspicious ? (
+                          <span className="sentiment-badge" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                            🚨 SPAM
+                          </span>
+                        ) : fb.processing_status === 'done' ? (
                           <span className={`sentiment-badge sentiment-badge--${sentCls}`}>
                             {isPos ? '+' : ''}{score.toFixed(2)}
                           </span>
