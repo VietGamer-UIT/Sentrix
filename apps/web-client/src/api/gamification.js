@@ -86,5 +86,14 @@ export async function submitSpinAPI(tenantId, customerPhone, feedbackId) {
     return response.json()
   }
 
-  throw new Error('Lỗi từ server khi quay thưởng')
+  let detail = ''
+  try {
+    const errObj = await response.json()
+    detail = errObj.detail ? JSON.stringify(errObj.detail) : JSON.stringify(errObj)
+  } catch {
+    detail = response.statusText
+  }
+
+  console.error('[Gamification API Error]', response.status, detail)
+  throw new Error(`Lỗi từ server khi quay thưởng (${response.status}: ${detail})`)
 }
