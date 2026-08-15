@@ -68,9 +68,7 @@ export async function submitSpinAPI(tenantId, customerPhone, feedbackId) {
   const formData = new FormData()
   formData.append('tenant_id', tenantId)
   formData.append('customer_phone', customerPhone)
-  if (feedbackId) {
-    formData.append('feedback_id', feedbackId)
-  }
+  formData.append('feedback_id', feedbackId || '')
 
   let response
   try {
