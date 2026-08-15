@@ -118,7 +118,7 @@
 |---|---|
 | **Phát triển & duy trì nền tảng SaaS** | Xây dựng và vận hành Web Client, Dashboard, Backend API |
 | **Pipeline AI 4 giai đoạn** | ① Tiếp nhận phản hồi (QR + Web Audio) → ② STT + Audio features + ABSA → ③ Lưu trữ multi-tenant Firestore → ④ Dashboard real-time + ZNS trigger |
-| **Thu thập & gán nhãn dữ liệu** | Pilot tại UIT để có dữ liệu thật, bổ sung từ Kaggle (Foody, ShopeeFood) để làm giàu từ vựng tiếng lóng |
+| **Thu thập & gán nhãn dữ liệu** | Pilot tại UIT để có dữ liệu thật, kết hợp bộ dữ liệu UIT-ViSD4SA và ABSA_Dataset đa lĩnh vực để làm giàu từ vựng tiếng lóng tiếng Việt |
 | **Tối ưu mô hình ABSA tiếng Việt** | Benchmark trên UIT-ViSD4SA và UIT-ABSA Restaurant7, tinh chỉnh Prompt Engineering |
 | **Tính toán RFMS & P_churn** | Huấn luyện hệ số α, β, γ, δ trên dữ liệu lịch sử từng doanh nghiệp |
 | **Bán hàng & onboarding khách B2B** | Tiếp cận SME, hỗ trợ cài đặt QR, hướng dẫn Dashboard |
