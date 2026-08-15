@@ -38,7 +38,7 @@ function ConfirmationPage() {
       if (raw) {
         try {
           setApiResult(JSON.parse(raw))
-          sessionStorage.removeItem('sentrix_api_result')
+          // Giữ lại sentrix_api_result trong sessionStorage để SpinPage đọc feedback_id
         } catch { /* ignore parse error */ }
         clearInterval(pollRef.current)
       }
