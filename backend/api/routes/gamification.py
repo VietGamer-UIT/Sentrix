@@ -53,7 +53,7 @@ SPIN_PRIZES = [
 async def spin_gamification(
     tenant_id: str = Form(...),
     customer_phone: str = Form(...),
-    feedback_id: str = Form(...)
+    feedback_id: Optional[str] = Form(None)
 ):
     """
     Xử lý Vòng quay may mắn sau khi khách hàng đã gửi feedback.
@@ -87,14 +87,15 @@ async def spin_gamification(
         customer_doc = get_or_create_customer(tenant_id, customer_phone)
         customer_id = customer_doc["customer_id"]
 
-        # Cập nhật thông tin vào Feedback
-        update_feedback_gamification(
-            tenant_id=tenant_id,
-            feedback_id=feedback_id,
-            customer_id=customer_id,
-            prize=selected_prize["id"],
-            voucher_code=voucher_code
-        )
+        # Cập nhật thông tin vào Feedback nếu có feedback_id
+        if feedback_id:
+            update_feedback_gamification(
+                tenant_id=tenant_id,
+                feedback_id=feedback_id,
+                customer_id=customer_id,
+                prize=selected_prize["id"],
+                voucher_code=voucher_code
+            )
         
     except Exception as e:
         logger.error(f"[Gamification] Lỗi khi xử lý spin: {e}")
