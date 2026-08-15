@@ -10,7 +10,7 @@ MỤC ĐÍCH:
   Xuất ra JSON chuẩn để giai đoạn 7 (Fusion) và 8 (RFMS) sử dụng.
 
 MODEL:
-  Sử dụng `gemini-2.0-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
+  Sử dụng `gemini-3.1-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
   phù hợp cho tác vụ phân tích cảm xúc có cấu trúc.
   Có thể ghi đè qua biến môi trường GEMINI_MODEL_NAME.
 
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Cấu hình model
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL = "gemini-2.0-flash-lite"
+DEFAULT_MODEL = "gemini-3.1-flash-lite"
 
 # Prompt hệ thống — thiết kế để LLM trả về JSON thuần, không markdown
 SYSTEM_PROMPT = """Bạn là chuyên gia phân tích cảm xúc khách hàng (ABSA) cho ngành dịch vụ F&B, Spa, Nha khoa, Phòng khám tại Việt Nam.
@@ -60,7 +60,7 @@ CẢM XÚC HỢP LỆ: "Tích cực", "Tiêu cực", "Trung lập"
 
 QUY TẮC BẮT BUỘC:
 1. Chỉ trả về JSON thuần — KHÔNG có markdown, KHÔNG có ```json, KHÔNG có chú thích.
-2. Nếu văn bản là spam, ký tự rác, không có nghĩa → trả về: {"is_spam": true, "aspects": []}
+2. Nếu văn bản là spam, ký tự rác, không có nghĩa, HOẶC là bài hát, thơ ca, những câu nói lãng mạn không liên quan đến đánh giá nhà hàng → trả về: {"is_spam": true, "aspects": []}
 3. Nếu văn bản có nghĩa → trả về mảng JSON: [{"aspect": "...", "sentiment": "...", "reason": "..."}]
 4. "reason" phải là trích dẫn ngắn từ văn bản gốc, không tự bịa.
 5. Phát hiện MỈA MAI: nếu câu nghe có vẻ tích cực nhưng giọng điệu hoặc ngữ cảnh ám chỉ tiêu cực (ví dụ: "phục vụ tốt quá ha"), đánh dấu sentiment là "Tiêu cực" và ghi rõ "sarcasm_suspected": true trong reason của khía cạnh đó.
@@ -69,13 +69,17 @@ VÍ DỤ 1 (Phản hồi thật):
 Input: "Món phở ngon lắm, nước dùng đậm đà. Nhưng nhân viên hơi lạnh lùng và chậm."
 Output: [{"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Món phở ngon lắm, nước dùng đậm đà"}, {"aspect": "Thái độ nhân viên", "sentiment": "Tiêu cực", "reason": "nhân viên hơi lạnh lùng và chậm"}]
 
-VÍ DỤ 2 (Spam):
+VÍ DỤ 2 (Spam ký tự rác):
 Input: "aaaaaaaaaa 123 !!!"
 Output: {"is_spam": true, "aspects": []}
 
 VÍ DỤ 3 (Mỉa mai):
 Input: "Phục vụ tốt quá ha, đợi mãi mới ra"
-Output: [{"aspect": "Thái độ nhân viên", "sentiment": "Tiêu cực", "reason": "Đợi mãi mới ra — mỉa mai", "sarcasm_suspected": true}]"""
+Output: [{"aspect": "Thái độ nhân viên", "sentiment": "Tiêu cực", "reason": "Đợi mãi mới ra — mỉa mai", "sarcasm_suspected": true}]
+
+VÍ DỤ 4 (Spam thơ ca, không liên quan):
+Input: "ôm hoài những kỷ niệm đã cũ, lẩn trốn mình trong mộng dài thiên thu"
+Output: {"is_spam": true, "aspects": []}"""
 
 # ---------------------------------------------------------------------------
 # Exceptions riêng

@@ -235,7 +235,7 @@ db.collection(`tenants/${tenantId}/customers`)
 
 *(Nguồn: backend/db/schema.md §Dashboard — Hướng dẫn nhanh cho Việt)*
 
-> ⚠️ Dashboard dùng React (đã chốt, không phải Streamlit). Deploy lên Vercel cùng web-client.
+> ⚠️ Dashboard dùng React. Deploy lên Vercel cùng web-client.
 
 ---
 

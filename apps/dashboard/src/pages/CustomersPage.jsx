@@ -59,9 +59,9 @@ export default function CustomersPage() {
       {/* Risk Summary */}
       <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--spacing-xl)' }}>
         {[
-          { key: 'high',   color: 'var(--color-risk-high)',   emoji: '🔴', label: 'Rủi ro cao',    sub: 'P_churn > 0.85 — cần ZNS ngay' },
-          { key: 'medium', color: 'var(--color-risk-medium)', emoji: '🟡', label: 'Rủi ro TB',     sub: 'P_churn 0.50–0.85 — theo dõi' },
-          { key: 'low',    color: 'var(--color-risk-low)',    emoji: '🟢', label: 'Rủi ro thấp',  sub: 'P_churn < 0.50 — ổn định' },
+          { key: 'high',   color: 'var(--color-risk-high)',   emoji: '🔴', label: 'Rủi ro cao',    sub: 'Nguy cơ > 85% — gửi ZNS ngay' },
+          { key: 'medium', color: 'var(--color-risk-medium)', emoji: '🟡', label: 'Rủi ro TB',     sub: 'Nguy cơ 50-85% — theo dõi' },
+          { key: 'low',    color: 'var(--color-risk-low)',    emoji: '🟢', label: 'Rủi ro thấp',  sub: 'Nguy cơ < 50% — ổn định' },
         ].map(({ key, color, emoji, label, sub }) => (
           <div key={key} className="kpi-card"
             style={{ borderLeft: `3px solid ${color}`, cursor: 'pointer' }}
@@ -86,7 +86,7 @@ export default function CustomersPage() {
         ))}
         <span style={{ marginLeft: 'auto', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Sắp xếp:</span>
         <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={selectStyle}>
-          <option value="p_churn">P_churn cao nhất</option>
+          <option value="p_churn">Nguy cơ cao nhất</option>
           <option value="feedback_count">Nhiều feedback nhất</option>
           <option value="last_feedback_at">Gần đây nhất</option>
         </select>
@@ -108,14 +108,14 @@ export default function CustomersPage() {
             <table>
               <thead>
                 <tr>
-                  <th>SĐT (masked)</th>
+                  <th>Số điện thoại</th>
                   <th>Rủi ro</th>
-                  <th>P_churn</th>
-                  <th>RFMS</th>
+                  <th>Nguy cơ rời bỏ</th>
+                  <th>Lòng trung thành</th>
                   <th>Feedback</th>
                   <th>Cảm xúc TB</th>
                   <th>Lần cuối</th>
-                  <th>ZNS</th>
+                  <th>Nhắn tin Zalo</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,10 +139,7 @@ export default function CustomersPage() {
                     <tr key={c.customer_id} onClick={() => setSelectedCustomer(c)} style={{ cursor: 'pointer' }}>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text-primary)' }}>
-                          {c.phone_masked || c.customer_id?.slice(0, 12) + '...'}
-                        </div>
-                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                          {c.customer_id?.slice(0, 20)}…
+                          {c.phone_masked || 'Khách vãng lai'}
                         </div>
                       </td>
                       <td>

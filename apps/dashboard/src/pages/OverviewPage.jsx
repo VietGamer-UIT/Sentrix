@@ -143,7 +143,7 @@ export default function OverviewPage() {
           <div className="kpi-value" style={{ color: highRiskCount > 0 ? 'var(--color-danger)' : 'var(--color-success)' }}>
             {highRiskCount}
           </div>
-          <div className="kpi-sub">P_churn &gt; 0.85 · cần chú ý</div>
+          <div className="kpi-sub">Nguy cơ &gt; 85% · cần chú ý</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Phát hiện mỉa mai</div>
@@ -195,7 +195,7 @@ export default function OverviewPage() {
             <>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} innerRadius={45} dataKey="value" paddingAngle={3}
+                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={65} innerRadius={40} dataKey="value" paddingAngle={3}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     labelLine={{ stroke: 'rgba(0,0,0,0.15)' }}>
                     {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}

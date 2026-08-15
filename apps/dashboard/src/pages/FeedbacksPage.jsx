@@ -156,8 +156,8 @@ export default function FeedbacksPage() {
                       <td style={{ maxWidth: 180 }}>
                         {(fb.aspects || []).slice(0, 3).map((a, i) => (
                           <span key={i} className="aspect-chip" style={{ fontSize: '0.65rem' }}>
-                            {ASPECT_LABELS[a.aspect]?.split(' ')[0]}
-                            <span style={{ color: scoreToColor(a.score ?? 0) }}>
+                            {ASPECT_LABELS[a.aspect] || a.aspect}
+                            <span style={{ color: scoreToColor(a.score ?? 0), marginLeft: 4 }}>
                               {a.sentiment === 'positive' ? '▲' : a.sentiment === 'negative' ? '▼' : '–'}
                             </span>
                           </span>

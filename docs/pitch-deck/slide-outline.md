@@ -190,8 +190,8 @@ P_churn = 1 / (1 + e^(-(αR + βF + γM - δS + ε)))
 3. **"57 khách hàng để hoà vốn — làm sao đạt được?"**
    → "Bắt đầu từ Làng ĐH Quốc gia (~40-50 quán cà phê/tiệm ăn trong bán kính 2km), rồi mở rộng ra."
 
-4. **"Tại sao dùng Streamlit mà dashboard lại là React?"**
-   → *(Đã chốt React — cần sửa thuyết minh trước khi nộp)*
+4. **"Dữ liệu được bảo mật như thế nào trên Firestore?"**
+   → "Mỗi quán ăn (tenant) có ID riêng và được phân tách qua Security Rules. Chỉ chủ quán mới xem được data của quán mình."
 
 ### Số liệu nhớ thuộc lòng (khớp cheat-sheet giám khảo)
 - Thị trường F&B: 760.000 tỷ₫, 333.600 điểm bán

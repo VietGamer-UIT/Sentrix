@@ -21,7 +21,6 @@ Hệ thống được chia thành các "lãnh địa" rõ ràng. **Nguyên tắc
   - Lãnh địa: `backend/` (Python, FastAPI).
 
 - 📚 `docs/`: Tài liệu chung (ai phụ trách mảng nào thì viết mảng đó).
-- 🖼️ `assets/`: File hình ảnh, logo, QR tĩnh.
 
 > **Tips:** Nhờ việc chia "lãnh địa" này, khi các bạn làm việc và đẩy code lên, sẽ GẦN NHƯ KHÔNG BAO GIỜ bị conflict code với nhau!
 

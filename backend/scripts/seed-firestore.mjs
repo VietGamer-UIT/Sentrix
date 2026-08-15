@@ -48,6 +48,7 @@ const app = initializeApp({
 const db = getFirestore(app)
 
 // ─── Helper timestamp ─────────────────────────────────────────────────────────
+// Cập nhật lại thời gian theo thực tế internet
 const now  = Date.now()
 const DAY  = 86400000
 function ts(msAgo) { return Timestamp.fromDate(new Date(now - msAgo)) }
@@ -483,10 +484,21 @@ async function seed() {
   const cuBatch = db.batch()
   for (const cu of customers) {
     const { customer_id, ...data } = cu
+    // Cập nhật lại số lượng feedback_count và lần phản hồi cuối cho khớp với dữ liệu
+    const customerFeedbacks = feedbacks.filter(f => f.customer_id === customer_id)
+    data.feedback_count = customerFeedbacks.length
+    if (customerFeedbacks.length > 0) {
+      // Tìm timestamp gần nhất
+      const latest = customerFeedbacks.reduce((max, f) => 
+        (f.timestamp.seconds > max.timestamp.seconds) ? f : max
+      )
+      data.last_feedback_at = latest.timestamp
+    }
+    
     cuBatch.set(db.doc(`tenants/${TENANT_ID}/customers/${customer_id}`), data, { merge: true })
   }
   await cuBatch.commit()
-  console.log(`✅ ${customers.length} customers`)
+  console.log(`✅ ${customers.length} customers (Đã chuẩn hoá feedback_count)`)
 
   console.log('\n🎉 Seed xong! Dashboard sẽ hiện data thật từ Firestore.\n')
   process.exit(0)
