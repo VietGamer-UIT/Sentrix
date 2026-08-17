@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Cấu hình model
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL = "gemini-3.1-flash-lite"
+DEFAULT_MODEL = "gemini-1.5-flash"
 
 # Prompt hệ thống — thiết kế để LLM trả về JSON thuần, không markdown
 SYSTEM_PROMPT = """Bạn là chuyên gia phân tích cảm xúc khách hàng (ABSA) cho ngành dịch vụ F&B (Nhà hàng, Quán ăn, Cà phê) tại Việt Nam. Mặc dù chuyên môn là F&B, bạn có khả năng thấu hiểu sâu sắc ngôn ngữ tự nhiên tiếng Việt, từ lóng mạng, và teencode thường thấy trên các nền tảng thương mại điện tử, mạng xã hội (Shopee, Tiki, Facebook, Tiktok).
