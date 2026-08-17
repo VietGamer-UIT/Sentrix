@@ -54,7 +54,7 @@ from backend.ai_pipeline.audio_features_librosa import (
     AudioFeaturesError,
 )
 from backend.ai_pipeline.absa_llm import analyze_absa, ABSAError, ABSAAuthError
-from backend.ai_pipeline.fusion import dynamic_weighted_fusion
+from backend.ai_pipeline.fusion import dynamic_weighted_fusion, normalize_aspects_for_db
 from backend.rfms_model.churn_model import (
     calculate_churn_full,
     DEFAULT_CHURN_ALERT_THRESHOLD,
@@ -68,6 +68,7 @@ from backend.db.firestore_ops import (
     get_or_create_customer,
     update_customer_rfms,
     get_tenant_config,
+    _mask_phone,
 )
 
 logger = logging.getLogger(__name__)
@@ -456,9 +457,11 @@ async def submit_feedback(
         # 8b. Chuẩn bị feedback document theo schema.md
         aspects_to_save = []
         if fusion_result and fusion_result.get("aspects"):
+            # fusion_result đã chứa normalized aspects (từ normalize_aspects_for_db trong fusion.py)
             aspects_to_save = fusion_result["aspects"]
         elif absa_result and absa_result.get("aspects"):
-            aspects_to_save = absa_result["aspects"]
+            # Fallback: normalize ở đây nếu không có fusion_result
+            aspects_to_save = normalize_aspects_for_db(absa_result["aspects"])
 
         # Chuẩn bị audio_features để lưu (chỉ lấy các field theo schema, bỏ file_info)
         audio_features_to_save: Optional[dict] = None
@@ -472,8 +475,14 @@ async def submit_feedback(
                 "is_stressed":  audio_features.get("is_stressed", False),
             }
 
+        # Lấy phone_masked nếu có SĐT (để hiển thị trên Dashboard mà không lộ SĐT gốc)
+        phone_masked: Optional[str] = None
+        if customer_phone:
+            phone_masked = _mask_phone(customer_phone)
+
         feedback_doc = {
             "customer_id":        customer_id,
+            "phone_masked":        phone_masked,          # SĐT ẩn danh hóa, ví dụ "090****567"
             "location":           location,
             "input_type":         input_type,
             "transcript":         transcript or "",
@@ -494,6 +503,9 @@ async def submit_feedback(
             "processing_status":  "done",
             "error_message":      None,
             "request_id":         request_id,
+            # ZNS voucher fields — sẽ được cập nhật ở Bước 9 sau khi gửi ZNS thành công
+            "zns_voucher_code":   None,
+            "zns_sent_at":        None,
         }
 
         feedback_id = save_feedback(tenant_id, feedback_doc)
@@ -553,23 +565,38 @@ async def submit_feedback(
                     f"tracking_id={zns_result['tracking_id']} | "
                     f"zalo_msg_id={zns_result['zalo_message_id']}"
                 )
-                # Cập nhật zns_sent_at vào Firestore customer nếu có
+                # Cập nhật zns_sent_at + voucher vào Firestore customer VÀ feedback doc
+                from backend.db.firestore_client import get_firestore_client as _get_db
+                from datetime import datetime, timezone
+                _zns_now = datetime.now(timezone.utc)
                 if customer_id:
                     try:
-                        from backend.db.firestore_ops import get_firestore_client
-                        from backend.db.firestore_client import get_firestore_client as _get_db
-                        from datetime import datetime, timezone
                         db = _get_db()
                         cust_ref = (
                             db.collection("tenants").document(tenant_id)
                             .collection("customers").document(customer_id)
                         )
                         cust_ref.update({
-                            "zns_sent_at":     datetime.now(timezone.utc),
+                            "zns_sent_at":      _zns_now,
                             "zns_voucher_code": voucher_code,
                         })
                     except Exception as e_zns_update:
-                        logger.warning(f"[Feedback] Khong update zns_sent_at: {e_zns_update}")
+                        logger.warning(f"[Feedback] Khong update zns_sent_at cho customer: {e_zns_update}")
+                # Cập nhật feedback doc với voucher info (để audit/dashboard)
+                if feedback_id:
+                    try:
+                        db = _get_db()
+                        fb_ref = (
+                            db.collection("tenants").document(tenant_id)
+                            .collection("feedbacks").document(feedback_id)
+                        )
+                        fb_ref.update({
+                            "zns_voucher_code": voucher_code,
+                            "zns_sent_at":      _zns_now,
+                        })
+                        logger.info(f"[Feedback] Cap nhat voucher vao feedback doc: {feedback_id}")
+                    except Exception as e_fb_update:
+                        logger.warning(f"[Feedback] Khong update voucher vao feedback doc: {e_fb_update}")
             else:
                 logger.warning(
                     f"[Feedback] ZNS gui that bai: "

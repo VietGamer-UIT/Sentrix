@@ -80,6 +80,30 @@ class TestTextFraudFilter:
         result = basic_fraud_filter(text_content="Phục vụ tốt quá ha")
         assert result.is_suspicious is False
 
+    def test_do_an_ngon_tuyet_not_flagged(self):
+        """'đồ ăn ngon tuyệt' — cụm từ thực tế gặp bug — không được flag."""
+        result = basic_fraud_filter(text_content="đồ ăn ngon tuyệt")
+        assert result.is_suspicious is False
+        assert result.should_reject is False
+
+    def test_nhan_vien_phuc_vu_kem_not_flagged(self):
+        """'nhân viên phục vụ kém' — cụm từ thực tế gặp bug — không được flag."""
+        result = basic_fraud_filter(text_content="nhân viên phục vụ kém")
+        assert result.is_suspicious is False
+        assert result.should_reject is False
+
+    def test_single_word_meaningful_passes(self):
+        """'Ngon' — câu đánh giá 1 từ tiếng Việt hợp lệ."""
+        result = basic_fraud_filter(text_content="Ngon")
+        assert result.is_suspicious is False
+
+    def test_long_vietnamese_review_passes(self):
+        """Câu phản hồi dài bình thường không bị flag."""
+        result = basic_fraud_filter(
+            text_content="Mình đã ăn ở đây nhiều lần rồi, lần nào cũng hài lòng. Món phở bò rất ngon, nước dùng đậm đà."
+        )
+        assert result.is_suspicious is False
+
 
 class TestCombinedInput:
     def test_valid_audio_and_text_passes(self):

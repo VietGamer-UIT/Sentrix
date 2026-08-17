@@ -47,7 +47,7 @@ class TestTextOnlyFeedback:
         )
         assert response.status_code == 202, response.text
         data = response.json()
-        assert data["status"] == "accepted"
+        assert data["status"] == "processed"
         assert "request_id" in data
         assert len(data["request_id"]) == 36   # UUID format
         assert data["input_type"] == "text"
@@ -88,7 +88,7 @@ class TestTextOnlyFeedback:
         assert response.status_code == 202, response.text
         data = response.json()
         assert data["is_suspicious"] is True
-        assert data["status"] == "accepted_with_warning"
+        assert data["status"] == "processed_with_warning"
 
 
 class TestAudioOnlyFeedback:
@@ -103,7 +103,7 @@ class TestAudioOnlyFeedback:
             )
         assert response.status_code == 202, response.text
         data = response.json()
-        assert data["status"] == "accepted"
+        assert data["status"] == "processed"
         assert data["input_type"] == "audio"
         assert data["transcript"] == "Phục vụ tốt"  # Giai đoạn 4: phải có transcript
         assert len(data["request_id"]) == 36
