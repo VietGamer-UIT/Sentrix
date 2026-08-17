@@ -242,7 +242,7 @@ def basic_fraud_filter(
             return FraudFilterResult(
                 is_suspicious=True,
                 reason=f"Nghi ngờ spam: {mash_reason}",
-                should_reject=False,
+                should_reject=True,  # Từ chối thẳng tay không cho chui vào DB
             )
 
     # --- Tất cả kiểm tra qua → hợp lệ ---
