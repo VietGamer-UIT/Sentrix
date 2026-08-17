@@ -38,7 +38,7 @@ numpy==1.26.4               # dependency của librosa (numpy 2.x chưa tương 
 # ---------------------------------------------------------------------------
 # [GIAI ĐOẠN 6] ABSA qua Gemini LLM
 # ---------------------------------------------------------------------------
-google-generativeai==0.8.3  # Gemini Flash-Lite API (ABSA + Dynamic Weighted Fusion)
+google-genai>=0.5.0  # Gemini Flash-Lite API (ABSA + Dynamic Weighted Fusion)
 
 # ---------------------------------------------------------------------------
 # [GIAI ĐOẠN 8] Firebase Firestore (multi-tenant storage)
