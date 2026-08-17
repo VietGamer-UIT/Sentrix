@@ -39,7 +39,8 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Cấu hình model
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL = "gemini-3.1-flash-lite"
+DEFAULT_MODEL = "gemini-2.0-flash-lite"
+VALID_FALLBACK_MODELS = ["gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-2.0-flash"]
 
 # Prompt hệ thống — thiết kế để LLM trả về JSON thuần, không markdown
 SYSTEM_PROMPT = """Bạn là chuyên gia phân tích cảm xúc khách hàng (ABSA) cho ngành dịch vụ F&B (Nhà hàng, Quán ăn, Cà phê) tại Việt Nam. Mặc dù chuyên môn là F&B, bạn có khả năng thấu hiểu sâu sắc ngôn ngữ tự nhiên tiếng Việt, từ lóng mạng, và teencode thường thấy trên các nền tảng thương mại điện tử, mạng xã hội (Shopee, Tiki, Facebook, Tiktok).
@@ -182,17 +183,33 @@ def analyze_absa(text: str, retry_on_parse_error: bool = True) -> dict:
 
     user_message = f"Input: {text.strip()}\nOutput:"
 
+    models_to_try = [model_name] + [m for m in VALID_FALLBACK_MODELS if m != model_name]
+
     def _call_api() -> str:
-        response = client.models.generate_content(
-            model=model_name,
-            contents=user_message,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                temperature=0.0,      # Deterministic — không sáng tạo khi phân tích
-                max_output_tokens=512,
-            ),
-        )
-        return response.text or ""
+        last_err = None
+        for m_name in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=m_name,
+                    contents=user_message,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                        temperature=0.0,      # Deterministic — không sáng tạo khi phân tích
+                        max_output_tokens=512,
+                    ),
+                )
+                return response.text or ""
+            except Exception as e:
+                err_str = str(e).lower()
+                if "not_found" in err_str or "not found" in err_str or "404" in err_str:
+                    logger.warning(f"[ABSA] Model '{m_name}' khong ton tai (404), thu model du phong...")
+                    last_err = e
+                    continue
+                else:
+                    raise e
+        if last_err:
+            raise last_err
+        return ""
 
     # --- Lần gọi đầu ---
     try:
@@ -200,7 +217,7 @@ def analyze_absa(text: str, retry_on_parse_error: bool = True) -> dict:
         logger.info(f"[ABSA] LLM raw output: {raw_output[:200]}")
     except Exception as e:
         err_msg = str(e).lower()
-        if "api_key" in err_msg or "invalid" in err_msg or "permission" in err_msg:
+        if "api_key" in err_msg or "permission" in err_msg or "unauthorized" in err_msg:
             raise ABSAAuthError(f"Lỗi xác thực Gemini API: {e}") from e
         raise ABSAError(f"Lỗi khi gọi Gemini API: {e}") from e
 
