@@ -390,7 +390,7 @@ async def submit_feedback(
 
     if is_suspicious_flag:
         logger.warning(f"[Feedback] Phat hien SPAM/NONSENSE -> Bo qua RFMS va Churn")
-        sentiment_score = None
+        sentiment_score = (fusion_result or {}).get("sentiment_score", 0.1)
         overall_sentiment = "Spam"
         p_churn = 0.0
         churn_risk_level = "none"

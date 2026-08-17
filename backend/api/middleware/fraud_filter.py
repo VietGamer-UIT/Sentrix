@@ -130,18 +130,25 @@ def _check_keyboard_mash(text: str) -> tuple[bool, str]:
     max_streak = 0
     current_streak = 0
     
-    # Rule 1: Từ quá dài không có khoảng trắng (>= 8 chars)
-    if len(text_lower) >= 8 and ' ' not in text_lower:
-        return True, "Chữ quá dài không có khoảng trắng (nghi ngờ gõ bừa)"
-        
-    # Rule 2: Home-row mashing (chỉ chứa các phím liền kề asdf, qwer, zxcv)
+    # Rule 1: Từ đơn rác không có khoảng trắng chứa hỗn hợp chữ + số (ví dụ 'asd23123')
     import re
-    if re.match(r'^[asdfghjkl;]+$', text_lower) and len(text_lower) >= 5:
-        return True, "Gõ bừa hàng phím giữa (home-row mashing)"
-    if re.match(r'^[qwertyuiop]+$', text_lower) and len(text_lower) >= 5:
-        return True, "Gõ bừa hàng phím trên"
-    if re.match(r'^[zxcvbnm,./]+$', text_lower) and len(text_lower) >= 5:
-        return True, "Gõ bừa hàng phím dưới"
+    if ' ' not in text_lower and len(text_lower) >= 5:
+        if re.search(r'[a-z]', text_lower) and re.search(r'\d', text_lower) and not re.search(r'^[a-z]+\d+$', text_lower):
+            return True, "Chuỗi ký tự pha trộn chữ và số bất thường (nghi ngờ gõ bừa)"
+        if len(text_lower) >= 6 and re.match(r'^[a-z0-9]+$', text_lower) and not any(v in text_lower for v in "aeiouyáàãảạâấầẫẩậăắằẵẳặéèẽẻẹêếềễểệíìĩỉịóòõỏọôốồỗổộơớờỡởợúùũủụưứừữửựýỳỹỷỵ"):
+            return True, "Chuỗi từ đơn không có nguyên âm tiếng Việt"
+
+    # Rule 2: Home-row mashing & keyboard pattern (ví dụ "asdasd", "adcadfasdt", "qweqwe")
+    if len(text_lower) >= 5 and ' ' not in text_lower:
+        consonants = [ch for ch in text_lower if ch.isalpha() and ch not in vowels]
+        if len(text_lower) >= 6 and (len(consonants) / len(text_lower)) >= 0.65:
+            return True, "Từ đơn dài không có khoảng trắng chứa tỷ lệ phụ âm bất thường (nghi ngờ gõ bừa)"
+        if not any(v in text_lower for v in "aeiouyáàãảạâấầẫẩậăắằẵẳặéèẽẻẹêếềễểệíìĩỉịóòõỏọôốồỗổộơớờỡởợúùũủụưứừữửựýỳỹỷỵ"):
+            return True, "Chuỗi từ đơn không có nguyên âm tiếng Việt (nghi ngờ gõ bừa)"
+        if re.match(r'^[asdfghjkl0-9;]+$', text_lower):
+            return True, "Gõ bừa hàng phím giữa (home-row mashing)"
+        if re.match(r'^[qwertyuiop0-9]+$', text_lower) and not any(v in text_lower for v in "aeiouyáàãảạâấầẫẩậăắằẵẳặéèẽẻẹêếềễểệíìĩỉịóòõỏọôốồỗổộơớờỡởợúùũủụưứừữửựýỳỹỷỵ"):
+            return True, "Gõ bừa hàng phím trên"
 
     # Rule 3: Quá 4 phụ âm liên tiếp
     for ch in text_lower:
@@ -151,7 +158,7 @@ def _check_keyboard_mash(text: str) -> tuple[bool, str]:
         else:
             current_streak = 0
             
-    if max_streak >= 5:
+    if max_streak >= 4:
         return True, f"Phát hiện {max_streak} phụ âm liên tiếp, nghi ngờ gõ bừa"
         
     return False, ""
