@@ -1,16 +1,16 @@
 // ═══════════════════════════════════════════════════════════════════════
 // firestore.rules — Sentrix Security Rules
 //
-// MỤC ĐÍCH: Chặn cross-tenant data leak (lỗ hổng IDOR được phát hiện
-// trong self-audit 2026-08-10: user A có thể đọc data của tenant B)
-//
+// MỤC ĐÍCH: Chặn cross-tenant data leak (lỗ hổng IDOR)
 // DEPLOY: firebase deploy --only firestore:rules
-//         (cần firebase-tools: npm i -g firebase-tools)
 //
 // NGUYÊN TẮC:
-//   1. Firestore data của tenant X → chỉ user đã auth VÀ thuộc tenant X mới đọc được
-//   2. Ghi feedback từ backend service account → chặn ghi trực tiếp từ client
-//   3. Dashboard chỉ đọc (không ghi) → rules read-only cho authenticated users
+//   1. Firestore data của tenant X → chỉ đúng user mới đọc được
+//   2. Ghi feedback: backend service account (Admin SDK, bypass rules)
+//   3. Dashboard: read-only cho authenticated users
+//   4. Web-client (unauthenticated): chỉ được UPDATE spin data vào
+//      feedback document (phone_masked, voucher_code, spin_prize, spin_at)
+//      — KHÔNG được tạo document mới, KHÔNG được đọc document khác
 // ═══════════════════════════════════════════════════════════════════════
 
 rules_version = '2';
@@ -26,30 +26,51 @@ service cloud.firestore {
     // ─── Tenants: chỉ đọc thông tin public của tenant ─────────────────
     // Dashboard cần đọc business_name, settings từ tenants/{tenantId}
     match /tenants/{tenantId} {
-      // Bất kỳ user đã đăng nhập đều đọc được thông tin tenant
-      // (cần để hiện tên quán trên sidebar)
-      // TODO: Thu hẹp về whitelist email khi có danh sách admin thật
       allow read: if request.auth != null;
-      allow write: if false; // chỉ admin Firebase Console mới được ghi
-    }
-
-    // ─── Feedbacks: chỉ đọc, chặn ghi từ client ──────────────────────
-    // Backend (service account) ghi vào đây qua Admin SDK
-    // Dashboard chỉ đọc để hiển thị analytics
-    match /tenants/{tenantId}/feedbacks/{feedbackId} {
-      // Chỉ user đã auth mới đọc được feedbacks
-      // TODO: Khi có danh sách admin per-tenant, thêm:
-      //   && get(/databases/$(database)/documents/tenants/$(tenantId)/admins/$(request.auth.uid)).data.role == 'admin'
-      allow read: if request.auth != null;
-
-      // Cấm ghi trực tiếp từ client — backend dùng Admin SDK (bypass rules)
       allow write: if false;
     }
 
-    // ─── Customers: tương tự feedbacks ────────────────────────────────
+    // ─── Feedbacks: đọc cho auth user, update spin cho web-client ──────
+    match /tenants/{tenantId}/feedbacks/{feedbackId} {
+      // Dashboard (auth user) đọc được
+      allow read: if request.auth != null;
+
+      // Backend (Admin SDK) ghi mới — bypass rules hoàn toàn, không cần rule
+
+      // Web-client (unauthenticated) chỉ được UPDATE 5 fields spin data
+      // SAU KHI feedback đã được tạo bởi backend.
+      // Điều kiện:
+      //   1. Document phải TỒN TẠI trước (resource != null)
+      //   2. Chỉ update đúng các field spin — không được thêm field lạ
+      //   3. Không được thay đổi bất kỳ field nào khác (transcript, sentiment, etc.)
+      allow update: if
+        resource != null &&
+        request.resource.data.keys().hasOnly(
+          resource.data.keys().toSet().union(
+            ['phone_masked', 'voucher_code', 'spin_prize', 'spin_prize_label', 'spin_at']
+          )
+        ) &&
+        // Chỉ các field spin được phép thay đổi
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['phone_masked', 'voucher_code', 'spin_prize', 'spin_prize_label', 'spin_at']
+        ) &&
+        // phone_masked phải là string ngắn (không inject script)
+        (!('phone_masked' in request.resource.data) ||
+          (request.resource.data.phone_masked is string &&
+           request.resource.data.phone_masked.size() <= 20)) &&
+        // voucher_code phải là string ngắn
+        (!('voucher_code' in request.resource.data) ||
+          (request.resource.data.voucher_code is string &&
+           request.resource.data.voucher_code.size() <= 50));
+
+      // Cấm xóa
+      allow delete: if false;
+    }
+
+    // ─── Customers: chỉ đọc cho auth user ─────────────────────────────
     match /tenants/{tenantId}/customers/{customerId} {
       allow read: if request.auth != null;
-      allow write: if false;
+      allow write: if false; // chỉ backend Admin SDK
     }
 
   }

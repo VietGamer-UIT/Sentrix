@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 from typing import Optional, Any
 
 from google.cloud.firestore_v1 import DocumentReference, DocumentSnapshot
+from firebase_admin import firestore  # cần cho @firestore.transactional
 
 from backend.db.firestore_client import get_firestore_client
 
