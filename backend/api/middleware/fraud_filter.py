@@ -17,9 +17,16 @@ CÁC KIỂM TRA HIỆN TẠI (Giai đoạn 3 — rule-based, không cần AI):
 
   Text:
     1. Chuỗi rỗng hoặc chỉ toàn khoảng trắng.
-    2. Toàn ký tự lặp lại (ví dụ: "aaaaaaaa", "asdasdasd").
+    2. Toàn ký tự lặp lại (ví dụ: "aaaaaaaa", "asdasdasd") — chỉ tính ký tự
+       NON-SPACE để tránh false positive với tiếng Việt nhiều dấu cách tự nhiên.
     3. Quá ngắn sau khi trim (< 3 ký tự) — không đủ nội dung để phân tích.
     4. Tỷ lệ ký tự không phải chữ/số/dấu câu quá cao (> 60%) — kiểu spam ký tự đặc biệt.
+
+THAY ĐỔI so với phiên bản cũ (fix false positive tiếng Việt):
+  - _check_repeated_chars(): bỏ khoảng trắng khỏi phép đếm ký tự phổ biến nhất.
+    Tiếng Việt tự nhiên có nhiều dấu cách giữa các âm tiết — không phải spam.
+  - Ngưỡng pattern lặp tăng từ repetitions >= 3 lên >= 4 để tránh nhận nhầm
+    các cụm từ ngắn tiếng Việt ("ngon tuyệt", "phục vụ" v.v.).
 
 KẾ HOẠCH MỞ RỘNG (Giai đoạn 6):
   - Sau khi có transcript từ Whisper, tái chạy fraud_filter trên text kết quả.
@@ -37,8 +44,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 AUDIO_MIN_BYTES = 800        # ~1 giây WebM/Opus @8kbps (an toàn về phía thấp)
 TEXT_MIN_CHARS = 3           # tối thiểu 3 ký tự sau trim
-TEXT_MAX_REPEAT_RATIO = 0.7  # nếu > 70% ký tự là lặp → spam
+TEXT_MAX_REPEAT_RATIO = 0.7  # nếu > 70% ký tự NON-SPACE là lặp → spam
 TEXT_MAX_SPECIAL_RATIO = 0.6 # nếu > 60% ký tự đặc biệt → spam
+REPEAT_PATTERN_MIN_COUNT = 4  # pattern lặp phải >= 4 lần mới bị flag (tránh false positive tiếng Việt)
 
 
 @dataclass
@@ -55,20 +63,28 @@ def _check_repeated_chars(text: str) -> tuple[bool, str]:
     Kiểm tra văn bản có toàn ký tự lặp không.
     Ví dụ: "aaaaaaa", "asdasdasd", "hahahaha"
 
+    LƯU Ý: Bỏ khoảng trắng khỏi phép đếm để tránh false positive với tiếng Việt.
+    Tiếng Việt có nhiều âm tiết ngắn, dấu cách tự nhiên xuất hiện nhiều — không phải spam.
+
     Returns:
         (is_repeated, reason_message)
     """
     if not text:
         return False, ""
 
-    # Tính tần suất ký tự
+    # Loại bỏ khoảng trắng trước khi đếm ký tự phổ biến nhất
+    text_no_space = text.lower().replace(" ", "")
+    if not text_no_space:
+        return False, ""
+
+    # Tính tần suất ký tự (không tính space)
     char_counts: dict[str, int] = {}
-    for ch in text.lower():
+    for ch in text_no_space:
         char_counts[ch] = char_counts.get(ch, 0) + 1
 
-    # Ký tự xuất hiện nhiều nhất chiếm bao nhiêu %
+    # Ký tự xuất hiện nhiều nhất chiếm bao nhiêu % (trong số ký tự non-space)
     most_common_count = max(char_counts.values())
-    most_common_ratio = most_common_count / len(text)
+    most_common_ratio = most_common_count / len(text_no_space)
 
     if most_common_ratio >= TEXT_MAX_REPEAT_RATIO:
         most_common_char = max(char_counts, key=lambda c: char_counts[c])
@@ -84,7 +100,8 @@ def _check_repeated_chars(text: str) -> tuple[bool, str]:
         pattern = text_lower[:pattern_len]
         # Số lần cần lặp để tạo thành chuỗi gốc
         repetitions = len(text_lower) // pattern_len
-        if repetitions >= 3 and pattern * repetitions == text_lower[:pattern_len * repetitions]:
+        # Tăng ngưỡng lên >= 4 (thay vì >= 3) để tránh false positive với tiếng Việt
+        if repetitions >= REPEAT_PATTERN_MIN_COUNT and pattern * repetitions == text_lower[:pattern_len * repetitions]:
             return (
                 True,
                 f"Phát hiện pattern lặp '{pattern}' x{repetitions} lần"

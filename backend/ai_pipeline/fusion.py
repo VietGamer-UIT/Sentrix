@@ -33,8 +33,13 @@ KẾT QUẢ TRẢ VỀ:
     "text_sentiment_score": float,
     "audio_stress_score": float,
     "fusion_mode": "agreement" | "conflict_audio_wins",
-    "aspects": list[dict],  # Pass-through từ ABSA
+    "aspects": list[dict],  # Pass-through từ ABSA, đã được normalize
   }
+
+THAY ĐỔI (fix phân loại khía cạnh):
+  - Thêm ASPECT_CATEGORY_MAP: map free-text aspect tiếng Việt → enum category
+  - Thêm hàm normalize_aspects_for_db(): chuẩn hóa aspects list trước khi lưu DB
+    + thêm field 'category' (enum), 'score' (numeric [-1, 1]), 'sentiment_en' (eng)
 """
 
 import logging
@@ -51,6 +56,77 @@ SARCASM_AUDIO_STRESS_THRESHOLD = 0.45   # stress_score > này → audio căng th
 # Trọng số khi đồng thuận: text 60%, audio 40%
 TEXT_WEIGHT = 0.60
 AUDIO_WEIGHT = 0.40
+
+
+# ---------------------------------------------------------------------------
+# Bảng map aspect category — free-text tiếng Việt → enum chuẩn DB
+# ---------------------------------------------------------------------------
+ASPECT_CATEGORY_MAP: dict[str, str] = {
+    # Nhân viên / phục vụ
+    "thái độ nhân viên": "nhan_vien",
+    "nhân viên": "nhan_vien",
+    "phục vụ": "nhan_vien",
+    "thái độ phục vụ": "nhan_vien",
+    "thái độ": "nhan_vien",
+    "nhân viên phục vụ": "nhan_vien",
+
+    # Món ăn / dịch vụ
+    "chất lượng món ăn": "mon_an",
+    "món ăn": "mon_an",
+    "đồ ăn": "mon_an",
+    "thức ăn": "mon_an",
+    "đồ uống": "mon_an",
+    "đồ uống / món ăn": "mon_an",
+    "chất lượng dịch vụ": "mon_an",
+    "dịch vụ": "mon_an",
+
+    # Không gian / môi trường
+    "không gian": "khong_gian",
+    "môi trường": "khong_gian",
+    "không gian / môi trường": "khong_gian",
+    "không khí": "khong_gian",
+    "trang trí": "khong_gian",
+    "âm nhạc": "khong_gian",
+
+    # Giá cả
+    "giá cả": "gia_ca",
+    "giá": "gia_ca",
+    "chi phí": "gia_ca",
+    "giá tiền": "gia_ca",
+
+    # Tốc độ phục vụ / thời gian chờ
+    "thời gian chờ đợi": "toc_do_phuc_vu",
+    "tốc độ phục vụ": "toc_do_phuc_vu",
+    "thời gian chờ": "toc_do_phuc_vu",
+    "tốc độ": "toc_do_phuc_vu",
+    "thời gian chờ đợi / tốc độ phục vụ": "toc_do_phuc_vu",
+    "chờ đợi": "toc_do_phuc_vu",
+
+    # Vệ sinh
+    "vệ sinh": "ve_sinh",
+    "vệ sinh sạch sẽ": "ve_sinh",
+    "sạch sẽ": "ve_sinh",
+
+    # Vị trí / tiện lợi
+    "vị trí": "vi_tri",
+    "vị trí / tiện lợi": "vi_tri",
+    "tiện lợi": "vi_tri",
+    "bãi đỗ xe": "vi_tri",
+}
+
+# Map sentiment tiếng Việt → tiếng Anh (enum DB)
+SENTIMENT_VN_TO_EN: dict[str, str] = {
+    "tích cực": "positive",
+    "tiêu cực": "negative",
+    "trung lập": "neutral",
+}
+
+# Map sentiment tiếng Việt → numeric score [-1.0, 1.0] (cho DB schema field 'score')
+SENTIMENT_VN_TO_SCORE: dict[str, float] = {
+    "tích cực": 1.0,
+    "tiêu cực": -1.0,
+    "trung lập": 0.0,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +173,78 @@ def _sentiment_label(score: float) -> str:
         return "Trung lập"
 
 
+def _normalize_aspect_category(aspect_text: str) -> str:
+    """
+    Map free-text aspect tiếng Việt (từ LLM) → enum category chuẩn DB.
+
+    Tra cứu trong ASPECT_CATEGORY_MAP (case-insensitive, strip whitespace).
+    Nếu không tìm thấy → trả về 'khac' (fallback).
+
+    Args:
+        aspect_text: Tên khía cạnh tự do từ LLM. Ví dụ: "Chất lượng món ăn"
+
+    Returns:
+        str: Enum category. Ví dụ: "mon_an"
+    """
+    key = aspect_text.strip().lower()
+    return ASPECT_CATEGORY_MAP.get(key, "khac")
+
+
+def normalize_aspects_for_db(aspects: list[dict]) -> list[dict]:
+    """
+    Chuẩn hóa danh sách aspects từ ABSA LLM → format chuẩn DB schema.
+
+    Input (từ LLM):
+        [
+            {"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon lắm"},
+            ...
+        ]
+
+    Output (chuẩn DB):
+        [
+            {
+                "aspect":       "Chất lượng món ăn",   # giữ nguyên text gốc
+                "category":     "mon_an",               # enum chuẩn hóa
+                "sentiment":    "Tích cực",             # tiếng Việt (giữ nguyên)
+                "sentiment_en": "positive",             # tiếng Anh (cho query)
+                "score":        1.0,                    # numeric [-1.0, 1.0]
+                "reason":       "Ngon lắm",             # từ LLM
+                "confidence":   None,                   # LLM hiện không trả confidence
+            },
+            ...
+        ]
+
+    Args:
+        aspects: List dict từ ABSA LLM output.
+
+    Returns:
+        List dict đã normalize theo schema.md.
+    """
+    normalized = []
+    for item in aspects:
+        aspect_text = str(item.get("aspect", "")).strip()
+        sentiment_raw = str(item.get("sentiment", "")).strip()
+        sentiment_key = sentiment_raw.lower()
+
+        normalized_item = {
+            "aspect":       aspect_text,
+            "category":     _normalize_aspect_category(aspect_text),
+            "sentiment":    sentiment_raw,
+            "sentiment_en": SENTIMENT_VN_TO_EN.get(sentiment_key, "neutral"),
+            "score":        SENTIMENT_VN_TO_SCORE.get(sentiment_key, 0.0),
+            "reason":       str(item.get("reason", "")).strip(),
+            "confidence":   item.get("confidence"),  # None nếu LLM không trả về
+        }
+
+        # Nếu LLM có sarcasm_suspected, truyền qua
+        if item.get("sarcasm_suspected"):
+            normalized_item["sarcasm_suspected"] = True
+
+        normalized.append(normalized_item)
+
+    return normalized
+
+
 # ---------------------------------------------------------------------------
 # Hàm chính
 # ---------------------------------------------------------------------------
@@ -123,7 +271,7 @@ def dynamic_weighted_fusion(
             "text_sentiment_score": float,
             "audio_stress_score": float | None,
             "fusion_mode": str,
-            "aspects": list[dict],
+            "aspects": list[dict],           # Đã normalize theo schema DB
             "is_spam": bool,
         }
     """
@@ -143,6 +291,9 @@ def dynamic_weighted_fusion(
             "aspects": [],
             "is_spam": True,
         }
+
+    # --- Normalize aspects để lưu DB ---
+    normalized_aspects = normalize_aspects_for_db(aspects)
 
     # --- Tính điểm text ---
     text_score = _compute_text_sentiment_score(aspects)
@@ -203,7 +354,7 @@ def dynamic_weighted_fusion(
         "text_sentiment_score": text_score,
         "audio_stress_score": audio_stress,
         "fusion_mode": fusion_mode,
-        "aspects": aspects,
+        "aspects": normalized_aspects,
         "is_spam": False,
     }
 
