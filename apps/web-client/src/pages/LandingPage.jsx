@@ -21,9 +21,10 @@ function LandingPage() {
   const location  = searchParams.get('location') || 'Bàn 1'
   const businessName = 'Phở Bà Lan'
 
-  // Xóa kết quả API cũ khi vào trang mới
+  // Xóa kết quả API cũ khi vào trang mới (session mới bắt đầu)
   useEffect(() => {
     sessionStorage.removeItem('sentrix_api_result')
+    sessionStorage.removeItem('sentrix_feedback_id')
     sessionStorage.removeItem('sentrix_is_suspicious')
   }, [])
 

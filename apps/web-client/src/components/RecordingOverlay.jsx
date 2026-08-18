@@ -149,7 +149,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     setLiveTranscript('')
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isSubmitting) return  // chặn double-click
     if (!audioBlob && !textContent.trim()) {
       setError('Vui lòng ghi âm hoặc gõ phản hồi trước khi gửi.')
@@ -157,29 +157,41 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     }
 
     setIsSubmitting(true)
-
-    // Optimistic: navigate ngay sang /done
     const decodedLocation = decodeURIComponent(location)
-    navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
 
-    // Gửi API ngầm — isSubmitting không cần reset vì đã navigate đi
-    submitFeedback({
-      tenantId,
-      location: decodedLocation,
-      audioBlob: audioBlob || null,
-      textContent: textContent.trim() || null,
-      customerPhone: null,
-      totalSpending: 0,
-    }).then(result => {
+    // Khi ghi âm: dùng liveTranscript (SpeechRecognition trình duyệt) làm text_content
+    // để backend có fallback nếu Whisper không chạy được — cả hai field sẽ được gửi cùng.
+    // Backend ưu tiên Whisper; nếu Whisper fail → dùng text_content (= liveTranscript) này.
+    const textFallback = mode === 'audio'
+      ? (liveTranscript.trim() || null)
+      : (textContent.trim() || null)
+
+    try {
+      const result = await submitFeedback({
+        tenantId,
+        location: decodedLocation,
+        audioBlob: audioBlob || null,
+        textContent: textFallback,
+        customerPhone: null,
+        totalSpending: 0,
+      })
+      // Lưu kết quả + feedback_id vào sessionStorage trước khi navigate
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
+        if (result.feedback_id) {
+          sessionStorage.setItem('sentrix_feedback_id', result.feedback_id)
+        }
         if (result.is_suspicious) {
           sessionStorage.setItem('sentrix_is_suspicious', 'true')
         }
-      } catch { /* ignore */ }
-    }).catch(err => {
+      } catch { /* ignore storage errors */ }
+    } catch (err) {
+      // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
-    })
+    }
+
+    // Navigate SAU khi đã có kết quả (hoặc fail) — đảm bảo feedback_id đã được lưu
+    navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
   }
 
   const isWarning   = timeLeft <= 5 && isRecording

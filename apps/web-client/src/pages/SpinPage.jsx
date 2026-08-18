@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { submitSpinAPI, SPIN_PRIZES } from '../api/gamification.js'
+import { SPIN_PRIZES } from '../api/gamification.js'
+import { updateFeedbackWithSpin } from '../api/firestoreUpdate.js'
 
 /**
  * SpinPage — Bước 5 trong user-flow.md
  *
- * Bug fixes (Giai đoạn BUG FIX):
- * - Fix tính góc vòng quay: pointer ở TOP (12 giờ) → segment 0 bắt đầu từ top
- * - Anti-spam: đọc sessionStorage 'sentrix_is_suspicious' → block quay nếu true
- * - Label phần thưởng: "Uống miễn phí" → "Voucher uống lần sau"
- * - Bỏ bớt icon emoji thừa
- *
- * ⚠️ MOCK — /api/gamification/spin chưa có (xem docs/api-contract.md mục 4)
+ * Logic mới (sau fix data pipeline):
+ * - Đọc feedback_id từ sessionStorage (được lưu bởi RecordingPage/RecordingOverlay)
+ * - Sau khi quay: lưu phone_masked + voucher_code vào Firestore feedback document
+ * - API /api/gamification/spin chưa có → dùng mock, nhưng DATA vẫn được lưu thật
+ * - handleSkip: KHÔNG lưu phone (khách chọn bỏ qua) nhưng navigate bình thường
  */
 function SpinPage() {
   const [searchParams] = useSearchParams()
@@ -50,52 +49,71 @@ function SpinPage() {
     setIsSpinning(true)
     setPhoneError(null)
 
-    // === Lấy feedback_id từ sessionStorage
+    // === Lấy feedback_id từ sessionStorage (được lưu bởi RecordingPage/Overlay)
     let feedbackId = null
     try {
-      const stored = sessionStorage.getItem('sentrix_api_result')
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        feedbackId = parsed.feedback_id
+      feedbackId = sessionStorage.getItem('sentrix_feedback_id')
+      if (!feedbackId) {
+        // Fallback: thử đọc từ api_result cũ (tương thích ngược)
+        const stored = sessionStorage.getItem('sentrix_api_result')
+        if (stored) feedbackId = JSON.parse(stored).feedback_id
       }
     } catch (err) {
-      console.error('Failed to parse sentrix_api_result', err)
+      console.error('[Sentrix] Không đọc được feedback_id từ sessionStorage', err)
     }
 
-    try {
-      const result = await submitSpinAPI(tenantId, phone, feedbackId)
-      const prizeIndex = SPIN_PRIZES.findIndex(p => p.id === result.prize)
+    // === Mock spin: chọn prize theo probability weights ===
+    const rand = Math.random()
+    let cumulative = 0
+    let prizeIndex = 0
+    for (let i = 0; i < SPIN_PRIZES.length; i++) {
+      cumulative += SPIN_PRIZES[i].probability
+      if (rand <= cumulative) { prizeIndex = i; break }
+      prizeIndex = i // fallback: last item
+    }
+    const prizeObj = SPIN_PRIZES[prizeIndex]
+    const voucherCode = prizeObj.voucherTemplate ? prizeObj.voucherTemplate(phone) : null
 
-      /**
-       * Fix góc quay: Pointer ở TOP (12 giờ = -90° trong toán học)
+    /**
+     * Fix góc quay: Pointer ở TOP (12 giờ = -90° trong toán học)
      * Segment i chiếm góc [i * segmentAngle, (i+1) * segmentAngle]
-     * Tâm segment i (tính từ top) = (i + 0.5) * segmentAngle
-     * Để pointer (top) trỏ vào tâm segment i, wheel phải xoay sao cho
-     * điểm đó lên top: rotationNeeded = 360 - (i + 0.5) * segmentAngle
+     * Để pointer (top) trỏ vào tâm segment i:
+     * rotationNeeded = 360 - (i + 0.5) * segmentAngle
      */
     const targetDeg = 360 - ((prizeIndex + 0.5) * segmentAngle)
     const totalRotation = rotation + 360 * 8 + targetDeg
     setRotation(totalRotation)
 
+    // === Lưu phone + voucher vào Firestore (ngầm, song song với animation) ===
+    if (feedbackId) {
+      updateFeedbackWithSpin({
+        tenantId,
+        feedbackId,
+        phone,
+        prize:       prizeObj.id,
+        prizeLabel:  prizeObj.prizeLabel || prizeObj.label,
+        voucherCode,
+      }).catch(err => console.warn('[Sentrix] updateFeedbackWithSpin failed:', err))
+    } else {
+      console.warn('[Sentrix] SpinPage: không có feedback_id — phone + voucher không được lưu vào Firestore')
+    }
+
+    // === Navigate sang VoucherPage sau khi animation kết thúc ===
     setTimeout(() => {
-      const prizeObj = SPIN_PRIZES[prizeIndex]
       navigate(
         `/voucher?tenant_id=${tenantId}` +
         `&location=${encodeURIComponent(location)}` +
-        `&prize=${result.prize}` +
-        `&prize_label=${encodeURIComponent(prizeObj.prizeLabel || prizeObj.label || result.prize_label)}` +
-        `&voucher_code=${encodeURIComponent(result.voucher_code || '')}` +
-        `&message=${encodeURIComponent(result.message)}`
+        `&prize=${prizeObj.id}` +
+        `&prize_label=${encodeURIComponent(prizeObj.prizeLabel || prizeObj.label)}` +
+        `&voucher_code=${encodeURIComponent(voucherCode || '')}` +
+        `&message=${encodeURIComponent('Cảm ơn bạn đã quay thưởng!')}`
       )
     }, 4500)
-    } catch (err) {
-      setIsSpinning(false)
-      setPhoneError(err.message || 'Có lỗi xảy ra, vui lòng thử lại')
-    }
   }
 
 
   const handleSkip = () => {
+    // Khách bỏ qua spin → không lưu phone, không có voucher
     navigate(`/voucher?tenant_id=${tenantId}&location=${encodeURIComponent(location)}&skipped=true`)
   }
 

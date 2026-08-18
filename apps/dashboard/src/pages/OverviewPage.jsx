@@ -66,12 +66,17 @@ export default function OverviewPage() {
     const map = {}
     doneFeedbacks.forEach(f => {
       (f.aspects || []).forEach(a => {
-        if (!map[a.aspect]) map[a.aspect] = { pos: 0, neg: 0, neu: 0, count: 0, total: 0 }
-        map[a.aspect].count++
-        map[a.aspect].total += (a.score ?? 0)
-        if (a.sentiment === 'positive') map[a.aspect].pos++
-        else if (a.sentiment === 'negative') map[a.aspect].neg++
-        else map[a.aspect].neu++
+        // Backend mới lưu: category (enum) + sentiment_en + score
+        // Mock cũ dùng: aspect (enum) + sentiment (en) + score
+        const cat  = a.category || a.aspect || 'khac'
+        const sent = a.sentiment_en || (a.sentiment === 'Tích cực' ? 'positive' : a.sentiment === 'Tiêu cực' ? 'negative' : a.sentiment) || 'neutral'
+        const sc   = typeof a.score === 'number' ? a.score : (sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0)
+        if (!map[cat]) map[cat] = { pos: 0, neg: 0, neu: 0, count: 0, total: 0 }
+        map[cat].count++
+        map[cat].total += sc
+        if (sent === 'positive') map[cat].pos++
+        else if (sent === 'negative') map[cat].neg++
+        else map[cat].neu++
       })
     })
     return Object.entries(map)
@@ -254,12 +259,17 @@ export default function OverviewPage() {
                     </p>
                     {(fb.aspects?.length > 0) && (
                       <div>
-                        {(fb.aspects || []).map((a, i) => (
-                          <span key={i} className="aspect-chip">
-                            {ASPECT_LABELS[a.aspect] || a.aspect}
-                            {' '}<span style={{ color: scoreToColor(a.score ?? 0) }}>{a.sentiment === 'positive' ? '▲' : a.sentiment === 'negative' ? '▼' : '–'}</span>
-                          </span>
-                        ))}
+                        {(fb.aspects || []).map((a, i) => {
+                          const cat  = a.category || a.aspect || 'khac'
+                          const sent = a.sentiment_en || (a.sentiment === 'Tích cực' ? 'positive' : a.sentiment === 'Tiêu cực' ? 'negative' : a.sentiment) || 'neutral'
+                          const sc   = typeof a.score === 'number' ? a.score : (sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0)
+                          return (
+                            <span key={i} className="aspect-chip">
+                              {ASPECT_LABELS[cat] || cat}
+                              {' '}<span style={{ color: scoreToColor(sc) }}>{sent === 'positive' ? '▲' : sent === 'negative' ? '▼' : '–'}</span>
+                            </span>
+                          )
+                        })}
                       </div>
                     )}
                   </div>

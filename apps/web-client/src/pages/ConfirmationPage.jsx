@@ -28,26 +28,29 @@ function ConfirmationPage() {
   const [apiResult, setApiResult] = useState(null)
   const pollRef = useRef(null)
 
-  // Poll sessionStorage để lấy kết quả AI (chạy ngầm từ RecordingPage)
+  // Đọc kết quả AI từ sessionStorage — với flow mới (await trước navigate),
+  // kết quả đã có sẵn ngay khi trang này load, không cần poll lâu.
   useEffect(() => {
-    // Xóa kết quả cũ trước khi poll
-    sessionStorage.removeItem('sentrix_api_result')
+    // Thử đọc ngay lập tức (flow mới: await → navigate → trang này load)
+    const raw = sessionStorage.getItem('sentrix_api_result')
+    if (raw) {
+      try { setApiResult(JSON.parse(raw)) } catch { /* ignore */ }
+      return // Đã có kết quả → không cần poll
+    }
 
+    // Fallback: poll nếu result chưa có (tránh race condition edge case)
     pollRef.current = setInterval(() => {
-      const raw = sessionStorage.getItem('sentrix_api_result')
-      if (raw) {
-        try {
-          setApiResult(JSON.parse(raw))
-          // Giữ lại sentrix_api_result trong sessionStorage để SpinPage đọc feedback_id
-        } catch { /* ignore parse error */ }
+      const r = sessionStorage.getItem('sentrix_api_result')
+      if (r) {
+        try { setApiResult(JSON.parse(r)) } catch { /* ignore */ }
         clearInterval(pollRef.current)
       }
-    }, 500)
+    }, 300)
 
     return () => clearInterval(pollRef.current)
   }, [])
 
-  // Tự chuyển sau 3 giây (đủ thời gian đọc thông báo + xem insight nếu có)
+  // Tự chuyển sau 3 giây
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!hasNavigated.current) {

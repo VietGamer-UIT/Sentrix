@@ -4,7 +4,36 @@ import { useFeedbacks, timeAgo } from '../mocks/useFirestore.js'
 const ASPECT_LABELS = {
   nhan_vien: 'Nhân viên', mon_an: 'Món ăn',
   khong_gian: 'Không gian', gia_ca: 'Giá cả',
-  toc_do_phuc_vu: 'Tốc độ', ve_sinh: 'Vệ sinh', khac: 'Khác'
+  toc_do_phuc_vu: 'Tốc độ', ve_sinh: 'Vệ sinh',
+  vi_tri: 'Vị trí', khac: 'Khác'
+}
+
+/**
+ * Lấy category key từ aspect object.
+ * Backend mới lưu: { category: "mon_an", sentiment_en: "positive", ... }
+ * Mock cũ dùng:    { aspect: "mon_an", sentiment: "positive", ... }
+ * Hàm này tương thích cả hai.
+ */
+function getAspectCategory(a) {
+  return a.category || a.aspect || 'khac'
+}
+
+function getAspectSentimentEn(a) {
+  // Backend mới: sentiment_en = "positive"|"negative"|"neutral"
+  // Mock cũ: sentiment = "positive"|"negative" (tiếng Anh)
+  // Backend cũ có thể: sentiment = "Tích cực" (tiếng Việt)
+  const raw = a.sentiment_en || a.sentiment || ''
+  if (raw === 'positive' || raw === 'Tích cực') return 'positive'
+  if (raw === 'negative' || raw === 'Tiêu cực') return 'negative'
+  return 'neutral'
+}
+
+function getAspectScore(a) {
+  // Ưu tiên field score numeric [-1,1] từ backend
+  if (typeof a.score === 'number') return a.score
+  // Fallback: suy ra từ sentiment
+  const sent = getAspectSentimentEn(a)
+  return sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0
 }
 
 function scoreToColor(s) {
@@ -154,14 +183,19 @@ export default function FeedbacksPage() {
                         ) : '—'}
                       </td>
                       <td style={{ maxWidth: 180 }}>
-                        {(fb.aspects || []).slice(0, 3).map((a, i) => (
-                          <span key={i} className="aspect-chip" style={{ fontSize: '0.65rem' }}>
-                            {ASPECT_LABELS[a.aspect] || a.aspect}
-                            <span style={{ color: scoreToColor(a.score ?? 0), marginLeft: 4 }}>
-                              {a.sentiment === 'positive' ? '▲' : a.sentiment === 'negative' ? '▼' : '–'}
+                        {(fb.aspects || []).slice(0, 3).map((a, i) => {
+                          const cat  = getAspectCategory(a)
+                          const sent = getAspectSentimentEn(a)
+                          const sc   = getAspectScore(a)
+                          return (
+                            <span key={i} className="aspect-chip" style={{ fontSize: '0.65rem' }}>
+                              {ASPECT_LABELS[cat] || cat}
+                              <span style={{ color: scoreToColor(sc), marginLeft: 4 }}>
+                                {sent === 'positive' ? '▲' : sent === 'negative' ? '▼' : '–'}
+                              </span>
                             </span>
-                          </span>
-                        ))}
+                          )
+                        })}
                         {(fb.aspects?.length ?? 0) > 3 && <span className="aspect-chip">+{fb.aspects.length - 3}</span>}
                       </td>
                       <td>

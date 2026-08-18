@@ -194,7 +194,7 @@ function RecordingPage() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!audioBlob && !textContent.trim()) {
       setError('Vui lòng ghi âm hoặc gõ phản hồi trước khi gửi.')
       return
@@ -210,25 +210,35 @@ function RecordingPage() {
       return // Dừng lại — không navigate, không gửi API
     }
 
-    // Optimistic UI: chuyển sang màn hình xác nhận NGAY — đúng user-flow.md Bước 4
-    navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
+    // Khi ghi âm: truyền thêm textContent nếu có (user nhập thêm)
+    // để backend dùng làm fallback nếu Whisper fail
+    const textToSend = textContent.trim() || null
 
-    // Gửi API ngầm (fire-and-forget) — Giai đoạn 7: thêm customerPhone + totalSpending
-    submitFeedback({
-      tenantId,
-      location: decodeURIComponent(location),
-      audioBlob: audioBlob || null,
-      textContent: textContent.trim() || null,
-      customerPhone: customerPhone.trim() || null,
-      totalSpending: 0,
-    }).then(result => {
-      // Lưu kết quả AI vào sessionStorage để ConfirmationPage hiển thị insight
+    try {
+      const result = await submitFeedback({
+        tenantId,
+        location: decodeURIComponent(location),
+        audioBlob: audioBlob || null,
+        textContent: textToSend,
+        customerPhone: customerPhone.trim() || null,
+        totalSpending: 0,
+      })
+      // Lưu feedback_id và kết quả AI vào sessionStorage trước khi navigate
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
+        if (result.feedback_id) {
+          sessionStorage.setItem('sentrix_feedback_id', result.feedback_id)
+        }
+        if (result.is_suspicious) {
+          sessionStorage.setItem('sentrix_is_suspicious', 'true')
+        }
       } catch { /* ignore */ }
-    }).catch(err => {
+    } catch (err) {
       console.error('[Sentrix] Feedback submit failed silently:', err)
-    })
+    }
+
+    // Navigate SAU khi đã có kết quả (hoặc fail)
+    navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
   }
 
   const handleRetry = () => {
