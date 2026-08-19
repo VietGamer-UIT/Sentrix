@@ -30,6 +30,8 @@ LƯU Ý THIẾT KẾ:
   - Nếu Firestore lỗi → trả 503, KHÔNG để mất dữ liệu im lặng.
 """
 
+import asyncio
+import concurrent.futures
 import uuid
 import logging
 import os
@@ -94,6 +96,9 @@ TEMP_AUDIO_DIR = Path(tempfile.gettempdir()) / "sentrix_audio_temp"
 
 # Số ngày mặc định kể từ lần cuối nếu không có phone (guest)
 GUEST_RECENCY_DAYS_DEFAULT = 30.0
+
+# Timeout cho Gemini ABSA (giây) — tránh chờ đến 1 phút
+GEMINI_ABSA_TIMEOUT_SECONDS = 10
 
 
 # ---------------------------------------------------------------------------
@@ -292,48 +297,71 @@ async def submit_feedback(
         )
 
     # -----------------------------------------------------------------------
-    # Bước 4: Whisper STT
+    # Bước 4 + 5: Whisper STT và Librosa audio features — CHẠY SONG SONG
+    # Dùng asyncio.gather + ThreadPoolExecutor để không block event loop.
     # -----------------------------------------------------------------------
     transcript: Optional[str] = text_to_check  # Nếu có text gốc thì dùng luôn
-
-    if has_audio and temp_audio_path:
-        try:
-            logger.info(f"[Feedback] [4] Whisper STT ...")
-            whisper_text = transcribe_audio(temp_audio_path, language="vi")
-            # Ưu tiên transcript từ Whisper; nếu trống thì fallback về text gõ tay
-            if whisper_text:
-                transcript = whisper_text
-            logger.info(f"[Feedback] Whisper: {repr((transcript or '')[:80])}")
-        except WhisperAuthError as e:
-            _cleanup_temp_audio(temp_audio_path)
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=f"STT service khong kha dung (loi xac thuc): {e}",
-            )
-        except WhisperFormatError as e:
-            logger.warning(f"[Feedback] Whisper format error (bo qua): {e}")
-        except WhisperTimeoutError:
-            logger.warning("[Feedback] Whisper timeout — su dung text goc neu co")
-        except WhisperError as e:
-            logger.warning(f"[Feedback] Whisper loi: {e}")
-
-    # -----------------------------------------------------------------------
-    # Bước 5: Librosa audio features
-    # -----------------------------------------------------------------------
     audio_features: Optional[dict] = None
 
     if has_audio and temp_audio_path:
+        loop = asyncio.get_event_loop()
+        _executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+
+        # --- Wrapper chạy Whisper trong thread ---
+        def _run_whisper() -> Optional[str]:
+            try:
+                logger.info("[Feedback] [4] Whisper STT (thread) ...")
+                result = transcribe_audio(temp_audio_path, language="vi")
+                logger.info(f"[Feedback] Whisper xong: {repr((result or '')[:80])}")
+                return result
+            except WhisperAuthError:
+                raise  # Sẽ được xử lý ở bên ngoài
+            except (WhisperFormatError, WhisperTimeoutError, WhisperError) as e:
+                logger.warning(f"[Feedback] Whisper loi (bo qua): {type(e).__name__}: {e}")
+                return None
+
+        # --- Wrapper chạy Librosa trong thread ---
+        def _run_librosa() -> Optional[dict]:
+            try:
+                logger.info("[Feedback] [5] Librosa feature extraction (thread) ...")
+                feats = extract_audio_features(temp_audio_path)
+                logger.info(
+                    f"[Feedback] Librosa xong: stress_score={feats.get('stress_score')}, "
+                    f"f0_mean={feats.get('f0_mean')}Hz"
+                )
+                return feats
+            except (AudioFeaturesError, Exception) as e:
+                logger.warning(f"[Feedback] Librosa loi (bo qua): {type(e).__name__}: {e}")
+                return None
+
         try:
-            logger.info(f"[Feedback] [5] Librosa feature extraction ...")
-            audio_features = extract_audio_features(temp_audio_path)
-            logger.info(
-                f"[Feedback] Librosa: stress_score={audio_features.get('stress_score')}, "
-                f"f0_mean={audio_features.get('f0_mean')}Hz"
+            # Gửi cả 2 tác vụ vào ThreadPoolExecutor, chạy song song
+            whisper_future = loop.run_in_executor(_executor, _run_whisper)
+            librosa_future = loop.run_in_executor(_executor, _run_librosa)
+            whisper_result, librosa_result = await asyncio.gather(
+                whisper_future, librosa_future, return_exceptions=True
             )
-        except AudioFeaturesError as e:
-            logger.warning(f"[Feedback] Librosa loi (bo qua): {e}")
-        except Exception as e:
-            logger.warning(f"[Feedback] Librosa loi khong xac dinh (bo qua): {e}")
+
+            # Xử lý kết quả Whisper
+            if isinstance(whisper_result, WhisperAuthError):
+                _cleanup_temp_audio(temp_audio_path)
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=f"STT service khong kha dung (loi xac thuc): {whisper_result}",
+                )
+            elif isinstance(whisper_result, BaseException):
+                logger.warning(f"[Feedback] Whisper exception trong gather: {whisper_result}")
+            elif whisper_result:
+                transcript = whisper_result
+
+            # Xử lý kết quả Librosa
+            if isinstance(librosa_result, BaseException):
+                logger.warning(f"[Feedback] Librosa exception trong gather: {librosa_result}")
+            elif librosa_result:
+                audio_features = librosa_result
+
+        finally:
+            _executor.shutdown(wait=False)
 
     # Dọn temp audio sau khi Whisper + Librosa đã đọc xong
     _cleanup_temp_audio(temp_audio_path)
@@ -352,24 +380,42 @@ async def submit_feedback(
 
     if text_for_absa:
         try:
-            logger.info(f"[Feedback] [6] ABSA qua Gemini ...")
-            absa_result = analyze_absa(text_for_absa)
-
-            if absa_result.get("is_spam"):
-                logger.warning(f"[Feedback] ABSA phat hien SPAM/NONSENSE")
-
-            logger.info(f"[Feedback] ABSA: {len(absa_result.get('aspects', []))} aspects")
-
-            # Fusion
-            fusion_result = dynamic_weighted_fusion(absa_result, audio_features)
-            sentiment_score = fusion_result.get("sentiment_score", 0.5)
-            overall_sentiment = fusion_result.get("overall_sentiment", "Trung lap")
-            is_sarcasm_suspected = fusion_result.get("is_sarcasm_suspected", False)
-
             logger.info(
-                f"[Feedback] Fusion: sentiment={sentiment_score:.4f} "
-                f"({overall_sentiment}), sarcasm={is_sarcasm_suspected}"
+                f"[Feedback] [6] ABSA qua Gemini (timeout={GEMINI_ABSA_TIMEOUT_SECONDS}s) ..."
             )
+            # Chạy ABSA trong ThreadPoolExecutor với timeout để tránh block > 10s
+            _absa_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+            _absa_loop = asyncio.get_event_loop()
+            try:
+                absa_result = await asyncio.wait_for(
+                    _absa_loop.run_in_executor(_absa_executor, analyze_absa, text_for_absa),
+                    timeout=GEMINI_ABSA_TIMEOUT_SECONDS,
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    f"[Feedback] Gemini ABSA timeout sau {GEMINI_ABSA_TIMEOUT_SECONDS}s "
+                    "— su dung sentiment mac dinh (fallback)."
+                )
+                absa_result = None
+            finally:
+                _absa_executor.shutdown(wait=False)
+
+            if absa_result is not None:
+                if absa_result.get("is_spam"):
+                    logger.warning(f"[Feedback] ABSA phat hien SPAM/NONSENSE")
+
+                logger.info(f"[Feedback] ABSA: {len(absa_result.get('aspects', []))} aspects")
+
+                # Fusion
+                fusion_result = dynamic_weighted_fusion(absa_result, audio_features)
+                sentiment_score = fusion_result.get("sentiment_score", 0.5)
+                overall_sentiment = fusion_result.get("overall_sentiment", "Trung lap")
+                is_sarcasm_suspected = fusion_result.get("is_sarcasm_suspected", False)
+
+                logger.info(
+                    f"[Feedback] Fusion: sentiment={sentiment_score:.4f} "
+                    f"({overall_sentiment}), sarcasm={is_sarcasm_suspected}"
+                )
         except ABSAAuthError as e:
             logger.error(f"[Feedback] ABSA auth error: {e}")
             # Không crash — tiếp tục với sentiment_score mặc định
@@ -524,13 +570,30 @@ async def submit_feedback(
                 sentiment_score_raw=sentiment_score or 0.5,
             )
 
-    except EnvironmentError as e:
+    except (EnvironmentError, FileNotFoundError) as e:
         # Firebase credentials chưa cấu hình — cho phép chạy mà không cần Firestore
-        logger.warning(f"[Feedback] Firestore chua cau hinh (bo qua luu): {e}")
+        # (chỉ xảy ra khi không có .env hoặc serviceAccountKey.json)
+        logger.warning(
+            f"[Feedback] Firestore chua cau hinh — bo qua luu (KHONG co feedback_id): {e}\n"
+            f"  → Kiem tra: FIREBASE_CREDENTIALS_PATH hoac FIREBASE_PROJECT_ID/PRIVATE_KEY/CLIENT_EMAIL "
+            f"trong file .env"
+        )
+        # EnvironmentError: không raise vì đây là lỗi môi trường dev/staging chưa setup
+        # feedback_id sẽ là None, Frontend sẽ biết không lưu được
     except Exception as e:
-        logger.error(f"[Feedback] Loi luu Firestore: {type(e).__name__}: {e}")
-        # Không raise — feedback đã xử lý xong, chỉ không lưu được
-        # Pipeline chính (ABSA, RFMS) đã chạy xong, kết quả đã có trong response
+        # LỖI THẬT (network, permissions, ...): PHẢI báo lỗi cho Frontend
+        # Không được nuốt lỗi vì sẽ khiến SpinPage mất feedback_id và voucher
+        logger.error(
+            f"[Feedback] LOI LUU FIRESTORE NGHIEM TRONG: {type(e).__name__}: {e}\n"
+            f"  → feedback_id se la None, Frontend biet can retry."
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=(
+                f"Luu feedback that bai do loi Firestore: {type(e).__name__}. "
+                "Vui long thu lai sau hoac lien he ky thuat."
+            ),
+        )
 
     # -----------------------------------------------------------------------
     # Bước 9 (Giai đoạn 9): Zalo ZNS webhook nếu P_churn vượt ngưỡng
