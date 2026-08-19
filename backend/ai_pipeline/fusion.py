@@ -21,11 +21,17 @@ NGƯỠNG MÂU THUẪN (tinh chỉnh — v2, dựa trên phản hồi dữ liệ
   - text_sentiment_score > 0.5 (tích cực)  VÀ  audio_stress_score > 0.80
   → Được xem là mâu thuẫn, nghi ngờ mỉa mai.
 
-  LÝ DO THAY ĐỔI (từ 0.45 → 0.80):
-    Ngưỡng cũ (0.45) quá nhạy: tiếng ồn nền, giọng hơi lo lắng ở quán đông
-    cũng kích hoạt cờ mỉa mai, bẻ lái phản hồi Tích Cực thành Tiêu Cực sai.
-    Ngưỡng mới (0.80) chỉ đánh dấu mỉa mai khi stress_score CỰC CAO,
-    phản ánh rõ ràng giọng căng thẳng bất thường (không phải tiếng ồn thông thường).
+  Tại sao ngưỡng cao (0.80) thay vì 0.45 như trước?
+  → Vì Librosa chưa ổn định: tiếng ồn nền, quán đông, micro kém đều
+    khiến stress_score tăng giả tạo dù khách hàng có giọng bình thường.
+  → KHI Librosa được kiểm tra kỹ và ổn định hơn: hạ về ~0.55–0.60 là hợp lý.
+
+TRỌNG SỐ (PROVISIONAL — tạm thời trong khi Whisper + Librosa chưa ổn định):
+  Mục tiêu dài hạn: ưu tiên giọng nói (audio 60%, text 40%) vì giọng
+  chứa cảm xúc thật mà người nói khó kiểm soát hơn. Tuy nhiên
+  hiện tại Whisper STT và Librosa chưa được QA kỹ → tạm dùng text làm chủ
+  đạo (80%) để đảm bảo kết quả chính xác.
+  TODO: Khi Whisper + Librosa QA xong → đổi TEXT_WEIGHT=0.40, AUDIO_WEIGHT=0.60.
 
 KẾT QUẢ TRẢ VỀ:
   {
@@ -50,14 +56,20 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Ngưỡng Fusion — ghi rõ đây là giá trị ĐỀ XUẤT, sẽ tinh chỉnh sau
+# Ngưỡng Fusion
 # ---------------------------------------------------------------------------
 SARCASM_TEXT_POSITIVE_THRESHOLD = 0.5   # text_score > này → văn bản tích cực
-SARCASM_AUDIO_STRESS_THRESHOLD  = 0.80  # stress_score > này → audio căng thẳng CỰC CAO (v2: tăng từ 0.45)
 
-# Trọng số khi đồng thuận: text 80%, audio 20%  (v2: ưu tiên văn bản hơn)
-TEXT_WEIGHT  = 0.80
-AUDIO_WEIGHT = 0.20
+# Ngưỡng mỉa mai tạm thời cao (0.80) vì Librosa chưa ổn định:
+# tiếng ồn nền / micro kém có thể đẩy stress_score lên giả tạo.
+# TODO: Khi Librosa QA xong → hạ về 0.55–0.60
+SARCASM_AUDIO_STRESS_THRESHOLD  = 0.80
+
+# TRọNG SỐ PROVISIONAL — tạm thời trong khi Whisper + Librosa chưa ổn định.
+# Mục tiêu dài hạn (khi audio QA xong): TEXT_WEIGHT=0.40, AUDIO_WEIGHT=0.60
+# (vì giọng nói phản ánh cảm xúc thật mà người nói khó che giấu hơn)
+TEXT_WEIGHT  = 0.80  # PROVISIONAL: sẽ giảm xuống 0.40 khi audio ổn định
+AUDIO_WEIGHT = 0.20  # PROVISIONAL: sẽ tăng lên 0.60 khi audio ổn định
 
 
 # ---------------------------------------------------------------------------

@@ -10,7 +10,7 @@ MỤC ĐÍCH:
   Xuất ra JSON chuẩn để giai đoạn 7 (Fusion) và 8 (RFMS) sử dụng.
 
 MODEL:
-  Sử dụng `gemini-3.1-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
+  Sử dụng `gemini-2.0-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
   phù hợp cho tác vụ phân tích cảm xúc có cấu trúc.
   Có thể ghi đè qua biến môi trường GEMINI_MODEL_NAME.
 
