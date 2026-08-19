@@ -1,10 +1,19 @@
 """
 Analyze Route — POST /api/v1/analyze
 =====================================
-Author: Nguyễn Thanh Tuyền (AI & Data Architect)
+Author: Ngưyễn Thanh Tuyền (AI & Data Architect)
 Mục đích:
 - Endpoint phân tích cảm xúc khía cạnh (ABSA) dựa trên Gemini LLM.
 - Chuyển từ app riêng rẽ (api_main.py cũ) sang APIRouter để gộp chung với app chính.
+
+⚠️  DEPRECATED / INTERNAL ONLY (BUG E3, 2026-08-19)
+
+Route này DÙNG SAI DOMAIN: categories đang dùng cho e-commerce
+(GENERAL, PERFORMANCE, BATTERY, CAMERA, SCREEN, FEATURES, PRICE, SER&ACC, STORAGE)
+Thay vì categories F&B (nhan_vien, mon_an, khong_gian, gia_ca, toc_do_phuc_vu, ve_sinh).
+
+Sử dụng nội bộ (dev/debug) hoặc loại bỏ sau. KHÔNG dùng trong demo với giám khảo.
+Endpoint chính đồng hành: POST /api/v1/feedback (dùng absa_llm.py với F&B categories).
 """
 
 import logging
@@ -38,15 +47,31 @@ class AnalyzeResponse(BaseModel):
 
 
 @router.post(
-    "/analyze", 
+    "/analyze",
     response_model=AnalyzeResponse,
-    summary="Phân tích ABSA từ text",
-    description="Nhận chuỗi văn bản và trả về các aspects cùng cảm xúc bằng Dynamic Few-Shot Prompting + Gemini LLM."
+    summary="[DEPRECATED] Phân tích ABSA từ text (categories e-commerce — không dùng cho demo F&B)",
+    description=(
+        "⚠️ DEPRECATED: Route này dùng categories e-commerce (BATTERY, CAMERA, SCREEN...) "
+        "không phù hợp với use case F&B. "
+        "Dùng POST /api/v1/feedback để phân tích feedback F&B đúng domain."
+    ),
+    deprecated=True,
 )
 async def analyze_sentiment(request: AnalyzeRequest):
     """
-    Endpoint nhận chuỗi văn bản (đánh giá của khách hàng) và trả về các aspects cùng cảm xúc.
+    [DEPRECATED — internal/debug only]
+    Endpoint nhận chuỗi văn bản và trả về aspects cùng cảm xúc.
+
+    Lưu ý: Route này dùng categories E-COMMERCE (BATTERY, CAMERA, SCREEN...)
+    thay vì categories F&B (nhan_vien, mon_an, khong_gian...). Kết quả sẽ
+    không có ý nghĩa khi dùng cho feedback quán ăn/spa/phòng khám.
+    Dùng POST /api/v1/feedback thay thế.
     """
+    logger.warning(
+        "[Analyze] ⚠️  Route DEPRECATED đang được gọi: /api/v1/analyze. "
+        "Route này dùng categories e-commerce (BATTERY, CAMERA...) không phù hợp F&B. "
+        "Dùng /api/v1/feedback thay thế."
+    )
     user_input = request.text.strip()
     
     if not user_input:

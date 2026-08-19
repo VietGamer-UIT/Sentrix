@@ -213,6 +213,7 @@ function RecordingPage() {
     // Khi ghi âm: truyền thêm textContent nếu có (user nhập thêm)
     // để backend dùng làm fallback nếu Whisper fail
     const textToSend = textContent.trim() || null
+    const phoneToSend = customerPhone.trim() || null
 
     try {
       const result = await submitFeedback({
@@ -220,7 +221,7 @@ function RecordingPage() {
         location: decodeURIComponent(location),
         audioBlob: audioBlob || null,
         textContent: textToSend,
-        customerPhone: customerPhone.trim() || null,
+        customerPhone: phoneToSend,
         totalSpending: 0,
       })
       // Lưu feedback_id và kết quả AI vào sessionStorage trước khi navigate
@@ -231,6 +232,11 @@ function RecordingPage() {
         }
         if (result.is_suspicious) {
           sessionStorage.setItem('sentrix_is_suspicious', 'true')
+        }
+        // C2 FIX: Lưu SĐT vào sessionStorage để SpinPage tái sử dụng
+        // → Không cần nhập SĐT lần 2, tránh 2 SĐT khác nhau cho cùng 1 feedback
+        if (phoneToSend) {
+          sessionStorage.setItem('sentrix_customer_phone', phoneToSend)
         }
       } catch { /* ignore */ }
     } catch (err) {

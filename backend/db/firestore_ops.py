@@ -73,8 +73,15 @@ def _mask_phone(phone_number: str) -> str:
 
 
 def _sentiment_to_risk_level(p_churn: float) -> str:
-    """Chuyển P_churn sang nhãn risk_level cho field churn_risk_level."""
-    if p_churn < 0.50:
+    """
+    Chuyển P_churn sang nhãn risk_level cho field churn_risk_level.
+
+    ALG-05 FIX: Thống nhất ngưỡng với churn_model.calculate_churn_full().
+    Trước đây 2 module dùng ngưỡng khác nhau (0.50/0.85 vs 0.30/0.60/0.85)
+    → cùng P_churn nhưng risk_level khác nhau giữa 2 nơi ghi.
+    Giờ: cả 2 dùng low(<0.30) / medium(0.30–0.85) / high(≥0.85).
+    """
+    if p_churn < 0.30:
         return "low"
     elif p_churn < 0.85:
         return "medium"

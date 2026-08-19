@@ -1,36 +1,100 @@
-# Sentrix - AI-Powered Multimodal Customer Experience Analytics Platform
+# Sentrix — AI-Powered Multimodal Customer Experience Analytics Platform
 
-Chào mừng team Sentrix! Đây là dự án của 3 thành viên: **Việt**, **Tuyền**, và **Tuấn**.
-Để đảm bảo tiến độ và không bị xung đột code (conflict), repository này được thiết kế với **CÁC NGUYÊN TẮC CHỐT CỨNG** theo đúng thế mạnh của từng người.
+Nền tảng phân tích trải nghiệm khách hàng đa phương thức (giọng nói + văn bản) dành cho ngành F&B Việt Nam. Dùng Whisper STT, Gemini ABSA, Librosa audio features, RFMS churn model và Zalo ZNS.
 
-## 🚨 PHÂN CÔNG VÀ "LÃNH ĐỊA" (CẤM VI PHẠM)
+---
 
-Hệ thống được chia thành các "lãnh địa" rõ ràng. **Nguyên tắc tối thượng:** Ai phụ trách mảng nào thì chỉ được sửa code ở mảng đó. CẤM TUYỆT ĐỐI việc sửa code trong thư mục của người khác nếu chưa được sự đồng ý.
+## 🏗️ Cấu trúc dự án
 
-- 👑 **ĐOÀN HOÀNG VIỆT (Trưởng nhóm / DevOps / Full-stack Support)**
-  - Phụ trách chính: Khởi xướng ý tưởng, Quản trị mô hình kinh doanh (BMC), Thuyết trình (Pitching).
-  - Kỹ thuật: Quản lý API Keys, chịu trách nhiệm Deploy toàn bộ hệ thống lên Vercel & Render, hỗ trợ xử lý lỗi khó cho cả Frontend lẫn Backend.
-  - Lãnh địa: `deploy/`, các file cấu hình gốc như `.env.example`, `firestore.rules`, `.gitignore`, `render.yaml`.
-  
-- 🎨 **NGUYỄN QUỐC TUẤN (Frontend Developer & UX/UI Designer)**
-  - Phụ trách chính: Toàn bộ giao diện người dùng (Web-Client cho khách và Dashboard cho chủ quán). Thiết kế UI/UX trên Figma và code React.
-  - Lãnh địa: `apps/` (React, Vite, Tailwind) và `design/`.
+```
+Sentrix/
+├── backend/          # FastAPI — AI pipeline, RFMS, Firestore ops
+├── apps/
+│   ├── web-client/   # React — giao diện khách hàng (quét QR → ghi âm → quay thưởng)
+│   └── dashboard/    # React — dashboard chủ quán (báo cáo, churn alert)
+├── docs/             # Tài liệu kỹ thuật
+├── design/           # Figma exports, assets
+├── firestore.rules   # Firestore Security Rules
+└── render.yaml       # Render deploy config
+```
 
-- 🧠 **NGUYỄN THANH TUYỀN (Backend Developer & AI Engineer)**
-  - Phụ trách chính: Kiến trúc hệ thống API, xây dựng Data Pipeline, phát triển lõi AI đa phương thức (Whisper, Gemini ABSA, Librosa) và thiết kế Database (Firestore Multi-tenant).
-  - Lãnh địa: `backend/` (Python, FastAPI).
+---
 
-- 📚 `docs/`: Tài liệu chung (ai phụ trách mảng nào thì viết mảng đó).
+## 🚀 Cài đặt & Chạy local
 
-> **Tips:** Nhờ việc chia "lãnh địa" này, khi các bạn làm việc và đẩy code lên, sẽ GẦN NHƯ KHÔNG BAO GIỜ bị conflict code với nhau!
+### Backend (Python 3.11+)
 
-## 🚀 Hướng dẫn cài đặt cho từng người
+```bash
+cd backend
+pip install -r requirements.txt
+cp ../.env.example ../.env   # điền các API key thật
+uvicorn backend.main:app --reload --port 8000
+```
 
-Mọi người sau khi clone code về (`git clone https://github.com/VietGamer-UIT/Sentrix.git`), hãy đi vào thư mục của mình và đọc file `README.md` trong đó để biết phải làm gì tiếp theo.
+### Web Client (Node 18+)
 
-1. **Tuấn:** Đọc file `apps/README.md` để xem cách chạy Frontend.
-2. **Tuyền:** Đọc file `backend/README.md` để xem cấu trúc API và cách chạy Backend.
-3. **Việt:** Theo dõi các file trong `deploy/` và cấu hình server, Database.
+```bash
+cd apps/web-client
+npm install
+cp .env.example .env         # điền VITE_API_BASE_URL
+npm run dev                  # http://localhost:5173
+```
 
-## 📚 Mới dùng Git? Đọc ngay CONTRIBUTING.md
-Nếu bạn chưa biết cách tạo nhánh (branch), lưu code (commit), và đẩy code (push) qua Pull Request, HÃY ĐỌC NGAY file `CONTRIBUTING.md`. Đó là luật chơi của team mình!
+### Dashboard
+
+```bash
+cd apps/dashboard
+npm install
+cp .env.example .env
+npm run dev                  # http://localhost:5174
+```
+
+### Biến môi trường cần thiết
+
+Xem [`.env.example`](.env.example) ở root. Các key cần có:
+
+| Biến | Mô tả |
+|---|---|
+| `FIREBASE_PROJECT_ID` | Firebase project |
+| `FIREBASE_CLIENT_EMAIL` | Service account email |
+| `FIREBASE_PRIVATE_KEY` | Service account private key |
+| `WHISPER_API_KEY` | OpenAI API key (Whisper STT) |
+| `GEMINI_API_KEY` | Google AI Studio key |
+| `GEMINI_MODEL_NAME` | Mặc định: `gemini-3.1-flash-lite` |
+
+---
+
+## 🔧 Luồng dữ liệu chính
+
+```
+Khách quét QR → Ghi âm/Gõ text
+  → POST /api/v1/feedback (FastAPI)
+    → Fraud Filter → Whisper STT ‖ Librosa (song song)
+    → Gemini ABSA → Fusion (text + audio weights)
+    → RFMS Calculator → Churn Model → Firestore
+  → 202 Accepted (sentiment, p_churn, feedback_id)
+  → SpinPage: POST /api/v1/gamification/spin (backend quyết định prize)
+  → Dashboard hiển thị realtime
+```
+
+Chi tiết: xem [`docs/`](docs/) và [`backend/README.md`](backend/README.md).
+
+---
+
+## 🛠️ Deploy
+
+- **Backend:** Render (Web Service, `render.yaml`)
+- **Frontend:** Vercel (auto-deploy từ `main`)
+- **Database:** Firestore (Firebase)
+- **Firestore Rules:** `firebase deploy --only firestore:rules`
+
+> **Cold start:** Render free tier ngủ sau ~15 phút không có traffic. Cài cron job (cron-job.org) ping `GET /health` mỗi 10 phút để giữ container ấm khi demo.
+
+---
+
+## 📚 Tài liệu kỹ thuật
+
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — Quy trình git & commit
+- [`backend/README.md`](backend/README.md) — API reference, cấu trúc backend
+- [`backend/db/schema.md`](backend/db/schema.md) — Firestore schema
+- [`docs/api-contract.md`](docs/api-contract.md) — API contract frontend–backend

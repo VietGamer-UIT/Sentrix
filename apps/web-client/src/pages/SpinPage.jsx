@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { SPIN_PRIZES } from '../api/gamification.js'
-import { updateFeedbackWithSpin } from '../api/firestoreUpdate.js'
+import { SPIN_PRIZES, submitSpinAPI } from '../api/gamification.js'
 
 /**
  * SpinPage — Bước 5 trong user-flow.md
  *
- * Logic mới (sau fix data pipeline):
- * - Đọc feedback_id từ sessionStorage (được lưu bởi RecordingPage/RecordingOverlay)
- * - Sau khi quay: lưu phone_masked + voucher_code vào Firestore feedback document
- * - API /api/gamification/spin chưa có → dùng mock, nhưng DATA vẫn được lưu thật
- * - handleSkip: KHÔNG lưu phone (khách chọn bỏ qua) nhưng navigate bình thường
+ * FIX B1+C1 (2026-08-19):
+ * - Gọi POST /api/v1/gamification/spin thay vì mock random ở client
+ *   (bảo mật: prize được quyết định ở server, không thể hack JS)
+ * - SĐT: ưu tiên lấy từ sessionStorage (nhập ở RecordingPage), chỉ hiện input
+ *   nếu chưa có → tránh nhập 2 lần, tránh 2 SĐT khác nhau cho cùng 1 feedback
+ * - Bỏ hoàn toàn firestoreUpdate.js — mọi ghi DB qua backend
+ * - handleSkip: navigate bình thường, không gọi spin API
  */
 function SpinPage() {
   const [searchParams] = useSearchParams()
@@ -19,11 +20,17 @@ function SpinPage() {
   const tenantId = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
   const location  = searchParams.get('location') || 'Bàn 1'
 
-  const [phone, setPhone]             = useState('')
+  // C1 FIX: Lấy SĐT từ sessionStorage (đã nhập ở RecordingPage)
+  // Chỉ hiện input nhập nếu sessionStorage trống (khách bỏ qua ở RecordingPage)
+  const storedPhone = sessionStorage.getItem('sentrix_customer_phone') || ''
+  const [phone, setPhone]             = useState(storedPhone)
   const [phoneError, setPhoneError]   = useState(null)
   const [isSpinning, setIsSpinning]   = useState(false)
   const [rotation, setRotation]       = useState(0)
   const [isSuspicious, setIsSuspicious] = useState(false)
+  const [apiError, setApiError]       = useState(null)
+  // Hiện input SĐT chỉ khi sessionStorage không có SĐT
+  const [showPhoneInput, setShowPhoneInput] = useState(!storedPhone)
 
   const segmentAngle = 360 / SPIN_PRIZES.length
 
@@ -48,13 +55,16 @@ function SpinPage() {
     }
     setIsSpinning(true)
     setPhoneError(null)
+    setApiError(null)
 
-    // === Lấy feedback_id từ sessionStorage (được lưu bởi RecordingPage/Overlay)
+    // Lưu SĐT vào sessionStorage để đồng bộ (phòng trường hợp nhập lần đầu tại đây)
+    sessionStorage.setItem('sentrix_customer_phone', phone)
+
+    // Lấy feedback_id từ sessionStorage (được lưu bởi RecordingPage)
     let feedbackId = null
     try {
       feedbackId = sessionStorage.getItem('sentrix_feedback_id')
       if (!feedbackId) {
-        // Fallback: thử đọc từ api_result cũ (tương thích ngược)
         const stored = sessionStorage.getItem('sentrix_api_result')
         if (stored) feedbackId = JSON.parse(stored).feedback_id
       }
@@ -62,58 +72,48 @@ function SpinPage() {
       console.error('[Sentrix] Không đọc được feedback_id từ sessionStorage', err)
     }
 
-    // === Mock spin: chọn prize theo probability weights ===
-    const rand = Math.random()
-    let cumulative = 0
-    let prizeIndex = 0
-    for (let i = 0; i < SPIN_PRIZES.length; i++) {
-      cumulative += SPIN_PRIZES[i].probability
-      if (rand <= cumulative) { prizeIndex = i; break }
-      prizeIndex = i // fallback: last item
-    }
-    const prizeObj = SPIN_PRIZES[prizeIndex]
-    const voucherCode = prizeObj.voucherTemplate ? prizeObj.voucherTemplate(phone) : null
+    // === B1 FIX: Gọi backend API thật, không mock random ở client ===
+    let prizeId = 'chuc_may_man'
+    let prizeLabel = 'Chúc may mắn'
+    let voucherCode = ''
 
-    /**
-     * Fix góc quay: Pointer ở TOP (12 giờ = -90° trong toán học)
-     * Segment i chiếm góc [i * segmentAngle, (i+1) * segmentAngle]
-     * Để pointer (top) trỏ vào tâm segment i:
-     * rotationNeeded = 360 - (i + 0.5) * segmentAngle
-     */
-    const targetDeg = 360 - ((prizeIndex + 0.5) * segmentAngle)
+    try {
+      const spinResult = await submitSpinAPI(tenantId, phone, feedbackId)
+      // Backend đã lưu phone + voucher vào Firestore — client chỉ nhận kết quả
+      prizeId     = spinResult.prize        || 'chuc_may_man'
+      prizeLabel  = spinResult.prize_label  || 'Chúc may mắn'
+      voucherCode = spinResult.voucher_code || ''
+    } catch (err) {
+      console.error('[Sentrix] Spin API thất bại:', err)
+      setApiError('Không kết nối được máy chủ. Vui lòng thử lại.')
+      setIsSpinning(false)
+      return
+    }
+
+    // Tìm prizeIndex trong SPIN_PRIZES để animate đúng ô
+    const prizeIndex = SPIN_PRIZES.findIndex(p => p.id === prizeId)
+    const safeIndex  = prizeIndex >= 0 ? prizeIndex : 0
+
+    // Fix góc quay: Pointer ở TOP (12 giờ)
+    // Segment i chiếm góc [i * segmentAngle, (i+1) * segmentAngle]
+    const targetDeg    = 360 - ((safeIndex + 0.5) * segmentAngle)
     const totalRotation = rotation + 360 * 8 + targetDeg
     setRotation(totalRotation)
 
-    // === Lưu phone + voucher vào Firestore (ngầm, song song với animation) ===
-    if (feedbackId) {
-      updateFeedbackWithSpin({
-        tenantId,
-        feedbackId,
-        phone,
-        prize:       prizeObj.id,
-        prizeLabel:  prizeObj.prizeLabel || prizeObj.label,
-        voucherCode,
-      }).catch(err => console.warn('[Sentrix] updateFeedbackWithSpin failed:', err))
-    } else {
-      console.warn('[Sentrix] SpinPage: không có feedback_id — phone + voucher không được lưu vào Firestore')
-    }
-
-    // === Navigate sang VoucherPage sau khi animation kết thúc ===
+    // Navigate sang VoucherPage sau animation
     setTimeout(() => {
       navigate(
         `/voucher?tenant_id=${tenantId}` +
         `&location=${encodeURIComponent(location)}` +
-        `&prize=${prizeObj.id}` +
-        `&prize_label=${encodeURIComponent(prizeObj.prizeLabel || prizeObj.label)}` +
-        `&voucher_code=${encodeURIComponent(voucherCode || '')}` +
-        `&message=${encodeURIComponent('Cảm ơn bạn đã quay thưởng!')}`
+        `&prize=${prizeId}` +
+        `&prize_label=${encodeURIComponent(prizeLabel)}` +
+        `&voucher_code=${encodeURIComponent(voucherCode)}` +
+        `&message=${encodeURIComponent(voucherCode ? 'Chúc mừng bạn đã trúng thưởng!' : 'Cảm ơn bạn đã tham gia!')}`
       )
     }, 4500)
   }
 
-
   const handleSkip = () => {
-    // Khách bỏ qua spin → không lưu phone, không có voucher
     navigate(`/voucher?tenant_id=${tenantId}&location=${encodeURIComponent(location)}&skipped=true`)
   }
 
@@ -127,7 +127,6 @@ function SpinPage() {
           stroke="rgba(0,122,255,0.12)" strokeWidth="10"/>
 
         {SPIN_PRIZES.map((prize, i) => {
-          // Bắt đầu từ TOP (-π/2), đi theo chiều kim đồng hồ
           const startAngleDeg = i * segmentAngle - 90
           const endAngleDeg   = (i + 1) * segmentAngle - 90
           const startRad = startAngleDeg * (Math.PI / 180)
@@ -138,13 +137,11 @@ function SpinPage() {
           const x2 = cx + r * Math.cos(endRad)
           const y2 = cy + r * Math.sin(endRad)
 
-          // Text ở tâm segment, 65% bán kính
           const midAngleDeg = (i + 0.5) * segmentAngle - 90
           const midRad = midAngleDeg * (Math.PI / 180)
           const textX = cx + (r * 0.63) * Math.cos(midRad)
           const textY = cy + (r * 0.63) * Math.sin(midRad)
 
-          // Label text ngắn (max 8 char) — xuống dòng nếu cần
           const labelLines = prize.label.split('\n')
 
           return (
@@ -221,7 +218,9 @@ function SpinPage() {
             Vòng quay may mắn
           </h1>
           <p style={{ marginTop: 6, color: 'var(--color-text-secondary)' }}>
-            Nhập SĐT để quay thưởng ngay!
+            {storedPhone
+              ? `Quay thưởng cho SĐT ${storedPhone.slice(0, 3)}****${storedPhone.slice(-3)}`
+              : 'Nhập SĐT để quay thưởng ngay!'}
           </p>
         </div>
 
@@ -250,8 +249,8 @@ function SpinPage() {
           </div>
         </div>
 
-        {/* Form nhập SĐT */}
-        {!isSpinning && (
+        {/* Form nhập SĐT — chỉ hiện nếu chưa có SĐT từ RecordingPage */}
+        {!isSpinning && showPhoneInput && (
           <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
             <div className="input-group">
               <label className="input-label" htmlFor="phone-input">
@@ -284,6 +283,12 @@ function SpinPage() {
               </p>
             )}
 
+            {apiError && (
+              <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--spacing-sm)' }}>
+                ⚠️ {apiError}
+              </p>
+            )}
+
             <button
               id="btn-spin"
               className="btn btn--primary"
@@ -291,6 +296,38 @@ function SpinPage() {
               disabled={phone.length < 10}
             >
               Quay ngay!
+            </button>
+          </div>
+        )}
+
+        {/* Có SĐT sẵn — hiện nút quay ngay không cần nhập lại */}
+        {!isSpinning && !showPhoneInput && (
+          <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
+            {apiError && (
+              <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--spacing-sm)' }}>
+                ⚠️ {apiError}
+              </p>
+            )}
+            <button
+              id="btn-spin"
+              className="btn btn--primary"
+              onClick={handleSpin}
+            >
+              🎰 Quay ngay!
+            </button>
+            <button
+              type="button"
+              style={{
+                background: 'none', border: 'none',
+                color: 'var(--color-text-muted)',
+                fontSize: 'var(--font-size-xs)',
+                cursor: 'pointer', textDecoration: 'underline',
+                padding: '8px 0', fontFamily: 'var(--font-family)',
+                marginTop: 8,
+              }}
+              onClick={() => setShowPhoneInput(true)}
+            >
+              Dùng số điện thoại khác
             </button>
           </div>
         )}

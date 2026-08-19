@@ -58,16 +58,26 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Ngưỡng Fusion
 # ---------------------------------------------------------------------------
-SARCASM_TEXT_POSITIVE_THRESHOLD = 0.5   # text_score > này → văn bản tích cực
+# BUG-D2 FIX: sentiment INTERNAL score vẫn dùng [0,1] cho phép tính RFMS (S).
+# Kết quả CUỐI CÙNG trả ra ngoài (sentiment_score trong Firestore + API response)
+# được convert sang thang [-1, +1] để khớp schema.md.
+# Công thức convert: external = (internal - 0.5) * 2
+#   internal 0.0 → external -1.0 (rất tiêu cực)
+#   internal 0.5 → external  0.0 (trung lập)
+#   internal 1.0 → external +1.0 (rất tích cực)
 
-# Ngưỡng mỉa mai tạm thời cao (0.80) vì Librosa chưa ổn định:
-# tiếng ồn nền / micro kém có thể đẩy stress_score lên giả tạo.
-# TODO: Khi Librosa QA xong → hạ về 0.55–0.60
-SARCASM_AUDIO_STRESS_THRESHOLD  = 0.80
+# text_score [0,1]: > 0.5 → văn bản tích cực
+SARCASM_TEXT_POSITIVE_THRESHOLD = 0.5
 
-# TRọNG SỐ PROVISIONAL — tạm thời trong khi Whisper + Librosa chưa ổn định.
+# E1 FIX: Hạ ngưỡng sarcasm từ 0.80 → 0.55.
+# Lý do: stress_score chỉ có 5 giá trị rời rạc (0, 0.25, 0.50, 0.75, 1.0).
+# Với ngưỡng 0.80, chỉ khi stress_score = 1.0 (4/4 chỉ số vượt ngưỡng) mới trigger
+# → xác suất < 1% → sarcasm detection gần như bị vô hiệu hoàn toàn.
+# Ngưỡng 0.55 cho phép trigger khi >= 3/4 chỉ số vượt ngưỡng (stress_score = 0.75).
+SARCASM_AUDIO_STRESS_THRESHOLD = 0.55
+
+# TRỌNG SỐ PROVISIONAL — tạm thời trong khi Whisper + Librosa chưa ổn định.
 # Mục tiêu dài hạn (khi audio QA xong): TEXT_WEIGHT=0.40, AUDIO_WEIGHT=0.60
-# (vì giọng nói phản ánh cảm xúc thật mà người nói khó che giấu hơn)
 TEXT_WEIGHT  = 0.80  # PROVISIONAL: sẽ giảm xuống 0.40 khi audio ổn định
 AUDIO_WEIGHT = 0.20  # PROVISIONAL: sẽ tăng lên 0.60 khi audio ổn định
 
@@ -149,15 +159,18 @@ SENTIMENT_VN_TO_SCORE: dict[str, float] = {
 
 def _compute_text_sentiment_score(aspects: list[dict]) -> float:
     """
-    Tính điểm cảm xúc từ list[dict] kết quả ABSA.
+    Tính điểm cảm xúc INTERNAL từ list[dict] kết quả ABSA.
 
-    Quy đổi:
+    Quy đổi (thang INTERNAL [0, 1] — dùng nội bộ cho phép tính RFMS S):
       Tích cực → +1.0
-      Trung lập → 0.5
-      Tiêu cực → 0.0
+      Trung lập →  0.5
+      Tiêu cực →  0.0
 
-    Trả về trung bình cộng, normalize về [0, 1].
+    Trả về trung bình cộng.
     Nếu không có aspect nào → 0.5 (trung lập).
+
+    NOTE: Kết quả cuối cùng trả ra ngoài được convert sang [-1,+1]
+    bằng hàm _to_external_score() trước khi trả về API response.
     """
     if not aspects:
         return 0.5
@@ -177,11 +190,22 @@ def _compute_text_sentiment_score(aspects: list[dict]) -> float:
     return round(sum(scores) / len(scores), 4) if scores else 0.5
 
 
-def _sentiment_label(score: float) -> str:
-    """Chuyển điểm số → nhãn cảm xúc dễ đọc."""
-    if score >= 0.65:
+def _to_external_score(internal_score: float) -> float:
+    """
+    Chuyển điểm INTERNAL [0, 1] → EXTERNAL [-1, +1] (theo schema.md).
+    Công thức: external = round((internal - 0.5) * 2, 4)
+      0.0  → -1.0  (rất tiêu cực)
+      0.5  →  0.0  (trung lập)
+      1.0  → +1.0  (rất tích cực)
+    """
+    return round((internal_score - 0.5) * 2, 4)
+
+
+def _sentiment_label(internal_score: float) -> str:
+    """Chuyển điểm INTERNAL [0,1] → nhãn cảm xúc dễ đọc."""
+    if internal_score >= 0.65:
         return "Tích cực"
-    elif score <= 0.35:
+    elif internal_score <= 0.35:
         return "Tiêu cực"
     else:
         return "Trung lập"
@@ -208,22 +232,26 @@ def normalize_aspects_for_db(aspects: list[dict]) -> list[dict]:
     """
     Chuẩn hóa danh sách aspects từ ABSA LLM → format chuẩn DB schema.
 
+    BUG-05 FIX (E2): Field `aspect` trong DB phải là ENUM (khớp schema.md),
+    không phải text tự do từ LLM.
+    Trước đây: aspect="Chất lượng món ăn" → Dashboard query `aspect=="mon_an"` MISS
+    Giờ:       aspect="mon_an" (enum) + aspect_text="Chất lượng món ăn" (display only)
+
     Input (từ LLM):
         [
             {"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon lắm"},
             ...
         ]
 
-    Output (chuẩn DB):
+    Output (chuẩn DB — khớp schema.md):
         [
             {
-                "aspect":       "Chất lượng món ăn",   # giữ nguyên text gốc
-                "category":     "mon_an",               # enum chuẩn hóa
-                "sentiment":    "Tích cực",             # tiếng Việt (giữ nguyên)
-                "sentiment_en": "positive",             # tiếng Anh (cho query)
-                "score":        1.0,                    # numeric [-1.0, 1.0]
-                "reason":       "Ngon lắm",             # từ LLM
-                "confidence":   None,                   # LLM hiện không trả confidence
+                "aspect":       "mon_an",              # ENUM (dùng để query/filter)
+                "aspect_text":  "Chất lượng món ăn",  # Text gốc từ LLM (display only)
+                "sentiment":    "positive",            # English lowercase (khớp schema.md)
+                "score":        1.0,                   # numeric [-1.0, 1.0]
+                "reason":       "Ngon lắm",            # từ LLM
+                "confidence":   None,
             },
             ...
         ]
@@ -240,11 +268,17 @@ def normalize_aspects_for_db(aspects: list[dict]) -> list[dict]:
         sentiment_raw = str(item.get("sentiment", "")).strip()
         sentiment_key = sentiment_raw.lower()
 
+        # E2 FIX: field `aspect` = ENUM theo schema.md, không phải text tự do.
+        # Dashboard query `where aspect == "nhan_vien"` sẽ đúng.
+        category_enum = _normalize_aspect_category(aspect_text)
+
         normalized_item = {
-            "aspect":       aspect_text,
-            "category":     _normalize_aspect_category(aspect_text),
-            "sentiment":    sentiment_raw,
-            "sentiment_en": SENTIMENT_VN_TO_EN.get(sentiment_key, "neutral"),
+            # ENUM dùng để filter/query — khớp schema.md
+            "aspect":       category_enum,
+            # Text gốc từ LLM — chỉ để hiển thị trên UI, KHÔNG dùng để query
+            "aspect_text":  aspect_text,
+            # D2+schema.md: sentiment_en lowercase English
+            "sentiment":    SENTIMENT_VN_TO_EN.get(sentiment_key, "neutral"),
             "score":        SENTIMENT_VN_TO_SCORE.get(sentiment_key, 0.0),
             "reason":       str(item.get("reason", "")).strip(),
             "confidence":   item.get("confidence"),  # None nếu LLM không trả về
@@ -294,16 +328,19 @@ def dynamic_weighted_fusion(
 
     # --- Trường hợp SPAM: trả về điểm rất thấp ---
     if is_spam:
-        logger.info("[Fusion] Input bị đánh dấu SPAM — sentiment_score = 0.1")
+        logger.info("[Fusion] Input bị đánh dấu SPAM — sentiment_score = -0.8")
         return {
-            "sentiment_score": 0.1,
+            # D2: external scale [-1,+1]; -0.8 = cực tiêu cực (spam)
+            "sentiment_score": -0.8,
             "overall_sentiment": "Tiêu cực",
             "is_sarcasm_suspected": False,
-            "text_sentiment_score": 0.1,
+            "text_sentiment_score": -0.8,
             "audio_stress_score": None,
             "fusion_mode": "spam",
             "aspects": [],
             "is_spam": True,
+            # internal_score dùng cho RFMS (S): 0.1 vẫn hợp lệ [0,1]
+            "_internal_sentiment_score": 0.1,
         }
 
     # --- Normalize aspects để lưu DB ---
@@ -361,19 +398,27 @@ def dynamic_weighted_fusion(
                 f"→ final_score={final_score:.2f}"
             )
 
+    # D2 FIX: Convert sang thang [-1,+1] để khớp schema.md
+    external_score = _to_external_score(final_score)
+
     result = {
-        "sentiment_score": final_score,
+        # sentiment_score trong DB/API = [-1, +1] theo schema.md
+        "sentiment_score": external_score,
         "overall_sentiment": _sentiment_label(final_score),
         "is_sarcasm_suspected": is_sarcasm_suspected,
-        "text_sentiment_score": text_score,
+        "text_sentiment_score": _to_external_score(text_score),
         "audio_stress_score": audio_stress,
         "fusion_mode": fusion_mode,
         "aspects": normalized_aspects,
         "is_spam": False,
+        # _internal_sentiment_score: dùng nội bộ cho RFMS (S ∈ [0,1])
+        # KHÔNG lưu vào Firestore — chỉ để feedback.py đọc trước khi gọi RFMS
+        "_internal_sentiment_score": final_score,
     }
 
     logger.info(
-        f"[Fusion] Kết quả: sentiment_score={final_score:.4f}, "
+        f"[Fusion] Kết quả: sentiment_score(ext)={external_score:.4f}, "
+        f"internal={final_score:.4f}, "
         f"overall={result['overall_sentiment']}, "
         f"sarcasm={is_sarcasm_suspected}, "
         f"mode={fusion_mode}"

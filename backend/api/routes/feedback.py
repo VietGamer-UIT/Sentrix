@@ -97,8 +97,13 @@ TEMP_AUDIO_DIR = Path(tempfile.gettempdir()) / "sentrix_audio_temp"
 # Số ngày mặc định kể từ lần cuối nếu không có phone (guest)
 GUEST_RECENCY_DAYS_DEFAULT = 30.0
 
-# Timeout cho Gemini ABSA (giây) — tránh chờ đến 1 phút
-GEMINI_ABSA_TIMEOUT_SECONDS = 10
+# Timeout cho Gemini ABSA (giây).
+# BUG-07 FIX: tăng từ 10 → 25s.
+# Gemini Flash-Lite free tier có thể mất 5-15s; 10s quá ngắn khiến nhiều request
+# rơi vào fallback sentiment=0.5/aspects=[] → làm sai toàn bộ pipeline RFMS phía sau.
+# Bằng chứng: dashboard thực tế cho thấy câu "đồ ăn bẩn có ruồi" bị chấm +0.50
+# (chữ ký timeout điển hình — không phải model kém).
+GEMINI_ABSA_TIMEOUT_SECONDS = 25
 
 
 # ---------------------------------------------------------------------------
@@ -372,7 +377,8 @@ async def submit_feedback(
     # -----------------------------------------------------------------------
     absa_result: Optional[dict] = None
     fusion_result: Optional[dict] = None
-    sentiment_score: float = 0.5       # neutral mặc định
+    sentiment_score: float = 0.0        # external [-1, +1] — lưu Firestore/response
+    _internal_sentiment_for_rfms: float = 0.5  # internal [0,1] — dùng tính RFMS S
     overall_sentiment: str = "Trung lap"
     is_sarcasm_suspected: bool = False
 
@@ -406,15 +412,19 @@ async def submit_feedback(
 
                 logger.info(f"[Feedback] ABSA: {len(absa_result.get('aspects', []))} aspects")
 
-                # Fusion
+                # D2 FIX: fusion_result trả ra 2 giá trị:
+                #   sentiment_score         = external [-1, +1] → lưu Firestore
+                #   _internal_sentiment_score = internal [0, 1] → dùng RFMS S
                 fusion_result = dynamic_weighted_fusion(absa_result, audio_features)
-                sentiment_score = fusion_result.get("sentiment_score", 0.5)
+                sentiment_score = fusion_result.get("sentiment_score", 0.0)  # external
+                _internal_sentiment_for_rfms = fusion_result.get("_internal_sentiment_score", 0.5)
                 overall_sentiment = fusion_result.get("overall_sentiment", "Trung lap")
                 is_sarcasm_suspected = fusion_result.get("is_sarcasm_suspected", False)
 
                 logger.info(
-                    f"[Feedback] Fusion: sentiment={sentiment_score:.4f} "
-                    f"({overall_sentiment}), sarcasm={is_sarcasm_suspected}"
+                    f"[Feedback] Fusion: sentiment_ext={sentiment_score:.4f} "
+                    f"({overall_sentiment}), internal={_internal_sentiment_for_rfms:.4f}, "
+                    f"sarcasm={is_sarcasm_suspected}"
                 )
         except ABSAAuthError as e:
             logger.error(f"[Feedback] ABSA auth error: {e}")
@@ -457,19 +467,53 @@ async def submit_feedback(
             if tenant_config and "churn_threshold" in tenant_config:
                 churn_threshold = float(tenant_config["churn_threshold"])
 
-            # Recency: nếu có phone → sẽ lấy từ last_feedback_at trong DB
-            # Đơn giản hoá MVP: dùng giá trị mặc định, customer tự cập nhật sau
-            recency_days = GUEST_RECENCY_DAYS_DEFAULT
+            # ALG-01 FIX: Lấy frequency + recency_days THẬT từ Firestore customer document.
+            # Trước đây hardcode frequency=1, recency_days=1 → khiến RFMS vô nghĩa
+            # (khách đến 50 lần vẫn bị tính như khách mới đến lần đầu).
+            recency_days = GUEST_RECENCY_DAYS_DEFAULT  # fallback: guest không có SĐT
+            frequency_actual = 1                        # fallback: ít nhất 1 lần (feedback này)
+
             if customer_phone:
-                # Sẽ lấy chính xác sau khi get_or_create_customer
-                # Tạm dùng 1 ngày (khách vừa gửi) → sẽ tinh chỉnh sau
-                recency_days = 1.0
+                try:
+                    # get_or_create_customer đã được gọi ở bước 8a (bên dưới),
+                    # nhưng để lấy dữ liệu hiện tại TRƯỚC khi tăng feedback_count,
+                    # ta gọi get_or_create_customer ở đây sớm hơn.
+                    # Hàm này idempotent — gọi 2 lần an toàn, lần 2 chỉ đọc, không tạo mới.
+                    customer_doc_pre = get_or_create_customer(tenant_id, customer_phone)
+                    old_count = customer_doc_pre.get("feedback_count", 0)
+                    # frequency = số lần đã gửi trước + 1 (lần này)
+                    frequency_actual = old_count + 1
+
+                    last_at = customer_doc_pre.get("last_feedback_at")
+                    if last_at is not None:
+                        from datetime import datetime, timezone
+                        if hasattr(last_at, "timestamp"):
+                            # Firestore Timestamp object
+                            last_dt = datetime.fromtimestamp(last_at.timestamp(), tz=timezone.utc)
+                        else:
+                            last_dt = last_at
+                        delta = datetime.now(timezone.utc) - last_dt
+                        recency_days = max(0.0, delta.total_seconds() / 86400)
+                    else:
+                        recency_days = 1.0   # khách mới (lần đầu) → gần đây
+
+                    logger.info(
+                        f"[Feedback] RFMS input thực: frequency={frequency_actual}, "
+                        f"recency_days={recency_days:.2f}d"
+                    )
+                except Exception as e_rfms_pre:
+                    logger.warning(
+                        f"[Feedback] Không lấy được customer data cho RFMS — dùng fallback: {e_rfms_pre}"
+                    )
+                    recency_days = 1.0
+                    frequency_actual = 1
 
             churn_result = calculate_churn_full(
                 recency_days=recency_days,
-                frequency=1,           # Mỗi feedback = 1 lần giao dịch; tích luỹ dần qua DB
+                frequency=frequency_actual,   # FIX D1: dùng giá trị thật, không hardcode 1
                 monetary=total_spending,
-                sentiment_score=sentiment_score,
+                # FIX D2: RFMS cần thang [0,1] — dùng biến internal, KHÔNG dùng sentiment_score [-1,+1]
+                sentiment_score=_internal_sentiment_for_rfms,
                 churn_threshold=churn_threshold,
             )
 

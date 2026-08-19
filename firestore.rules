@@ -8,9 +8,14 @@
 //   1. Firestore data của tenant X → chỉ đúng user mới đọc được
 //   2. Ghi feedback: backend service account (Admin SDK, bypass rules)
 //   3. Dashboard: read-only cho authenticated users
-//   4. Web-client (unauthenticated): chỉ được UPDATE spin data vào
-//      feedback document (phone_masked, voucher_code, spin_prize, spin_at)
-//      — KHÔNG được tạo document mới, KHÔNG được đọc document khác
+//   4. Web-client (unauthenticated): KHÔNG được phép ghi trực tiếp
+//      vào bất kỳ document nào — mọi ghi dữ liệu phải qua Backend API
+//
+// SEC-01 FIX (2026-08-19):
+//   Đã xóa rule `allow update` cho unauthenticated client trên feedbacks.
+//   Trước đây rule này cho phép bất kỳ ai biết tenant_id + feedback_id
+//   có thể ghi phone_masked và voucher_code giả mạo trực tiếp vào DB.
+//   Giờ: mọi update phải qua Backend Admin SDK (bypass rules theo thiết kế Firestore).
 // ═══════════════════════════════════════════════════════════════════════
 
 rules_version = '2';
@@ -30,41 +35,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ─── Feedbacks: đọc cho auth user, update spin cho web-client ──────
+    // ─── Feedbacks: chỉ đọc cho auth user ─────────────────────────────
+    // Ghi mới + update (phone, voucher, spin): chỉ qua Backend Admin SDK
+    // SEC-01 FIX: Xóa rule allow update từ unauthenticated client.
+    // SpinPage giờ gọi POST /api/v1/gamification/spin → backend dùng Admin SDK ghi.
     match /tenants/{tenantId}/feedbacks/{feedbackId} {
       // Dashboard (auth user) đọc được
       allow read: if request.auth != null;
 
-      // Backend (Admin SDK) ghi mới — bypass rules hoàn toàn, không cần rule
-
-      // Web-client (unauthenticated) chỉ được UPDATE 5 fields spin data
-      // SAU KHI feedback đã được tạo bởi backend.
-      // Điều kiện:
-      //   1. Document phải TỒN TẠI trước (resource != null)
-      //   2. Chỉ update đúng các field spin — không được thêm field lạ
-      //   3. Không được thay đổi bất kỳ field nào khác (transcript, sentiment, etc.)
-      allow update: if
-        resource != null &&
-        request.resource.data.keys().hasOnly(
-          resource.data.keys().toSet().union(
-            ['phone_masked', 'voucher_code', 'spin_prize', 'spin_prize_label', 'spin_at']
-          )
-        ) &&
-        // Chỉ các field spin được phép thay đổi
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
-          ['phone_masked', 'voucher_code', 'spin_prize', 'spin_prize_label', 'spin_at']
-        ) &&
-        // phone_masked phải là string ngắn (không inject script)
-        (!('phone_masked' in request.resource.data) ||
-          (request.resource.data.phone_masked is string &&
-           request.resource.data.phone_masked.size() <= 20)) &&
-        // voucher_code phải là string ngắn
-        (!('voucher_code' in request.resource.data) ||
-          (request.resource.data.voucher_code is string &&
-           request.resource.data.voucher_code.size() <= 50));
-
-      // Cấm xóa
-      allow delete: if false;
+      // Tất cả ghi (create/update/delete): chỉ Backend Admin SDK
+      // Admin SDK bypass rules → không cần rule allow write ở đây
+      allow write: if false;
     }
 
     // ─── Customers: chỉ đọc cho auth user ─────────────────────────────
