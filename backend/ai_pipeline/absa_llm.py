@@ -10,7 +10,7 @@ MỤC ĐÍCH:
   Xuất ra JSON chuẩn để giai đoạn 7 (Fusion) và 8 (RFMS) sử dụng.
 
 MODEL:
-  Sử dụng `gemini-2.0-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
+  Sử dụng `gemini-3.1-flash-lite` — dòng Flash-Lite tốc độ cao, chi phí thấp,
   phù hợp cho tác vụ phân tích cảm xúc có cấu trúc.
   Có thể ghi đè qua biến môi trường GEMINI_MODEL_NAME.
 
@@ -39,8 +39,8 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Cấu hình model
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL = "gemini-2.0-flash-lite"
-VALID_FALLBACK_MODELS = ["gemini-2.0-flash-lite", "gemini-1.5-flash-8b", "gemini-1.5-flash"]
+DEFAULT_MODEL = "gemini-3.1-flash-lite"
+VALID_FALLBACK_MODELS = ["gemini-3.1-flash-lite", "gemini-2.0-flash-lite", "gemini-1.5-flash-8b", "gemini-1.5-flash"]
 
 
 # Prompt hệ thống — thiết kế để LLM trả về JSON thuần, không markdown
