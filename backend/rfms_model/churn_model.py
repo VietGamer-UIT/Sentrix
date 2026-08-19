@@ -205,15 +205,16 @@ def calculate_churn_full(
     # --- Bước 2: Tính churn ---
     p_churn = calculate_churn_probability(R, F, M, S, coefficients=coefficients)
 
-    # --- Bước 3: Xếp mức rủi ro ---
+    # ALG-05 FIX: Thống nhất ngưỡng và label với firestore_ops._sentiment_to_risk_level().
+    # Trước: chúng dùng 2 bộ ngưỡng + ngôn ngữ khác nhau (Tiếng Việt vs English).
+    # Giờ: cả 2 module dùng chung: low (<0.30), medium (0.30-0.85), high (>=0.85).
+    # Ngưỡng 0.85 giữ nguyên — khớp churn_threshold mặc định và schema.md.
     if p_churn < 0.30:
-        risk_level = "Thấp"
-    elif p_churn < 0.60:
-        risk_level = "Trung bình"
+        risk_level = "low"
     elif p_churn < 0.85:
-        risk_level = "Cao"
+        risk_level = "medium"
     else:
-        risk_level = "Nguy hiểm"
+        risk_level = "high"
 
     coef_used = coefficients if coefficients is not None else DEFAULT_COEFFICIENTS
 
