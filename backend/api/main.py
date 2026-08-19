@@ -4,14 +4,25 @@ Author: Nguyễn Thanh Tuyền (AI & Data Architect)
 """
 
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+import logging
 
 from backend.api.routes import health, feedback, analyze, gamification
 
 # Load biến môi trường từ file .env (nếu chạy local)
 load_dotenv()
+
+# Setup logging cho ứng dụng để tương thích với Uvicorn trên Render
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Sentrix Backend API",
@@ -25,6 +36,16 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Bắt và log chi tiết lỗi 422 Unprocessable Entity (thường bị FastAPI ẩn)."""
+    logger.warning(f"Validation error cho {request.method} {request.url}: {exc.errors()}")
+    # Vẫn trả về 422 mặc định của FastAPI, nhưng đã có log để debug
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()},
+    )
 
 # ---------------------------------------------------------------------------
 # CORS

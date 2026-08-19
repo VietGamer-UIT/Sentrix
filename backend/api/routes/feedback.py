@@ -148,7 +148,10 @@ async def _read_and_validate_audio(
         HTTPException 413: Nếu file quá lớn.
     """
     content_type = audio_file.content_type or ""
-    if content_type not in ALLOWED_AUDIO_MIME_TYPES:
+    base_content_type = content_type.split(";")[0].strip().lower()
+    
+    if base_content_type not in ALLOWED_AUDIO_MIME_TYPES:
+        logger.warning(f"[Feedback] Tu choi do dinh dang audio khong duoc ho tro: '{content_type}' (base: '{base_content_type}')")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
@@ -161,6 +164,7 @@ async def _read_and_validate_audio(
     file_size = len(content)
 
     if file_size > AUDIO_MAX_SIZE_BYTES:
+        logger.warning(f"[Feedback] Tu choi do file audio qua lon: {file_size} bytes")
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=(
@@ -251,13 +255,15 @@ async def submit_feedback(
     has_audio = audio_file is not None and audio_file.filename
     has_text = text_content is not None and text_content.strip()
 
+    request_id = str(uuid.uuid4())
+
     if not has_audio and not has_text:
+        logger.warning(f"[Feedback] Tu choi do thieu noi dung (request_id={request_id}): khong co audio cung khong co text_content")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Thieu noi dung phan hoi: phai co it nhat audio hoac text_content.",
         )
 
-    request_id = str(uuid.uuid4())
     logger.info(
         f"[Feedback] === Bat dau pipeline | request_id={request_id} "
         f"| tenant={tenant_id} | location={location} "
@@ -377,7 +383,11 @@ async def submit_feedback(
     # -----------------------------------------------------------------------
     absa_result: Optional[dict] = None
     fusion_result: Optional[dict] = None
-    sentiment_score: float = 0.0        # external [-1, +1] — lưu Firestore/response
+    # 0.D FIX: Fallback là None thay vì 0.0.
+    # Lý do: 0.0 bị lưu vào Firestore và dashboard hiển thị "0.00" khi ABSA fail/timeout.
+    # None rõ ràng hơn: "chưa có kết quả ABSA" khác với "trung tính thật sự" (= 0.0).
+    # churn_model.py nhận S [0,1] → dùng _internal_sentiment_for_rfms (không ảnh hưởng).
+    sentiment_score: Optional[float] = None   # external [-1, +1] — None khi ABSA chưa chạy
     _internal_sentiment_for_rfms: float = 0.5  # internal [0,1] — dùng tính RFMS S
     overall_sentiment: str = "Trung lap"
     is_sarcasm_suspected: bool = False
@@ -422,7 +432,7 @@ async def submit_feedback(
                 is_sarcasm_suspected = fusion_result.get("is_sarcasm_suspected", False)
 
                 logger.info(
-                    f"[Feedback] Fusion: sentiment_ext={sentiment_score:.4f} "
+                    f"[Feedback] Fusion: sentiment_ext={sentiment_score} "
                     f"({overall_sentiment}), internal={_internal_sentiment_for_rfms:.4f}, "
                     f"sarcasm={is_sarcasm_suspected}"
                 )
@@ -602,16 +612,21 @@ async def submit_feedback(
         logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id}")
 
         # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam)
+        # 0.A FIX: Gọi update_customer_rfms ngay cả khi rfms_normalized rỗng (do RFMS exception),
+        # để đảm bảo feedback_count và last_feedback_at luôn được cập nhật sau mỗi feedback hợp lệ.
+        # rfms_normalized có thể rỗng nếu RFMS bị exception → dùng safe defaults.
         if customer_id and not is_suspicious_flag:
             update_customer_rfms(
                 tenant_id=tenant_id,
                 customer_id=customer_id,
-                R=rfms_normalized.get("R", 0.5),
-                F=rfms_normalized.get("F", 0.0),
-                M=rfms_normalized.get("M", 0.0),
-                S=rfms_normalized.get("S", 0.5),
+                R=rfms_normalized.get("R", 0.5),    # 0.5 = unknown (safe default)
+                F=rfms_normalized.get("F", 0.0),    # 0.0 = lần đầu
+                M=rfms_normalized.get("M", 0.0),    # 0.0 = chưa có spending
+                S=rfms_normalized.get("S", 0.5),    # 0.5 = neutral (safe default)
                 p_churn=p_churn,
-                sentiment_score_raw=sentiment_score or 0.5,
+                sentiment_score_raw=(
+                    _internal_sentiment_for_rfms  # internal [0,1] cho running avg
+                ),
             )
 
     except (EnvironmentError, FileNotFoundError) as e:
