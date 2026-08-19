@@ -17,13 +17,15 @@ NGUYÊN TẮC FUSION:
       nhưng thay đổi giọng điệu. Đặt cờ is_sarcasm_suspected = True.
     → Điều chỉnh điểm về phía tín hiệu âm thanh.
 
-NGƯỠNG MÂU THUẪN (đề xuất ban đầu — sẽ tinh chỉnh khi có dữ liệu thật):
-  - text_sentiment_score > 0.5 (tích cực)  VÀ  audio_stress_score > 0.45
+NGƯỠNG MÂU THUẪN (tinh chỉnh — v2, dựa trên phản hồi dữ liệu thực):
+  - text_sentiment_score > 0.5 (tích cực)  VÀ  audio_stress_score > 0.80
   → Được xem là mâu thuẫn, nghi ngờ mỉa mai.
 
-  Lý do chọn 0.45: Theo nghiên cứu âm học, người nói mỉa mai thường có
-  jitter/shimmer cao hơn bình thường ~20-30%, tương đương stress_score ~0.4-0.5.
-  Ngưỡng 0.45 là giá trị bảo thủ, tránh nhận định sai khi người nói chỉ hơi lo lắng.
+  LÝ DO THAY ĐỔI (từ 0.45 → 0.80):
+    Ngưỡng cũ (0.45) quá nhạy: tiếng ồn nền, giọng hơi lo lắng ở quán đông
+    cũng kích hoạt cờ mỉa mai, bẻ lái phản hồi Tích Cực thành Tiêu Cực sai.
+    Ngưỡng mới (0.80) chỉ đánh dấu mỉa mai khi stress_score CỰC CAO,
+    phản ánh rõ ràng giọng căng thẳng bất thường (không phải tiếng ồn thông thường).
 
 KẾT QUẢ TRẢ VỀ:
   {
@@ -51,11 +53,11 @@ logger = logging.getLogger(__name__)
 # Ngưỡng Fusion — ghi rõ đây là giá trị ĐỀ XUẤT, sẽ tinh chỉnh sau
 # ---------------------------------------------------------------------------
 SARCASM_TEXT_POSITIVE_THRESHOLD = 0.5   # text_score > này → văn bản tích cực
-SARCASM_AUDIO_STRESS_THRESHOLD = 0.45   # stress_score > này → audio căng thẳng cao
+SARCASM_AUDIO_STRESS_THRESHOLD  = 0.80  # stress_score > này → audio căng thẳng CỰC CAO (v2: tăng từ 0.45)
 
-# Trọng số khi đồng thuận: text 60%, audio 40%
-TEXT_WEIGHT = 0.60
-AUDIO_WEIGHT = 0.40
+# Trọng số khi đồng thuận: text 80%, audio 20%  (v2: ưu tiên văn bản hơn)
+TEXT_WEIGHT  = 0.80
+AUDIO_WEIGHT = 0.20
 
 
 # ---------------------------------------------------------------------------
