@@ -263,6 +263,7 @@ def update_customer_rfms(
     p_churn: float,
     sentiment_score_raw: float,
     recency_days: Optional[float] = None,
+    voucher_code: Optional[str] = None,
 ) -> None:
     """
     Cập nhật điểm RFMS và P_churn sau mỗi lần xử lý feedback.
@@ -322,7 +323,12 @@ def update_customer_rfms(
             "p_churn":              round(p_churn, 6),
             "churn_risk_level":     _sentiment_to_risk_level(p_churn),
             "updated_at":           now,
-        })
+        }
+        
+        if voucher_code:
+            update_data["zns_voucher_code"] = voucher_code
+
+        transaction.update(ref, update_data)
 
     transaction = db.transaction()
     _update_in_transaction(transaction, customer_ref)
@@ -332,6 +338,27 @@ def update_customer_rfms(
         f"| R={R:.4f}, F={F:.4f}, M={M:.4f}, S={S:.4f} "
         f"| P_churn={p_churn:.4f} ({_sentiment_to_risk_level(p_churn)})"
     )
+
+def update_customer_voucher(
+    tenant_id: str,
+    customer_id: str,
+    voucher_code: str,
+) -> None:
+    """
+    Chỉ cập nhật mã voucher cho khách hàng nếu khách hàng đã có RFMS từ trước.
+    """
+    db = get_firestore_client()
+    customer_ref = (
+        db.collection("tenants")
+        .document(tenant_id)
+        .collection("customers")
+        .document(customer_id)
+    )
+    customer_ref.update({
+        "zns_voucher_code": voucher_code,
+        "updated_at": _now_utc()
+    })
+    logger.info(f"[Firestore] Cập nhật voucher_code {voucher_code} cho customer {customer_id}")
 
 
 # ---------------------------------------------------------------------------

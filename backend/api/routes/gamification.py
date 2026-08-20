@@ -4,7 +4,8 @@ from fastapi import APIRouter, Form, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
 
-from backend.db.firestore_ops import update_feedback_gamification, get_or_create_customer, update_customer_rfms
+from backend.db.firestore_client import get_firestore_client
+from backend.db.firestore_ops import update_feedback_gamification, get_or_create_customer, update_customer_rfms, update_customer_voucher
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,41 @@ async def spin_gamification(
 
         # Cập nhật thông tin vào Feedback nếu có feedback_id
         if feedback_id:
+            # Kiểm tra xem feedback đã được link với customer chưa
+            db = get_firestore_client()
+            feedback_ref = db.collection("tenants").document(tenant_id).collection("feedbacks").document(feedback_id)
+            feedback_snap = feedback_ref.get()
+            
+            already_linked = False
+            if feedback_snap.exists:
+                fb_data = feedback_snap.to_dict()
+                already_linked = bool(fb_data.get("customer_id"))
+                
+                # Nếu chưa link, đồng bộ RFMS từ feedback sang customer mới tạo
+                if not already_linked:
+                    # Lấy sentiment_score, đổi sang thang [0,1] để làm sentiment_score_raw
+                    sent_score = fb_data.get("sentiment_score", 0.0)
+                    sent_score_raw = (sent_score + 1.0) / 2.0
+                    
+                    update_customer_rfms(
+                        tenant_id=tenant_id,
+                        customer_id=customer_id,
+                        R=fb_data.get("rfms_r", 0.5),
+                        F=fb_data.get("rfms_f", 0.0),
+                        M=fb_data.get("rfms_m", 0.0),
+                        S=fb_data.get("rfms_s", 0.5),
+                        p_churn=fb_data.get("p_churn", 0.5),
+                        sentiment_score_raw=sent_score_raw,
+                        voucher_code=voucher_code
+                    )
+                elif voucher_code:
+                    # Nếu đã link từ trước, chỉ cập nhật thêm mã voucher
+                    update_customer_voucher(
+                        tenant_id=tenant_id,
+                        customer_id=customer_id,
+                        voucher_code=voucher_code
+                    )
+
             update_feedback_gamification(
                 tenant_id=tenant_id,
                 feedback_id=feedback_id,
