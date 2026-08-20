@@ -1,20 +1,15 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Cell, PieChart, Pie
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
+  ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area
 } from 'recharts'
 import { useFeedbacks, useCustomers, timeAgo, tsToDate } from '../mocks/useFirestore.js'
+import { isToday, isYesterday, subDays, format, isSameDay } from 'date-fns'
+import CountUp from 'react-countup'
 
 /**
  * OverviewPage — Tổng quan realtime
- *
- * Giai đoạn 6: Dùng useFeedbacks() + useCustomers() thay vì import mock trực tiếp.
- * Hook tự động switch giữa Firestore thật và mock tùy VITE_USE_MOCK_FIRESTORE.
- *
- * Collections (backend/db/schema.md):
- *   tenants/{tenant_id}/feedbacks   — onSnapshot realtime
- *   tenants/{tenant_id}/customers   — onSnapshot realtime
  */
 
 const ASPECT_LABELS = {
@@ -38,6 +33,39 @@ function sentimentLabel(score) {
   return { label: 'Trung lập', cls: 'neutral' }
 }
 
+function SkeletonLoader() {
+  return (
+    <div>
+      <div className="kpi-grid">
+        {[1, 2, 3, 4].map(i => <div key={i} className="kpi-card skeleton-box" style={{ height: 110 }} />)}
+      </div>
+      <div className="grid-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
+        <div className="card skeleton-box" style={{ height: 320 }} />
+        <div className="card skeleton-box" style={{ height: 320 }} />
+      </div>
+      <div className="card skeleton-box" style={{ height: 400 }} />
+    </div>
+  )
+}
+
+function TrendIndicator({ pct, up, invertColors = false }) {
+  if (pct === null || pct === undefined) return null;
+  const isUp = up;
+  // If invertColors is true, UP is bad (red), DOWN is good (green). Example: High risk customers.
+  // Otherwise, UP is good (green), DOWN is bad (red).
+  let color = 'var(--color-text-muted)';
+  if (pct !== '0.0' && pct !== 'Mới') {
+    color = (isUp !== invertColors) ? 'var(--color-success)' : 'var(--color-danger)';
+  }
+  
+  return (
+    <span style={{ color, fontSize: 'var(--font-size-xs)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+      {pct !== 'Mới' && (isUp ? '↑' : '↓')} {pct}{pct !== 'Mới' ? '%' : ''}
+      <span style={{ color: 'var(--color-text-muted)', fontWeight: 400, marginLeft: 4 }}>so với hôm qua</span>
+    </span>
+  )
+}
+
 export default function OverviewPage() {
   const { feedbacks, loading: fbLoading, error: fbError } = useFeedbacks()
   const { customers, loading: cuLoading }                  = useCustomers()
@@ -49,25 +77,68 @@ export default function OverviewPage() {
     feedbacks.filter(f => f.processing_status === 'done' && !f.is_suspicious), [feedbacks])
 
   const todayFeedbacks = useMemo(() =>
-    doneFeedbacks.filter(f => tsToDate(f.timestamp) >= today), [doneFeedbacks])
+    doneFeedbacks.filter(f => isToday(tsToDate(f.timestamp))), [doneFeedbacks])
+    
+  const yesterdayFeedbacks = useMemo(() =>
+    doneFeedbacks.filter(f => isYesterday(tsToDate(f.timestamp))), [doneFeedbacks])
+
+  const calcTrend = (todayVal, yesterdayVal) => {
+    if (yesterdayVal === 0) return { pct: todayVal > 0 ? 'Mới' : '0.0', up: todayVal >= 0 }
+    const pct = ((todayVal - yesterdayVal) / yesterdayVal) * 100
+    return { pct: Math.abs(pct).toFixed(1), up: pct >= 0 }
+  }
+
+  const feedbackTrend = useMemo(() => calcTrend(todayFeedbacks.length, yesterdayFeedbacks.length), [todayFeedbacks, yesterdayFeedbacks])
 
   const avgSentiment = useMemo(() => {
     if (!doneFeedbacks.length) return 0
     return doneFeedbacks.reduce((s, f) => s + (f.sentiment_score ?? 0), 0) / doneFeedbacks.length
   }, [doneFeedbacks])
 
+  const todayAvgSentiment = useMemo(() => {
+    if (!todayFeedbacks.length) return 0
+    return todayFeedbacks.reduce((s, f) => s + (f.sentiment_score ?? 0), 0) / todayFeedbacks.length
+  }, [todayFeedbacks])
+
+  const yesterdayAvgSentiment = useMemo(() => {
+    if (!yesterdayFeedbacks.length) return 0
+    return yesterdayFeedbacks.reduce((s, f) => s + (f.sentiment_score ?? 0), 0) / yesterdayFeedbacks.length
+  }, [yesterdayFeedbacks])
+
+  const sentimentTrend = useMemo(() => {
+     if (yesterdayFeedbacks.length === 0) return { pct: todayFeedbacks.length > 0 ? 'Mới' : '0.0', up: todayAvgSentiment >= 0 }
+     const diff = todayAvgSentiment - yesterdayAvgSentiment
+     // Handle cases where yesterday was 0 but diff is something
+     const pct = yesterdayAvgSentiment !== 0 ? (diff / Math.abs(yesterdayAvgSentiment)) * 100 : diff * 100
+     return { pct: Math.abs(pct).toFixed(1), up: diff >= 0 }
+  }, [todayAvgSentiment, yesterdayAvgSentiment, todayFeedbacks, yesterdayFeedbacks])
+
   const sarcasmCount = useMemo(() =>
     doneFeedbacks.filter(f => f.is_sarcasm).length, [doneFeedbacks])
+    
+  const todaySarcasm = useMemo(() => todayFeedbacks.filter(f => f.is_sarcasm).length, [todayFeedbacks])
+  const yesterdaySarcasm = useMemo(() => yesterdayFeedbacks.filter(f => f.is_sarcasm).length, [yesterdayFeedbacks])
+  const sarcasmTrend = useMemo(() => calcTrend(todaySarcasm, yesterdaySarcasm), [todaySarcasm, yesterdaySarcasm])
 
   const highRiskCount = useMemo(() =>
     customers.filter(c => c.churn_risk_level === 'high').length, [customers])
+
+  const sentiment7Days = useMemo(() => {
+    const days = []
+    for (let i = 6; i >= 0; i--) {
+      const d = subDays(today, i)
+      const dayStr = format(d, 'dd/MM')
+      const fbs = doneFeedbacks.filter(f => isSameDay(tsToDate(f.timestamp), d))
+      const avg = fbs.length > 0 ? fbs.reduce((s, f) => s + (f.sentiment_score ?? 0), 0) / fbs.length : 0
+      days.push({ name: dayStr, avgSentiment: avg, count: fbs.length })
+    }
+    return days
+  }, [doneFeedbacks, today])
 
   const aspectData = useMemo(() => {
     const map = {}
     doneFeedbacks.forEach(f => {
       (f.aspects || []).forEach(a => {
-        // Backend mới lưu: category (enum) + sentiment_en + score
-        // Mock cũ dùng: aspect (enum) + sentiment (en) + score
         const cat  = a.category || a.aspect || 'khac'
         const sent = a.sentiment_en || (a.sentiment === 'Tích cực' ? 'positive' : a.sentiment === 'Tiêu cực' ? 'negative' : a.sentiment) || 'neutral'
         const sc   = typeof a.score === 'number' ? a.score : (sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0)
@@ -97,6 +168,15 @@ export default function OverviewPage() {
       { name: 'Tiêu cực', value: neg, color: '#EF4444' },
     ].filter(d => d.value > 0)
   }, [doneFeedbacks])
+  
+  const customerPieData = useMemo(() => {
+    const newC = customers.filter(c => c.feedback_count === 1).length
+    const returningC = customers.filter(c => c.feedback_count > 1).length
+    return [
+      { name: 'Khách mới', value: newC, color: '#3B82F6' },
+      { name: 'Quay lại', value: returningC, color: '#8B5CF6' }
+    ].filter(d => d.value > 0)
+  }, [customers])
 
   const recentFeedbacks = useMemo(() =>
     [...feedbacks]
@@ -105,13 +185,9 @@ export default function OverviewPage() {
 
   // Loading / Error states
   if (fbLoading || cuLoading) {
-    return (
-      <div style={{ textAlign: 'center', padding: 'var(--spacing-2xl)', color: 'var(--color-text-muted)' }}>
-        <div style={{ fontSize: '2rem', marginBottom: 'var(--spacing-md)' }}>⏳</div>
-        <p>Đang tải dữ liệu từ Firestore...</p>
-      </div>
-    )
+    return <SkeletonLoader />
   }
+  
   if (fbError) {
     return (
       <div style={{
@@ -131,37 +207,65 @@ export default function OverviewPage() {
     <div>
       {/* KPI Cards */}
       <div className="kpi-grid">
-        <div className="kpi-card">
+        <div className="kpi-card glass-card">
           <div className="kpi-label">Phản hồi hôm nay</div>
-          <div className="kpi-value">{todayFeedbacks.length}</div>
-          <div className="kpi-sub">/ {doneFeedbacks.length} tổng tuần này</div>
+          <div className="kpi-value"><CountUp end={todayFeedbacks.length} duration={1} separator="," /></div>
+          <div className="kpi-sub"><TrendIndicator pct={feedbackTrend.pct} up={feedbackTrend.up} /></div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-card">
           <div className="kpi-label">Điểm cảm xúc TB</div>
           <div className="kpi-value" style={{ color: scoreToColor(avgSentiment) }}>
-            {avgSentiment >= 0 ? '+' : ''}{avgSentiment.toFixed(2)}
+            {avgSentiment >= 0 ? '+' : ''}<CountUp end={avgSentiment} decimals={2} duration={1} />
           </div>
-          <div className="kpi-sub">Thang điểm: -1.0 → +1.0</div>
+          <div className="kpi-sub"><TrendIndicator pct={sentimentTrend.pct} up={sentimentTrend.up} /></div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-card">
           <div className="kpi-label">Khách rủi ro cao</div>
           <div className="kpi-value" style={{ color: highRiskCount > 0 ? 'var(--color-danger)' : 'var(--color-success)' }}>
-            {highRiskCount}
+            <CountUp end={highRiskCount} duration={1} />
           </div>
-          <div className="kpi-sub">Nguy cơ &gt; 85% · cần chú ý</div>
+          <div className="kpi-sub">
+            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Cần chú ý</span>
+          </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-card">
           <div className="kpi-label">Phát hiện mỉa mai</div>
           <div className="kpi-value" style={{ color: sarcasmCount > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>
-            {sarcasmCount}
+            <CountUp end={sarcasmCount} duration={1} />
           </div>
-          <div className="kpi-sub">AI phát hiện mỉa mai</div>
+          <div className="kpi-sub"><TrendIndicator pct={sarcasmTrend.pct} up={sarcasmTrend.up} invertColors={true} /></div>
         </div>
+      </div>
+
+      {/* Area Chart 7 Days */}
+      <div className="card glass-card" style={{ marginBottom: 'var(--spacing-xl)' }}>
+        <div className="card-header">
+          <span className="card-title">Xu hướng cảm xúc (7 ngày qua)</span>
+        </div>
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart data={sentiment7Days} margin={{ left: -10, right: 20, top: 10, bottom: 0 }}>
+            <defs>
+              <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} />
+            <YAxis domain={[-1, 1]} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-text-muted)' }} tickFormatter={v => v.toFixed(1)} />
+            <RechartsTooltip 
+              contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', border: 'none', borderRadius: 12, fontSize: 13, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+              formatter={(val) => [val.toFixed(2), 'Điểm cảm xúc']}
+              labelStyle={{ fontWeight: 'bold', color: 'var(--color-text-primary)' }}
+            />
+            <Area type="monotone" dataKey="avgSentiment" stroke="#14b8a6" fill="url(#sentimentGradient)" strokeWidth={2.5} />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Charts Row */}
       <div className="grid-2" style={{ marginBottom: 'var(--spacing-xl)' }}>
-        <div className="card">
+        <div className="card glass-card">
           <div className="card-header">
             <span className="card-title">Cảm xúc theo khía cạnh</span>
             <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
@@ -193,7 +297,7 @@ export default function OverviewPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" horizontal={false} />
                   <XAxis type="number" domain={[-1, 1]} tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} tickFormatter={v => v.toFixed(1)} axisLine={false} tickLine={false} />
                   <YAxis type="category" dataKey="label" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12, fontWeight: 700 }} width={95} axisLine={false} tickLine={false} />
-                  <Tooltip
+                  <RechartsTooltip
                     contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 12, fontSize: 13, boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
                     labelStyle={{ color: 'var(--color-text-primary)', fontWeight: 800, marginBottom: 4 }}
                     formatter={(val) => [val.toFixed(2), 'Điểm TB']}
@@ -210,51 +314,52 @@ export default function OverviewPage() {
           )}
         </div>
 
-        <div className="card">
-          <div className="card-header"><span className="card-title">Phân bổ cảm xúc</span></div>
-          {pieData.length === 0 ? (
+        <div className="card glass-card">
+          <div className="card-header"><span className="card-title">Khách mới vs Quay lại</span></div>
+          {customers.length === 0 ? (
             <div className="empty-state"><div className="empty-state-icon">📭</div><p>Chưa có dữ liệu</p></div>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
                   <defs>
-                    <linearGradient id="piePos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#34D399" />
-                      <stop offset="100%" stopColor="#059669" />
+                    <linearGradient id="pieNew" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#60A5FA" />
+                      <stop offset="100%" stopColor="#2563EB" />
                     </linearGradient>
-                    <linearGradient id="pieNeu" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#9CA3AF" />
-                      <stop offset="100%" stopColor="#4B5563" />
+                    <linearGradient id="pieRet" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#A78BFA" />
+                      <stop offset="100%" stopColor="#7C3AED" />
                     </linearGradient>
-                    <linearGradient id="pieNeg" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F87171" />
-                      <stop offset="100%" stopColor="#DC2626" />
-                    </linearGradient>
-                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <filter id="shadowC" x="-10%" y="-10%" width="120%" height="120%">
                       <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
                     </filter>
                   </defs>
-                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={75} innerRadius={45} dataKey="value" paddingAngle={5}
+                  <Pie data={customerPieData} cx="50%" cy="50%" outerRadius={75} innerRadius={55} dataKey="value" paddingAngle={5}
                     stroke="none"
-                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                     labelLine={false}>
-                    {pieData.map((entry, i) => {
-                       const grad = entry.name === 'Tích cực' ? 'url(#piePos)' : entry.name === 'Tiêu cực' ? 'url(#pieNeg)' : 'url(#pieNeu)';
-                       return <Cell key={i} fill={grad} filter="url(#shadow)" />;
+                    {customerPieData.map((entry, i) => {
+                       const grad = entry.name === 'Khách mới' ? 'url(#pieNew)' : 'url(#pieRet)';
+                       return <Cell key={i} fill={grad} filter="url(#shadowC)" />;
                     })}
                   </Pie>
-                  <Tooltip 
+                  <RechartsTooltip 
                     contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', border: 'none', borderRadius: 12, fontSize: 13, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }} 
                     itemStyle={{ fontWeight: 700 }}
-                    formatter={(val) => [`${val} phản hồi`]} 
+                    formatter={(val) => [`${val} khách`]} 
                   />
+                  <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '20px', fontWeight: 'bold', fill: 'var(--color-text-primary)' }}>
+                    {customers.length}
+                  </text>
+                  <text x="50%" y="62%" textAnchor="middle" dominantBaseline="middle" style={{ fontSize: '11px', fill: 'var(--color-text-muted)' }}>
+                    Tổng số
+                  </text>
                 </PieChart>
               </ResponsiveContainer>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-lg)', flexWrap: 'wrap', marginTop: 12 }}>
-                {pieData.map(d => (
+                {customerPieData.map(d => (
                   <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--font-size-sm)' }}>
-                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: d.name === 'Tích cực' ? 'linear-gradient(to bottom, #34D399, #059669)' : d.name === 'Tiêu cực' ? 'linear-gradient(to bottom, #F87171, #DC2626)' : 'linear-gradient(to bottom, #9CA3AF, #4B5563)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: d.name === 'Khách mới' ? 'linear-gradient(to bottom, #60A5FA, #2563EB)' : 'linear-gradient(to bottom, #A78BFA, #7C3AED)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
                     <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{d.name}: <strong style={{ color: 'var(--color-text-primary)' }}>{d.value}</strong></span>
                   </div>
                 ))}
@@ -265,7 +370,7 @@ export default function OverviewPage() {
       </div>
 
       {/* Recent Feedbacks */}
-      <div className="card">
+      <div className="card glass-card">
         <div className="card-header">
           <span className="card-title">Phản hồi mới nhất</span>
           <Link to="/feedbacks" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none' }}>Xem tất cả</Link>
