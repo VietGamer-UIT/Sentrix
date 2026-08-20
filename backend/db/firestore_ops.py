@@ -312,7 +312,7 @@ def update_customer_rfms(
         )
 
         now = _now_utc()
-        transaction.update(ref, {
+        update_data = {
             "feedback_count":       new_count,
             "last_feedback_at":     now,
             "avg_sentiment_score":  round(new_avg_sentiment, 6),
