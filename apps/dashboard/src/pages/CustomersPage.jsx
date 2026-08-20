@@ -14,7 +14,7 @@ export default function CustomersPage() {
   const { feedbacks } = useFeedbacks()
 
   const [filterRisk, setFilterRisk] = useState('all')
-  const [sortBy, setSortBy]         = useState('p_churn')
+  const [sortBy, setSortBy]         = useState('last_feedback_at')
   const [selectedCustomer, setSelectedCustomer] = useState(null)
 
   const riskStats = useMemo(() => ({

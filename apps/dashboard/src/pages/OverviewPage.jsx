@@ -174,18 +174,36 @@ export default function OverviewPage() {
               <p>Chưa có dữ liệu phân tích</p>
             </div>
           ) : (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={aspectData} layout="vertical" margin={{ left: 10, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-                  <XAxis type="number" domain={[-1, 1]} tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} tickFormatter={v => v.toFixed(1)} />
-                  <YAxis type="category" dataKey="label" tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }} width={95} />
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={aspectData} layout="vertical" margin={{ left: 10, right: 20, top: 10, bottom: 10 }}>
+                  <defs>
+                    <linearGradient id="gradPos" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#34D399" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#059669" stopOpacity={1}/>
+                    </linearGradient>
+                    <linearGradient id="gradNeg" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#F87171" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#DC2626" stopOpacity={1}/>
+                    </linearGradient>
+                    <linearGradient id="gradNeu" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#9CA3AF" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#4B5563" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" horizontal={false} />
+                  <XAxis type="number" domain={[-1, 1]} tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} tickFormatter={v => v.toFixed(1)} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="label" tick={{ fill: 'var(--color-text-secondary)', fontSize: 12, fontWeight: 700 }} width={95} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}
-                    labelStyle={{ color: 'var(--color-text-primary)', fontWeight: 700 }}
+                    contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 12, fontSize: 13, boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
+                    labelStyle={{ color: 'var(--color-text-primary)', fontWeight: 800, marginBottom: 4 }}
                     formatter={(val) => [val.toFixed(2), 'Điểm TB']}
+                    cursor={{ fill: 'rgba(0,0,0,0.03)' }}
                   />
-                  <Bar dataKey="avgScore" radius={[0, 4, 4, 0]}>
-                    {aspectData.map((entry, i) => <Cell key={i} fill={scoreToColor(entry.avgScore)} />)}
+                  <Bar dataKey="avgScore" radius={[0, 8, 8, 0]} barSize={16}>
+                    {aspectData.map((entry, i) => {
+                      const grad = entry.avgScore >= 0.3 ? 'url(#gradPos)' : entry.avgScore <= -0.3 ? 'url(#gradNeg)' : 'url(#gradNeu)';
+                      return <Cell key={i} fill={grad} />;
+                    })}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -198,20 +216,45 @@ export default function OverviewPage() {
             <div className="empty-state"><div className="empty-state-icon">📭</div><p>Chưa có dữ liệu</p></div>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={65} innerRadius={40} dataKey="value" paddingAngle={3}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={{ stroke: 'rgba(0,0,0,0.15)' }}>
-                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  <defs>
+                    <linearGradient id="piePos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#34D399" />
+                      <stop offset="100%" stopColor="#059669" />
+                    </linearGradient>
+                    <linearGradient id="pieNeu" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#9CA3AF" />
+                      <stop offset="100%" stopColor="#4B5563" />
+                    </linearGradient>
+                    <linearGradient id="pieNeg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F87171" />
+                      <stop offset="100%" stopColor="#DC2626" />
+                    </linearGradient>
+                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
+                    </filter>
+                  </defs>
+                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={75} innerRadius={45} dataKey="value" paddingAngle={5}
+                    stroke="none"
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    labelLine={false}>
+                    {pieData.map((entry, i) => {
+                       const grad = entry.name === 'Tích cực' ? 'url(#piePos)' : entry.name === 'Tiêu cực' ? 'url(#pieNeg)' : 'url(#pieNeu)';
+                       return <Cell key={i} fill={grad} filter="url(#shadow)" />;
+                    })}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }} formatter={(val) => [`${val} phản hồi`]} />
+                  <Tooltip 
+                    contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', border: 'none', borderRadius: 12, fontSize: 13, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }} 
+                    itemStyle={{ fontWeight: 700 }}
+                    formatter={(val) => [`${val} phản hồi`]} 
+                  />
                 </PieChart>
               </ResponsiveContainer>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-md)', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-lg)', flexWrap: 'wrap', marginTop: 12 }}>
                 {pieData.map(d => (
-                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--font-size-xs)' }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color }} />
+                  <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--font-size-sm)' }}>
+                    <div style={{ width: 14, height: 14, borderRadius: '50%', background: d.name === 'Tích cực' ? 'linear-gradient(to bottom, #34D399, #059669)' : d.name === 'Tiêu cực' ? 'linear-gradient(to bottom, #F87171, #DC2626)' : 'linear-gradient(to bottom, #9CA3AF, #4B5563)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
                     <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{d.name}: <strong style={{ color: 'var(--color-text-primary)' }}>{d.value}</strong></span>
                   </div>
                 ))}
