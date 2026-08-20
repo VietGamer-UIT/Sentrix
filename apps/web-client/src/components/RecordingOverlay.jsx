@@ -94,7 +94,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   }
 
   const handleStartRecording = useCallback(async () => {
-    setError('Tính năng ghi âm tạm thời bảo trì (Whisper API). Vui lòng sử dụng tính năng gõ văn bản!')
+    setError('Tính năng ghi âm tạm thời bảo trì. Vui lòng sử dụng tính năng gõ văn bản!')
     return
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })

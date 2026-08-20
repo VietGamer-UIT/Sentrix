@@ -115,7 +115,7 @@ export default function CustomersPage() {
                   <th>Feedback</th>
                   <th>Cảm xúc TB</th>
                   <th>Lần cuối</th>
-                  <th>Nhắn tin Zalo</th>
+                  <th>Zalo / Voucher</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,7 +177,9 @@ export default function CustomersPage() {
                         {timeAgo(c.last_feedback_at)}
                       </td>
                       <td>
-                        {c.churn_risk_level === 'high' ? (
+                        {c.zns_voucher_code ? (
+                          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', fontWeight: 600 }}>{c.zns_voucher_code}</span>
+                        ) : c.churn_risk_level === 'high' ? (
                           <button className="btn btn--ghost" style={{ padding: '4px 10px', fontSize: '0.72rem' }} title="Gửi Tin nhắn Zalo — Giai đoạn 9">
                             Tin nhắn Zalo
                           </button>
