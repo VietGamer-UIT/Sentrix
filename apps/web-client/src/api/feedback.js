@@ -40,12 +40,17 @@ export async function submitFeedback({
   textContent,
   customerPhone = null,
   totalSpending = 0,
+  feedbackId = null,
 }) {
   const formData = new FormData()
 
   // === Fields bắt buộc ===
   formData.append('tenant_id', tenantId)
   formData.append('location', location)
+
+  if (feedbackId) {
+    formData.append('feedback_id', feedbackId)
+  }
 
   // === Fields tùy chọn — audio hoặc text (cần ít nhất 1) ===
   if (audioBlob && audioBlob.size > 0) {

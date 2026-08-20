@@ -96,42 +96,40 @@ def _sentiment_to_risk_level(p_churn: float) -> str:
 def save_feedback(
     tenant_id: str,
     feedback_data: dict[str, Any],
+    feedback_id_override: str | None = None,
 ) -> str:
     """
-    Lưu 1 lượt phản hồi khách hàng vào Firestore.
+    Lưu feedback vào collection `feedbacks` của một tenant cụ thể.
 
-    Path: tenants/{tenant_id}/feedbacks/{auto_id}
+    Path: tenants/{tenant_id}/feedbacks/{feedback_id}
 
     Args:
-        tenant_id: ID của doanh nghiệp (tenant).
-        feedback_data: dict chứa dữ liệu feedback đã xử lý qua toàn bộ pipeline.
-                       Xem schema.md để biết các field bắt buộc.
-                       Sẽ được merge với timestamp server-side (không tin client).
+        tenant_id: ID của doanh nghiệp.
+        feedback_data: Dữ liệu feedback cần lưu (chưa có trường timestamp).
+        feedback_id_override: ID do client cung cấp (để xử lý fire-and-forget).
 
     Returns:
-        str: feedback_id (Firestore auto-generated document ID).
-
-    Raises:
-        Exception: Lỗi Firestore (network, permissions, ...).
+        str: feedback_id.
     """
     db = get_firestore_client()
 
-    # Đảm bảo có timestamp server-side (không tin timestamp từ client)
     doc_data = {
         **feedback_data,
         "timestamp": _now_utc(),
         "processing_status": feedback_data.get("processing_status", "done"),
     }
 
-    # Tạo document với auto-generated ID
     tenant_ref = db.collection("tenants").document(tenant_id)
-    feedback_ref = tenant_ref.collection("feedbacks").document()
+    if feedback_id_override:
+        feedback_ref = tenant_ref.collection("feedbacks").document(feedback_id_override)
+    else:
+        feedback_ref = tenant_ref.collection("feedbacks").document()
+    
     feedback_id = feedback_ref.id
-
-    # Lưu lại feedback_id vào chính document đó (tiện truy vấn sau)
     doc_data["feedback_id"] = feedback_id
 
-    feedback_ref.set(doc_data)
+    # Dùng merge=True để không ghi đè dữ liệu từ /spin nếu /spin chạy xong trước
+    feedback_ref.set(doc_data, merge=True)
 
     logger.info(
         f"[Firestore] Lưu feedback thành công: "
@@ -154,16 +152,15 @@ def update_feedback_gamification(
     db = get_firestore_client()
     feedback_ref = db.collection("tenants").document(tenant_id).collection("feedbacks").document(feedback_id)
     
-    # Kiểm tra xem feedback có tồn tại không
-    if not feedback_ref.get().exists:
-        raise ValueError(f"Feedback {feedback_id} không tồn tại")
-        
-    feedback_ref.update({
+    # Dùng set(merge=True) thay vì update() để tránh ValueError 
+    # trong trường hợp Spin API chạy trước khi Feedback lưu xong
+    feedback_ref.set({
         "customer_id": customer_id,
         "gamification_prize": prize,
         "gamification_voucher": voucher_code,
-        "gamification_updated_at": _now_utc()
-    })
+        "gamification_updated_at": _now_utc(),
+        "feedback_id": feedback_id, # Đảm bảo stub doc có đủ trường khóa
+    }, merge=True)
     
     logger.info(
         f"[Firestore] Đã cập nhật voucher {voucher_code} cho feedback {feedback_id}"

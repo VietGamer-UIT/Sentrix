@@ -245,6 +245,10 @@ async def submit_feedback(
         default=0.0,
         description="Tong chi tieu lan nay (VND). Dung tinh M trong RFMS.",
     ),
+    feedback_id: str | None = Form(
+        default=None,
+        description="UUID tự sinh từ frontend phục vụ Fire-and-Forget",
+    ),
 ) -> JSONResponse:
     """
     Pipeline đầy đủ Giai đoạn 8: nhận → xử lý → lưu Firestore.
@@ -543,7 +547,7 @@ async def submit_feedback(
     # -----------------------------------------------------------------------
     # Bước 8: Lưu Firestore multi-tenant
     # -----------------------------------------------------------------------
-    feedback_id: Optional[str] = None
+    feedback_id_created: Optional[str] = None
     customer_id: Optional[str] = None
 
     try:
@@ -608,8 +612,8 @@ async def submit_feedback(
             "zns_sent_at":        None,
         }
 
-        feedback_id = save_feedback(tenant_id, feedback_doc)
-        logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id}")
+        feedback_id_created = save_feedback(tenant_id, feedback_doc, feedback_id_override=feedback_id)
+        logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id_created}")
 
         # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam)
         # 0.A FIX: Gọi update_customer_rfms ngay cả khi rfms_normalized rỗng (do RFMS exception),
@@ -743,14 +747,14 @@ async def submit_feedback(
 
     logger.info(
         f"[Feedback] === Hoan thanh pipeline | request_id={request_id} "
-        f"| feedback_id={feedback_id} | p_churn={p_churn:.4f} ==="
+        f"| feedback_id={feedback_id_created or feedback_id} | p_churn={p_churn:.4f} ==="
     )
 
     return JSONResponse(
         status_code=status.HTTP_202_ACCEPTED,
         content=FeedbackAcceptedResponse(
             request_id=request_id,
-            feedback_id=feedback_id,
+            feedback_id=feedback_id_created or feedback_id,
             status=final_status,
             message=(
                 "Phan hoi da duoc xu ly va luu thanh cong."

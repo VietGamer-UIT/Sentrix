@@ -136,7 +136,9 @@ function RecordingPage() {
   }, [isRecording]) // eslint-disable-line
 
   const handleStartRecording = useCallback(async () => {
-    setError(null)
+    setError('Tính năng ghi âm tạm thời bảo trì (Whisper API). Vui lòng sử dụng tính năng gõ văn bản!')
+    setShowText(true)
+    return
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
@@ -194,7 +196,7 @@ function RecordingPage() {
     }
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!audioBlob && !textContent.trim()) {
       setError('Vui lòng ghi âm hoặc gõ phản hồi trước khi gửi.')
       return
@@ -215,16 +217,24 @@ function RecordingPage() {
     const textToSend = textContent.trim() || null
     const phoneToSend = customerPhone.trim() || null
 
-    try {
-      const result = await submitFeedback({
-        tenantId,
-        location: decodeURIComponent(location),
-        audioBlob: audioBlob || null,
-        textContent: textToSend,
-        customerPhone: phoneToSend,
-        totalSpending: 0,
-      })
-      // Lưu feedback_id và kết quả AI vào sessionStorage trước khi navigate
+    // Lưu SĐT và ID sớm vào sessionStorage để các trang sau có thể dùng ngay
+    const clientFeedbackId = crypto.randomUUID()
+    if (phoneToSend) {
+      sessionStorage.setItem('sentrix_customer_phone', phoneToSend)
+    }
+    sessionStorage.setItem('sentrix_feedback_id', clientFeedbackId)
+
+    // Gửi API ngầm (Fire-and-forget)
+    submitFeedback({
+      tenantId,
+      location: decodeURIComponent(location),
+      audioBlob: audioBlob || null,
+      textContent: textToSend,
+      customerPhone: phoneToSend,
+      totalSpending: 0,
+      feedbackId: clientFeedbackId,
+    }).then(result => {
+      // Thành công ngầm: lưu kết quả cho SpinPage
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
         if (result.feedback_id) {
@@ -233,17 +243,14 @@ function RecordingPage() {
         if (result.is_suspicious) {
           sessionStorage.setItem('sentrix_is_suspicious', 'true')
         }
-        // C2 FIX: Lưu SĐT vào sessionStorage để SpinPage tái sử dụng
-        // → Không cần nhập SĐT lần 2, tránh 2 SĐT khác nhau cho cùng 1 feedback
-        if (phoneToSend) {
-          sessionStorage.setItem('sentrix_customer_phone', phoneToSend)
-        }
       } catch { /* ignore */ }
-    } catch (err) {
-      console.error('[Sentrix] Feedback submit failed silently:', err)
-    }
+    }).catch(err => {
+      // Lỗi mạng hoặc server
+      console.error('[Sentrix] Lỗi gửi feedback ngầm:', err)
+      alert('Cảnh báo: Không thể gửi phản hồi do lỗi kết nối. Vui lòng thử lại sau.')
+    })
 
-    // Navigate SAU khi đã có kết quả (hoặc fail)
+    // Navigate NGAY LẬP TỨC (phiên bản trung gian) — UX mượt
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(location)}`)
   }
 
