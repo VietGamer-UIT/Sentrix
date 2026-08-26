@@ -7,11 +7,14 @@ import { SPIN_PRIZES, submitSpinAPI } from '../api/gamification.js'
  *
  * FIX B1+C1 (2026-08-19):
  * - Gọi POST /api/v1/gamification/spin thay vì mock random ở client
- *   (bảo mật: prize được quyết định ở server, không thể hack JS)
- * - SĐT: ưu tiên lấy từ sessionStorage (nhập ở RecordingPage), chỉ hiện input
+ * - SĐT: ưu tiên lấy từ sessionStorage (nhập ở RecordingOverlay), chỉ hiện input
  *   nếu chưa có → tránh nhập 2 lần, tránh 2 SĐT khác nhau cho cùng 1 feedback
  * - Bỏ hoàn toàn firestoreUpdate.js — mọi ghi DB qua backend
  * - handleSkip: navigate bình thường, không gọi spin API
+ *
+ * Module 2 (PDPA):
+ * - Nếu voucher_eligible=false (phản hồi ẩn danh) → skip spin ngay, không hỏi SĐT
+ * - Nếu đã OTP ở RecordingOverlay → sentrix_customer_phone có sẵn, không hỏi lại
  */
 function SpinPage() {
   const [searchParams] = useSearchParams()
@@ -20,8 +23,18 @@ function SpinPage() {
   const tenantId = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
   const location  = searchParams.get('location') || 'Bàn 1'
 
-  // C1 FIX: Lấy SĐT từ sessionStorage (đã nhập ở RecordingPage)
-  // Chỉ hiện input nhập nếu sessionStorage trống (khách bỏ qua ở RecordingPage)
+  // Module 2: đọc voucher_eligible từ sessionStorage (set bởi RecordingOverlay)
+  // Nếu false (ẩn danh) → không hiện spin, redirect thẳng sang voucher
+  const voucherEligible = (() => {
+    try {
+      const stored = sessionStorage.getItem('sentrix_api_result')
+      if (stored) return JSON.parse(stored).voucher_eligible !== false
+    } catch { /* ignore */ }
+    return true  // Default: cho phép spin nếu không có info
+  })()
+
+  // C1 FIX: Lấy SĐT từ sessionStorage (đã nhập và OTP ở RecordingOverlay)
+  // Chỉ hiện input nhập nếu sessionStorage trống (khách bỏ qua OTP ở Overlay)
   const storedPhone = sessionStorage.getItem('sentrix_customer_phone') || ''
   const [phone, setPhone]             = useState(storedPhone)
   const [phoneError, setPhoneError]   = useState(null)
@@ -29,8 +42,8 @@ function SpinPage() {
   const [rotation, setRotation]       = useState(0)
   const [isSuspicious, setIsSuspicious] = useState(false)
   const [apiError, setApiError]       = useState(null)
-  // Hiện input SĐT chỉ khi sessionStorage không có SĐT
-  const [showPhoneInput, setShowPhoneInput] = useState(!storedPhone)
+  // Hiện input SĐT chỉ khi sessionStorage không có SĐT và voucher eligible
+  const [showPhoneInput, setShowPhoneInput] = useState(!storedPhone && voucherEligible)
 
   const segmentAngle = 360 / SPIN_PRIZES.length
 
@@ -39,6 +52,20 @@ function SpinPage() {
     const flag = sessionStorage.getItem('sentrix_is_suspicious')
     if (flag === 'true') setIsSuspicious(true)
   }, [])
+
+
+  // Module 2: Nếu ẩn danh (voucher_eligible=false) → redirect sang voucher ngay
+  // Không hiển thị spin vì user đã từ chối nhận voucher (Điều 5 NĐ 356/2025)
+  useEffect(() => {
+    if (!voucherEligible) {
+      navigate(
+        `/voucher?tenant_id=${tenantId}` +
+        `&location=${encodeURIComponent(location)}` +
+        `&skipped=true` +
+        `&anonymous=true`
+      )
+    }
+  }, [voucherEligible, navigate, tenantId, location]) // eslint-disable-line
 
   const validatePhone = (p) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(p.trim())
 
@@ -60,7 +87,7 @@ function SpinPage() {
     // Lưu SĐT vào sessionStorage để đồng bộ (phòng trường hợp nhập lần đầu tại đây)
     sessionStorage.setItem('sentrix_customer_phone', phone)
 
-    // Lấy feedback_id từ sessionStorage (được lưu bởi RecordingPage)
+    // Lấy feedback_id từ sessionStorage (được lưu bởi RecordingOverlay)
     let feedbackId = null
     try {
       feedbackId = sessionStorage.getItem('sentrix_feedback_id')
