@@ -113,9 +113,9 @@ function ConsentWindow({ tenantId, businessName, onConsented }) {
           <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.8 }}>
             <p style={{ marginBottom: 6, fontWeight: 600, color: '#111827' }}>Dữ liệu thu thập:</p>
             <ul style={{ paddingLeft: 16, margin: 0 }}>
-              <li>🎙️ <strong>Giọng nói</strong> (ghi âm tối đa 15 giây) — dữ liệu sinh trắc học</li>
-              <li>📝 <strong>Văn bản phản hồi</strong> (nếu chọn gõ thay vì nói)</li>
-              <li>📱 <strong>Số điện thoại</strong> (chỉ khi bạn muốn nhận voucher; lưu dạng mã hoá)</li>
+              <li><strong>Giọng nói</strong> (ghi âm tối đa 15 giây) — dữ liệu sinh trắc học</li>
+              <li><strong>Văn bản phản hồi</strong> (nếu chọn gõ thay vì nói)</li>
+              <li><strong>Số điện thoại</strong> (chỉ khi bạn muốn nhận voucher; lưu dạng mã hoá)</li>
             </ul>
           </div>
 
@@ -123,7 +123,7 @@ function ConsentWindow({ tenantId, businessName, onConsented }) {
           <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.8, marginTop: 10 }}>
             <p style={{ marginBottom: 4, fontWeight: 600, color: '#111827' }}>Mục đích sử dụng:</p>
             <ul style={{ paddingLeft: 16, margin: 0 }}>
-              <li>Phân tích cảm xúc (AI) để cải thiện dịch vụ</li>
+              <li>Phân tích cảm xúc để cải thiện dịch vụ</li>
               <li>Gửi voucher ưu đãi qua Zalo (nếu bạn đồng ý để lại SĐT)</li>
             </ul>
           </div>
@@ -156,14 +156,12 @@ function ConsentWindow({ tenantId, businessName, onConsented }) {
               Quyền của bạn (Điều 5 NĐ 356/2025/NĐ-CP):
             </p>
             <ul style={{ paddingLeft: 16, margin: 0 }}>
-              <li>✅ <strong>Quyền từ chối:</strong> Bấm "Không đồng ý" hoặc bật "Phản hồi ẩn danh"</li>
-              <li>🗑️ <strong>Yêu cầu xóa dữ liệu:</strong> Được thực hiện trong <strong>20 ngày</strong> kể từ yêu cầu hợp lệ</li>
-              <li>👁️ <strong>Quyền xem dữ liệu:</strong> Liên hệ qua email hoặc fanpage của cơ sở</li>
+              <li><strong>Quyền từ chối:</strong> Bật “Phản hồi ẩn danh” để gửi phản hồi mà không cần để lại thông tin cá nhân</li>
+              <li><strong>Yêu cầu xóa dữ liệu:</strong> Thực hiện trong <strong>20 ngày</strong> kể từ yêu cầu hợp lệ</li>
+              <li><strong>Quyền xem dữ liệu:</strong> Liên hệ qua email hoặc fanpage của cơ sở</li>
             </ul>
             <p style={{ marginTop: 8, color: '#6B7280' }}>
-              <strong>Bên xử lý dữ liệu thay mặt:</strong> Sentrix Platform
-              (Nền tảng phân tích trải nghiệm khách hàng)<br/>
-              <strong>Phiên bản điều khoản:</strong> {CONSENT_VERSION}
+              <strong>Bên xử lý dữ liệu thay mặt:</strong> Sentrix
             </p>
           </div>
         )}
