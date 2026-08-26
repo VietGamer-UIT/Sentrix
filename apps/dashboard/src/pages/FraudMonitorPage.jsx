@@ -18,18 +18,18 @@ import { isToday, isThisWeek } from 'date-fns'
 
 // Map validity_status → metadata
 const LAYER_META = {
-  invalid_short_audio: { lop: 1, label: 'Audio quá ngắn',       color: '#FFA412', textColor: '#fff', icon: '🎙️' },
-  invalid_low_snr:     { lop: 1, label: 'Nhiễu âm thanh',       color: '#FFA412', textColor: '#fff', icon: '📡' },
-  rate_limited:        { lop: 2, label: 'Vượt tần suất gửi',    color: '#EF4444', textColor: '#fff', icon: '🚫' },
-  invalid_semantic:    { lop: 3, label: 'Nội dung vô nghĩa',    color: '#8B5CF6', textColor: '#fff', icon: '🤖' },
-  valid:               { lop: null, label: 'Hợp lệ',            color: '#00B69B', textColor: '#fff', icon: '✅' },
+  invalid_short_audio: { lop: 1, label: 'Audio quá ngắn',       color: '#FFA412', textColor: '#fff' },
+  invalid_low_snr:     { lop: 1, label: 'Nhiễu âm thanh',       color: '#FFA412', textColor: '#fff' },
+  rate_limited:        { lop: 2, label: 'Vượt tần suất gửi',    color: '#EF4444', textColor: '#fff' },
+  invalid_semantic:    { lop: 3, label: 'Nội dung vô nghĩa',    color: '#8B5CF6', textColor: '#fff' },
+  valid:               { lop: null, label: 'Hợp lệ',            color: '#00B69B', textColor: '#fff' },
 }
 
 function getLayerMeta(f) {
   if (f.is_suspicious && f.validity_status === 'valid') {
-    return { lop: 4, label: 'Bất thường', color: '#EF4444', textColor: '#fff', icon: '⚠️' }
+    return { lop: 4, label: 'Bất thường', color: '#EF4444', textColor: '#fff' }
   }
-  return LAYER_META[f.validity_status] || { lop: null, label: f.validity_status || 'Không rõ', color: '#9CA3AF', textColor: '#fff', icon: '❓' }
+  return LAYER_META[f.validity_status] || { lop: null, label: f.validity_status || 'Không rõ', color: '#9CA3AF', textColor: '#fff' }
 }
 
 function LayerBadge({ meta }) {
@@ -43,7 +43,7 @@ function LayerBadge({ meta }) {
       fontSize: 'var(--font-size-xs)', fontWeight: 700,
       whiteSpace: 'nowrap',
     }}>
-      {meta.icon} {meta.lop ? `Lớp ${meta.lop}` : ''} {meta.label}
+      {meta.lop ? `Lớp ${meta.lop}` : ''} {meta.label}
     </span>
   )
 }
@@ -116,24 +116,24 @@ export default function FraudMonitorPage() {
         border: '1px solid rgba(239,68,68,0.2)', borderRadius: 'var(--radius-md)',
         color: 'var(--color-danger)'
       }}>
-        <strong>⚠️ Lỗi kết nối Firestore:</strong> {error}
+        <strong>Lỗi:</strong> Không thể tải dữ liệu giám sát.
       </div>
     )
   }
 
   return (
     <div>
-      {/* Page Header */}
+      {/* Tiêu đề trang */}
       <div style={{ marginBottom: 'var(--spacing-lg)' }}>
         <h2 style={{
           fontSize: 'var(--font-size-lg)', fontWeight: 800,
           color: 'var(--color-text-primary)', margin: 0
         }}>
-          🛡️ Giám Sát Chống Gian Lận
+          Giám sát chống gian lận
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 4 }}>
-          Theo dõi realtime các lượt phản hồi bị lọc bởi hệ thống Anti-Fraud 3 lớp
-          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>• Demo Data</span>}
+          Theo dõi các lượt phản hồi bị lọc bởi hệ thống chống gian lận 3 lớp
+          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>— Dữ liệu mẫu</span>}
         </p>
       </div>
 
@@ -157,9 +157,9 @@ export default function FraudMonitorPage() {
           color="#FFA412"
         />
         <StatCard
-          label="Lớp 2+3 — Logic/NLP"
+          label="LỜp 2 và 3 — Kiểm tra nội dung"
           value={(byLayer[2] || 0) + (byLayer[3] || 0)}
-          sub={`Rate-limit: ${byLayer[2]||0} • Semantic: ${byLayer[3]||0}`}
+          sub={`Quá tần suất: ${byLayer[2]||0}  •  Vô nghĩa: ${byLayer[3]||0}`}
           color="#EF4444"
         />
       </div>
@@ -248,7 +248,7 @@ export default function FraudMonitorPage() {
         <div style={{ overflowX: 'auto' }}>
           {tableRows.length === 0 ? (
             <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-              ✅ Không có lượt bị chặn {layerFilter !== 'all' ? `ở Lớp ${layerFilter}` : ''} trong bộ nhớ hiện tại
+              Không có lượt bị chặn {layerFilter !== 'all' ? `ở LỚp ${layerFilter}` : ''} trong bộ nhớ hiện tại
             </div>
           ) : (
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -278,14 +278,14 @@ export default function FraudMonitorPage() {
                       <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
                         {f.location || '—'}
                       </td>
-                      <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
+                       <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
                         <span style={{
                           padding: '2px 8px', borderRadius: 4,
                           background: f.input_type === 'audio' ? 'rgba(6,136,166,0.1)' : 'rgba(107,114,128,0.1)',
                           color: f.input_type === 'audio' ? 'var(--color-primary)' : 'var(--color-text-muted)',
                           fontSize: 'var(--font-size-xs)', fontWeight: 600,
                         }}>
-                          {f.input_type === 'audio' ? '🎙 Audio' : '✏️ Text'}
+                          {f.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'}
                         </span>
                       </td>
                       <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)', fontFamily: 'monospace', color: 'var(--color-text-secondary)' }}>

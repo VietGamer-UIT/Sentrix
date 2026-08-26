@@ -1,233 +1,425 @@
-/**
- * mockFirestore.js — Dữ liệu giả lập Firestore cho Dashboard
+﻿/**
+ * firestoreMock.js — Nguon du lieu mau duy nhat cho Dashboard
  *
- * Field names KHỚP CHÍNH XÁC với backend/db/schema.md
- * KHÔNG được đổi tên field — khi bỏ mock sẽ dùng cùng field names này
- * từ Firestore SDK thật.
- *
- * Điều kiện để bỏ mock:
- * 1. Tuyền tạo Firebase project và báo credentials
- * 2. Việt/Tuyền fill .env với Firebase config thật
- * 3. Đổi VITE_USE_MOCK_FIRESTORE=false trong .env
- * 4. Thay useMockFeedbacks/useMockCustomers bằng useFirestoreFeedbacks/useFirestoreCustomers
+ * Quy tac:
+ * - Field names khop chinh xac voi backend/db/schema.md
+ * - input_type: CHI "audio" hoac "text" (khong co "audio_and_text")
+ * - Moi feedback co validity_status ro rang
+ * - customer_id phai khop voi MOCK_CUSTOMERS bên duoi
+ * - 12 feedback hop le + 3 spam: tong 15 records
  */
 
 const NOW = Date.now()
-const DAY = 86400000
+const H   = 3600000
+const D   = 86400000
 
-// ============================================================
-// Mock data: feedbacks — schema từ backend/db/schema.md §feedbacks
-// ============================================================
+function ts(msAgo) {
+  return { seconds: Math.floor((NOW - msAgo) / 1000) }
+}
+
 export const MOCK_FEEDBACKS = [
+  // Phan hoi hop le
   {
     feedback_id: 'fb_001',
-    customer_id: 'cust_a3f8c2d1e4b7f901',
-    timestamp: { seconds: Math.floor((NOW - 5 * 60000) / 1000) },   // 5 phút trước
-    location: 'Bàn 5',
+    customer_id: 'cust_a',
+    timestamp: ts(1.5 * H),
+    location: 'Ban 5',
     input_type: 'audio',
-    transcript: 'Phục vụ tốt quá ha, đợi có 20 phút mà. Nước uống ngon!',
+    transcript: 'Phuc vu tot qua ha, doi co 20 phut ma. Nuoc uong ngon!',
     aspects: [
-      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.82, reason: 'Chờ 20 phút', confidence: 0.91 },
-      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.45, reason: 'Nhân viên được khen', confidence: 0.78 },
-      { aspect: 'mon_an', sentiment: 'positive', score: 0.62, reason: 'Khen nước uống ngon', confidence: 0.85 }
+      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.82 },
+      { aspect: 'nhan_vien',       sentiment: 'positive', score:  0.45 },
+      { aspect: 'mon_an',          sentiment: 'positive', score:  0.62 },
     ],
     sentiment_score: -0.21,
     is_sarcasm: true,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: 8.4
+    audio_duration_sec: 8.4,
+    voucher_eligible: true,
+    phone_masked: '090****567',
   },
   {
     feedback_id: 'fb_002',
-    customer_id: 'cust_b9d4e7f1a2c3e084',
-    timestamp: { seconds: Math.floor((NOW - 45 * 60000) / 1000) },  // 45 phút trước
-    location: 'Bàn 12',
+    customer_id: 'cust_b',
+    timestamp: ts(3 * H),
+    location: 'Ban 12',
     input_type: 'text',
-    transcript: 'Phở ngon lắm! Nhân viên nhiệt tình. Sẽ quay lại!',
+    transcript: 'Pho ngon lam! Nhan vien nhiet tinh. Se quay lai!',
     aspects: [
-      { aspect: 'mon_an', sentiment: 'positive', score: 0.91, reason: 'Khen phở ngon', confidence: 0.95 },
-      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.84, reason: 'Khen nhiệt tình', confidence: 0.90 }
+      { aspect: 'mon_an',    sentiment: 'positive', score: 0.91 },
+      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.84 },
     ],
     sentiment_score: 0.88,
     is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: null
+    audio_duration_sec: null,
+    voucher_eligible: false,
+    phone_masked: null,
   },
   {
     feedback_id: 'fb_003',
-    customer_id: 'cust_c7e2f4a8b1d6e912',
-    timestamp: { seconds: Math.floor((NOW - 2 * 3600000) / 1000) }, // 2 giờ trước
+    customer_id: 'cust_c',
+    timestamp: ts(5 * H),
     location: 'Khu VIP',
     input_type: 'audio',
-    transcript: 'Không gian ồn quá, bàn bẩn, giá hơi cao so với chất lượng.',
+    transcript: 'Khong gian on qua, ban ban, gia hoi cao so voi chat luong.',
     aspects: [
-      { aspect: 'khong_gian', sentiment: 'negative', score: -0.75, reason: 'Phàn nàn ồn ào', confidence: 0.88 },
-      { aspect: 've_sinh', sentiment: 'negative', score: -0.91, reason: 'Bàn bẩn', confidence: 0.94 },
-      { aspect: 'gia_ca', sentiment: 'negative', score: -0.58, reason: 'Giá không tương xứng', confidence: 0.82 }
+      { aspect: 'khong_gian', sentiment: 'negative', score: -0.75 },
+      { aspect: 've_sinh',    sentiment: 'negative', score: -0.91 },
+      { aspect: 'gia_ca',     sentiment: 'negative', score: -0.58 },
     ],
     sentiment_score: -0.75,
     is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: 12.1
+    audio_duration_sec: 12.1,
+    voucher_eligible: true,
+    phone_masked: '091****234',
   },
   {
     feedback_id: 'fb_004',
-    customer_id: 'cust_d2a9c5f7e3b1d804',
-    timestamp: { seconds: Math.floor((NOW - 4 * 3600000) / 1000) }, // 4 giờ trước
-    location: 'Bàn 3',
+    customer_id: 'cust_d',
+    timestamp: ts(8 * H),
+    location: 'Ban 3',
     input_type: 'text',
-    transcript: 'Tạm ổn thôi. Bình thường.',
+    transcript: 'Tam on thoi. Binh thuong.',
     aspects: [
-      { aspect: 'khac', sentiment: 'neutral', score: 0.02, reason: 'Nhận xét trung lập', confidence: 0.61 }
+      { aspect: 'khac', sentiment: 'neutral', score: 0.02 },
     ],
     sentiment_score: 0.02,
     is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: null
+    audio_duration_sec: null,
+    voucher_eligible: false,
+    phone_masked: null,
   },
   {
     feedback_id: 'fb_005',
-    customer_id: 'cust_e4f1b8d6c9a2f713',
-    timestamp: { seconds: Math.floor((NOW - DAY + 3600000) / 1000) }, // Hôm qua
-    location: 'Bàn 8',
+    customer_id: 'cust_e',
+    timestamp: ts(1 * D + 2 * H),
+    location: 'Ban 8',
     input_type: 'audio',
-    transcript: 'Mỗi lần tới đây mình đều hài lòng. Giữ nguyên chất lượng nha!',
+    transcript: 'Moi lan toi day minh deu hai long. Giu nguyen chat luong nha!',
     aspects: [
-      { aspect: 'mon_an', sentiment: 'positive', score: 0.78, reason: 'Hài lòng tổng thể', confidence: 0.86 },
-      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.72, reason: 'Luôn hài lòng', confidence: 0.83 }
+      { aspect: 'mon_an',    sentiment: 'positive', score: 0.78 },
+      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.72 },
     ],
     sentiment_score: 0.75,
     is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: 9.8
+    audio_duration_sec: 9.8,
+    voucher_eligible: true,
+    phone_masked: '098****756',
   },
   {
     feedback_id: 'fb_006',
-    customer_id: 'cust_a3f8c2d1e4b7f901', // Cùng khách với fb_001
-    timestamp: { seconds: Math.floor((NOW - DAY - 2 * 3600000) / 1000) }, // Hôm qua
-    location: 'Bàn 5',
+    customer_id: 'cust_a',
+    timestamp: ts(1 * D + 5 * H),
+    location: 'Ban 5',
     input_type: 'audio',
-    transcript: 'Lại phải đợi lâu như mọi lần. Nhân viên thiếu người.',
+    transcript: 'Lai phai doi lau nhu moi lan. Nhan vien thieu nguoi.',
     aspects: [
-      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.88, reason: 'Đợi lâu lặp lại', confidence: 0.93 },
-      { aspect: 'nhan_vien', sentiment: 'negative', score: -0.65, reason: 'Thiếu nhân sự', confidence: 0.79 }
+      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.88 },
+      { aspect: 'nhan_vien',       sentiment: 'negative', score: -0.65 },
     ],
     sentiment_score: -0.78,
     is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
     processing_status: 'done',
-    audio_duration_sec: 7.2
+    audio_duration_sec: 7.2,
+    voucher_eligible: true,
+    phone_masked: '090****567',
   },
   {
     feedback_id: 'fb_007',
-    customer_id: 'cust_f6c3a9e2d7b0f124',
-    timestamp: { seconds: Math.floor((NOW - 20 * 60000) / 1000) }, // 20 phút trước
-    location: 'Bàn 1',
+    customer_id: 'cust_b',
+    timestamp: ts(2 * D),
+    location: 'Ban 7',
+    input_type: 'audio',
+    transcript: 'Do an ngon nhung cho lau qua, khoang 30 phut. Khong gian thoai mai.',
+    aspects: [
+      { aspect: 'mon_an',          sentiment: 'positive', score:  0.71 },
+      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.63 },
+      { aspect: 'khong_gian',      sentiment: 'positive', score:  0.48 },
+    ],
+    sentiment_score: 0.16,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: 11.3,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
+  {
+    feedback_id: 'fb_008',
+    customer_id: 'cust_c',
+    timestamp: ts(3 * D),
+    location: 'Mang ve',
+    input_type: 'text',
+    transcript: 'Order online nhung thieu topping, phai goi dien khieu nai mat 10 phut.',
+    aspects: [
+      { aspect: 'nhan_vien',       sentiment: 'negative', score: -0.55 },
+      { aspect: 'toc_do_phuc_vu', sentiment: 'negative', score: -0.71 },
+    ],
+    sentiment_score: -0.63,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: null,
+    voucher_eligible: true,
+    phone_masked: '091****234',
+  },
+  {
+    feedback_id: 'fb_009',
+    customer_id: 'cust_d',
+    timestamp: ts(4 * D),
+    location: 'Ban 2',
+    input_type: 'audio',
+    transcript: 'On ma, khong co gi dac biet.',
+    aspects: [
+      { aspect: 'khac', sentiment: 'neutral', score: 0.05 },
+    ],
+    sentiment_score: 0.05,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: 5.1,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
+  {
+    feedback_id: 'fb_010',
+    customer_id: 'cust_e',
+    timestamp: ts(5 * D),
+    location: 'Ban 10',
+    input_type: 'text',
+    transcript: 'Gia re ma chat luong on. Dang dong tien.',
+    aspects: [
+      { aspect: 'gia_ca',  sentiment: 'positive', score: 0.76 },
+      { aspect: 'mon_an',  sentiment: 'positive', score: 0.72 },
+    ],
+    sentiment_score: 0.74,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: null,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
+  {
+    feedback_id: 'fb_011',
+    customer_id: 'cust_a',
+    timestamp: ts(6 * D),
+    location: 'Ban 1',
+    input_type: 'text',
+    transcript: 'Do an hom nay do te, thai do phuc vu qua kem.',
+    aspects: [
+      { aspect: 'mon_an',    sentiment: 'negative', score: -0.93 },
+      { aspect: 'nhan_vien', sentiment: 'negative', score: -0.87 },
+    ],
+    sentiment_score: -1.00,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: null,
+    voucher_eligible: true,
+    phone_masked: '090****567',
+  },
+  {
+    feedback_id: 'fb_012',
+    customer_id: 'cust_e',
+    timestamp: ts(7 * D),
+    location: 'Khu VIP',
+    input_type: 'audio',
+    transcript: 'Tuyet voi! Pho dac biet that su dac biet. Nuoc dung trong, thom. Nhan vien tan tinh.',
+    aspects: [
+      { aspect: 'mon_an',    sentiment: 'positive', score: 0.95 },
+      { aspect: 'nhan_vien', sentiment: 'positive', score: 0.91 },
+    ],
+    sentiment_score: 0.93,
+    is_sarcasm: false,
+    is_suspicious: false,
+    validity_status: 'valid',
+    fraud_layer_rejected_at: null,
+    processing_status: 'done',
+    audio_duration_sec: 14.2,
+    voucher_eligible: true,
+    phone_masked: '098****756',
+  },
+
+  // Phan hoi spam
+  {
+    feedback_id: 'fb_s01',
+    customer_id: null,
+    timestamp: ts(30 * 60000),
+    location: 'Ban 1',
+    input_type: 'text',
+    transcript: 'alo alo 1 2 3 4',
+    aspects: [],
+    sentiment_score: 0,
+    is_sarcasm: false,
+    is_suspicious: true,
+    validity_status: 'invalid_semantic',
+    fraud_layer_rejected_at: 3,
+    processing_status: 'done',
+    audio_duration_sec: null,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
+  {
+    feedback_id: 'fb_s02',
+    customer_id: null,
+    timestamp: ts(2 * D + 3 * H),
+    location: 'Ban 4',
     input_type: 'audio',
     transcript: '',
     aspects: [],
     sentiment_score: 0,
     is_sarcasm: false,
-    processing_status: 'processing', // Đang xử lý
-    audio_duration_sec: 6.5
-  }
+    is_suspicious: true,
+    validity_status: 'invalid_short_audio',
+    fraud_layer_rejected_at: 1,
+    processing_status: 'done',
+    audio_duration_sec: 1.1,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
+  {
+    feedback_id: 'fb_s03',
+    customer_id: null,
+    timestamp: ts(3 * D + 1 * H),
+    location: 'Ban 2',
+    input_type: 'text',
+    transcript: 'asdfghjkl qweqweqwe 123123',
+    aspects: [],
+    sentiment_score: 0,
+    is_sarcasm: false,
+    is_suspicious: true,
+    validity_status: 'invalid_semantic',
+    fraud_layer_rejected_at: 3,
+    processing_status: 'done',
+    audio_duration_sec: null,
+    voucher_eligible: false,
+    phone_masked: null,
+  },
 ]
 
-// ============================================================
-// Mock data: customers — schema từ backend/db/schema.md §customers
-// ============================================================
 export const MOCK_CUSTOMERS = [
   {
-    customer_id: 'cust_a3f8c2d1e4b7f901',
+    customer_id: 'cust_a',
     phone_masked: '090****567',
-    first_seen_at: { seconds: Math.floor((NOW - 21 * DAY) / 1000) },
-    last_feedback_at: { seconds: Math.floor((NOW - 5 * 60000) / 1000) },
-    feedback_count: 5,
-    total_spending: 850000,
-    avg_sentiment_score: -0.52,
-    rfms_r: 0.98, rfms_f: 0.70, rfms_m: 0.55, rfms_s: 0.24,
+    first_seen_at: ts(21 * D),
+    last_feedback_at: ts(1.5 * H),
+    feedback_count: 3,
+    total_spending: 450000,
+    avg_sentiment_score: -0.66,
+    rfms_r: 0.97, rfms_f: 0.45, rfms_m: 0.38, rfms_s: 0.17,
     p_churn: 0.91,
     churn_risk_level: 'high',
     zns_sent_at: null,
     zns_voucher_code: null,
-    updated_at: { seconds: Math.floor((NOW - 5 * 60000) / 1000) }
+    updated_at: ts(1.5 * H),
   },
   {
-    customer_id: 'cust_c7e2f4a8b1d6e912',
-    phone_masked: '091****234',
-    first_seen_at: { seconds: Math.floor((NOW - 7 * DAY) / 1000) },
-    last_feedback_at: { seconds: Math.floor((NOW - 2 * 3600000) / 1000) },
+    customer_id: 'cust_b',
+    phone_masked: null,
+    first_seen_at: ts(14 * D),
+    last_feedback_at: ts(3 * H),
     feedback_count: 2,
-    total_spending: 320000,
-    avg_sentiment_score: -0.71,
-    rfms_r: 0.88, rfms_f: 0.30, rfms_m: 0.22, rfms_s: 0.15,
+    total_spending: 180000,
+    avg_sentiment_score: 0.52,
+    rfms_r: 0.94, rfms_f: 0.30, rfms_m: 0.20, rfms_s: 0.72,
+    p_churn: 0.18,
+    churn_risk_level: 'low',
+    zns_sent_at: null,
+    zns_voucher_code: null,
+    updated_at: ts(3 * H),
+  },
+  {
+    customer_id: 'cust_c',
+    phone_masked: '091****234',
+    first_seen_at: ts(7 * D),
+    last_feedback_at: ts(5 * H),
+    feedback_count: 2,
+    total_spending: 520000,
+    avg_sentiment_score: -0.69,
+    rfms_r: 0.90, rfms_f: 0.30, rfms_m: 0.42, rfms_s: 0.13,
     p_churn: 0.87,
     churn_risk_level: 'high',
     zns_sent_at: null,
     zns_voucher_code: null,
-    updated_at: { seconds: Math.floor((NOW - 2 * 3600000) / 1000) }
+    updated_at: ts(5 * H),
   },
   {
-    customer_id: 'cust_b9d4e7f1a2c3e084',
-    phone_masked: '093****891',
-    first_seen_at: { seconds: Math.floor((NOW - 14 * DAY) / 1000) },
-    last_feedback_at: { seconds: Math.floor((NOW - 45 * 60000) / 1000) },
-    feedback_count: 4,
-    total_spending: 620000,
-    avg_sentiment_score: 0.81,
-    rfms_r: 0.94, rfms_f: 0.60, rfms_m: 0.48, rfms_s: 0.91,
-    p_churn: 0.08,
-    churn_risk_level: 'low',
-    zns_sent_at: null,
-    zns_voucher_code: null,
-    updated_at: { seconds: Math.floor((NOW - 45 * 60000) / 1000) }
-  },
-  {
-    customer_id: 'cust_d2a9c5f7e3b1d804',
-    phone_masked: '097****312',
-    first_seen_at: { seconds: Math.floor((NOW - 30 * DAY) / 1000) },
-    last_feedback_at: { seconds: Math.floor((NOW - 4 * 3600000) / 1000) },
-    feedback_count: 7,
-    total_spending: 1200000,
-    avg_sentiment_score: 0.12,
-    rfms_r: 0.82, rfms_f: 0.85, rfms_m: 0.78, rfms_s: 0.56,
-    p_churn: 0.62,
+    customer_id: 'cust_d',
+    phone_masked: null,
+    first_seen_at: ts(30 * D),
+    last_feedback_at: ts(8 * H),
+    feedback_count: 2,
+    total_spending: 310000,
+    avg_sentiment_score: 0.04,
+    rfms_r: 0.85, rfms_f: 0.30, rfms_m: 0.25, rfms_s: 0.54,
+    p_churn: 0.43,
     churn_risk_level: 'medium',
     zns_sent_at: null,
     zns_voucher_code: null,
-    updated_at: { seconds: Math.floor((NOW - 4 * 3600000) / 1000) }
+    updated_at: ts(8 * H),
   },
   {
-    customer_id: 'cust_e4f1b8d6c9a2f713',
+    customer_id: 'cust_e',
     phone_masked: '098****756',
-    first_seen_at: { seconds: Math.floor((NOW - 60 * DAY) / 1000) },
-    last_feedback_at: { seconds: Math.floor((NOW - DAY) / 1000) },
-    feedback_count: 12,
-    total_spending: 2800000,
-    avg_sentiment_score: 0.74,
-    rfms_r: 0.77, rfms_f: 1.00, rfms_m: 0.95, rfms_s: 0.88,
-    p_churn: 0.04,
+    first_seen_at: ts(60 * D),
+    last_feedback_at: ts(1 * D + 2 * H),
+    feedback_count: 3,
+    total_spending: 1250000,
+    avg_sentiment_score: 0.81,
+    rfms_r: 0.80, rfms_f: 0.45, rfms_m: 0.88, rfms_s: 0.90,
+    p_churn: 0.05,
     churn_risk_level: 'low',
     zns_sent_at: null,
     zns_voucher_code: null,
-    updated_at: { seconds: Math.floor((NOW - DAY) / 1000) }
-  }
+    updated_at: ts(1 * D + 2 * H),
+  },
 ]
 
-// ============================================================
-// Mock tenant info — schema từ backend/db/schema.md §tenants
-// ============================================================
 export const MOCK_TENANT = {
   tenant_id: 'pho-ba-lan_1722500000000',
-  business_name: 'Phở Bà Lan',
+  business_name: 'Pho Ba Lan',
   industry: 'fnb',
   plan: 'pro',
   owner_email: 'balan.pho@gmail.com',
   is_active: true,
-  churn_threshold: 0.85
+  churn_threshold: 0.85,
+  daily_voucher_limit: 20,
+  win_rate_percent: 30,
 }
 
-// ============================================================
-// Helper: format timestamp từ Firestore (hoặc mock) → Date object
-// ============================================================
 export function tsToDate(ts) {
   if (!ts) return null
   if (ts instanceof Date) return ts
@@ -235,13 +427,12 @@ export function tsToDate(ts) {
   return new Date(ts)
 }
 
-// Helper: format thời gian tương đối
 export function timeAgo(ts) {
   const date = tsToDate(ts)
   if (!date) return '—'
   const diff = Math.floor((Date.now() - date.getTime()) / 1000)
-  if (diff < 60) return `${diff}s trước`
-  if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`
-  return `${Math.floor(diff / 86400)} ngày trước`
+  if (diff < 60)    return `${diff} giay truoc`
+  if (diff < 3600)  return `${Math.floor(diff / 60)} phut truoc`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} gio truoc`
+  return `${Math.floor(diff / 86400)} ngay truoc`
 }
