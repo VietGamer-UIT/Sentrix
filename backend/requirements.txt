@@ -50,3 +50,9 @@ firebase-admin==6.6.0       # Admin SDK — ghi/đọc Firestore, xác thực Te
 # [GIAI ĐOẠN 9] Zalo ZNS webhook
 # ---------------------------------------------------------------------------
 httpx==0.27.2               # HTTP client bất đồng bộ để gọi Zalo ZNS API
+
+# ---------------------------------------------------------------------------
+# [MODULE 3] RFMS Logistic Regression + Synthetic Data (Chương trình AISC'26)
+# ---------------------------------------------------------------------------
+scikit-learn>=1.3.0         # LogisticRegression + Pipeline + StandardScaler (rfms_pipeline.py)
+# numpy đã có ở [GIAI ĐOẠN 5], scikit-learn dùng chung
