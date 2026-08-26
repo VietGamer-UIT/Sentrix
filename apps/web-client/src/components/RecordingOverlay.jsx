@@ -24,6 +24,10 @@ const MAX_DURATION_SEC = 15
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
+// Chế độ thử nghiệm: bỏ qua OTP (set VITE_SKIP_OTP=true trong .env)
+// Khi deploy production, xóa biến này hoặc để false
+const SKIP_OTP = import.meta.env.VITE_SKIP_OTP === 'true'
+
 function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }) {
   const navigate = useNavigate()
 
@@ -42,13 +46,14 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   const [speechSupported, setSpeechSupported] = useState(false)
 
   // ── Module 2: Anonymous Toggle + OTP ─────────────────────────────────────
-  // Mặc định isAnonymous=false: khuyến khích để lại SĐT nhận voucher,
-  // nhưng user có quyền chọn ẩn danh (Điều 5 NĐ 356/2025/NĐ-CP).
+  // Mặc định isAnonymous=false: không ẩn danh → hiển thị form nhập SĐT để nhận voucher.
+  // Khi user BẬT toggle → isAnonymous=true → ẩn form SĐT, voucher_eligible=false.
   const [isAnonymous, setIsAnonymous]         = useState(false)
   const [phone, setPhone]                     = useState('')
   const [otpCode, setOtpCode]                 = useState('')
   const [otpSent, setOtpSent]                 = useState(false)
-  const [otpVerified, setOtpVerified]         = useState(false)
+  // SKIP_OTP=true: tự coi như đã verified (chế độ thử nghiệm)
+  const [otpVerified, setOtpVerified]         = useState(SKIP_OTP)
   const [otpLoading, setOtpLoading]           = useState(false)
   const [otpError, setOtpError]               = useState(null)
   // ─────────────────────────────────────────────────────────────────────────
@@ -241,8 +246,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       return
     }
 
-    // Kiểm tra OTP nếu không ẩn danh và muốn voucher
-    if (!isAnonymous && phone.trim() && !otpVerified) {
+    // Kiểm tra OTP nếu không ẩn danh, có nhập SĐT, và chưa verify (chỉ khi không phải test mode)
+    if (!isAnonymous && phone.trim() && !otpVerified && !SKIP_OTP) {
       setError('Vui lòng xác thực số điện thoại qua OTP trước khi gửi.')
       return
     }
@@ -257,8 +262,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       ? (liveTranscript.trim() || null)
       : (textContent.trim() || null)
 
-    // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có SĐT + OTP đã verified
-    const effectiveVoucherEligible = !isAnonymous && otpVerified && !!phone.trim()
+    // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có SĐT + (OTP verified hoặc skip mode)
+    const effectiveVoucherEligible = !isAnonymous && (otpVerified || SKIP_OTP) && !!phone.trim()
 
     try {
       const result = await submitFeedback({
@@ -472,6 +477,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
               maxLength={2000}
               rows={5}
               autoFocus
+              spellCheck={false}
+              lang="vi"
               style={{ marginBottom: 8 }}
             />
             <p style={{ fontSize: 11, color: '#9CA3AF', textAlign: 'right', marginBottom: 16 }}>
@@ -496,6 +503,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         <div style={{
           marginTop: 20,
           padding: '14px 16px',
+          // Khi ẩn danh (BẬT): nền xám. Khi không ẩn danh (TẮT): nền xanh accent
           background: isAnonymous ? 'rgba(107,114,128,0.06)' : 'rgba(6,136,166,0.05)',
           borderRadius: 16,
           border: `1.5px solid ${isAnonymous ? 'rgba(107,114,128,0.2)' : 'rgba(6,136,166,0.2)'}`,
@@ -519,27 +527,32 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                   : '🎁 Để lại SĐT → nhận voucher qua Zalo'}
               </p>
             </div>
-            {/* Toggle switch */}
+            {/* Toggle switch
+                BẬT (isAnonymous=true):  knob PHẢI + màu xanh = ẩn danh đang bật
+                TẮT (isAnonymous=false): knob TRÁI + màu xám  = không ẩn danh
+            */}
             <div
               id="btn-anonymous-toggle"
               onClick={() => {
                 setIsAnonymous(a => !a)
                 // Reset OTP state khi đổi mode
                 setPhone(''); setOtpCode(''); setOtpSent(false)
-                setOtpVerified(false); setOtpError(null)
+                setOtpVerified(SKIP_OTP); setOtpError(null)
               }}
               role="switch"
               aria-checked={isAnonymous}
               style={{
                 width: 48, height: 28, borderRadius: 14, flexShrink: 0,
-                background: isAnonymous ? '#9CA3AF' : '#0688A6',
+                // BẬT ẩn danh = xanh teal | TẮT = xám
+                background: isAnonymous ? '#0688A6' : '#D1D5DB',
                 position: 'relative', cursor: 'pointer',
                 transition: 'background 0.2s',
               }}
             >
               <div style={{
                 position: 'absolute', top: 3,
-                left: isAnonymous ? 3 : 23,
+                // BẬT: knob phải (23) | TẮT: knob trái (3)
+                left: isAnonymous ? 23 : 3,
                 width: 22, height: 22, borderRadius: '50%',
                 background: '#FFFFFF',
                 boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
@@ -561,34 +574,44 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                       inputMode="numeric"
                       placeholder="Số điện thoại (VD: 0901234567)"
                       value={phone}
-                      onChange={e => { setPhone(e.target.value); setOtpError(null); setOtpSent(false); setOtpVerified(false) }}
+                      onChange={e => {
+                        setPhone(e.target.value)
+                        setOtpError(null)
+                        setOtpSent(false)
+                        // Khi user đổi SĐT: reset verified (trừ SKIP_OTP mode)
+                        if (!SKIP_OTP) setOtpVerified(false)
+                      }}
                       maxLength={11}
-                      disabled={otpSent && !otpVerified}
+                      disabled={otpSent && !otpVerified && !SKIP_OTP}
+                      spellCheck={false}
                       style={{
                         flex: 1, padding: '10px 12px', borderRadius: 10,
                         border: '1.5px solid #E5E7EB', fontFamily: 'inherit',
                         fontSize: 14, outline: 'none', background: '#FAFAFA',
-                        opacity: otpSent && !otpVerified ? 0.6 : 1,
+                        opacity: (otpSent && !otpVerified && !SKIP_OTP) ? 0.6 : 1,
                       }}
                     />
-                    <button
-                      id="btn-send-otp"
-                      onClick={handleSendOtp}
-                      disabled={otpLoading || (otpSent && !otpVerified)}
-                      style={{
-                        padding: '10px 14px', borderRadius: 10, border: 'none',
-                        background: '#0688A6', color: '#fff', fontSize: 13,
-                        fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
-                        whiteSpace: 'nowrap', flexShrink: 0,
-                        opacity: (otpLoading || (otpSent && !otpVerified)) ? 0.6 : 1,
-                      }}
-                    >
-                      {otpLoading && !otpSent ? '...' : otpSent ? 'Gửi lại' : 'Gửi mã'}
-                    </button>
+                    {/* Nút gửi OTP — ẩn đi nếu SKIP_OTP mode */}
+                    {!SKIP_OTP && (
+                      <button
+                        id="btn-send-otp"
+                        onClick={handleSendOtp}
+                        disabled={otpLoading || (otpSent && !otpVerified)}
+                        style={{
+                          padding: '10px 14px', borderRadius: 10, border: 'none',
+                          background: '#0688A6', color: '#fff', fontSize: 13,
+                          fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
+                          whiteSpace: 'nowrap', flexShrink: 0,
+                          opacity: (otpLoading || (otpSent && !otpVerified)) ? 0.6 : 1,
+                        }}
+                      >
+                        {otpLoading && !otpSent ? '...' : otpSent ? 'Gửi lại' : 'Gửi mã'}
+                      </button>
+                    )}
                   </div>
 
-                  {/* Ô nhập mã OTP — chỉ hiện sau khi đã gửi */}
-                  {otpSent && (
+                  {/* Ô nhập mã OTP — ẩn khi SKIP_OTP hoặc chưa gửi */}
+                  {!SKIP_OTP && otpSent && (
                     <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
                       <input
                         id="input-otp-code"
@@ -598,6 +621,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                         value={otpCode}
                         onChange={e => { setOtpCode(e.target.value.replace(/\D/g, '')); setOtpError(null) }}
                         maxLength={6}
+                        spellCheck={false}
                         style={{
                           flex: 1, padding: '10px 12px', borderRadius: 10,
                           border: '1.5px solid #E5E7EB', fontFamily: 'inherit',
@@ -622,9 +646,16 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                     </div>
                   )}
 
-                  {otpSent && (
+                  {!SKIP_OTP && otpSent && (
                     <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>
                       Mã OTP đã gửi tới {phone} · Có hiệu lực 5 phút
+                    </p>
+                  )}
+
+                  {/* Thông báo chế độ thử nghiệm */}
+                  {SKIP_OTP && (
+                    <p style={{ fontSize: 11, color: '#D97706', marginTop: 4 }}>
+                      ⚙️ Chế độ thử nghiệm — OTP đang được bỏ qua
                     </p>
                   )}
                 </>
