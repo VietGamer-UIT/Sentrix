@@ -55,13 +55,13 @@ function Layout() {
             />
           </div>
 
-          {/* Tên quán */}
+          {/* Tên quán — nổi bật hơn logo */}
           {tenantName && (
             <div style={{ padding: '0 var(--spacing-lg) var(--spacing-sm)', flexShrink: 0 }}>
               <div style={{
-                fontWeight: 700,
-                color: 'var(--color-text-secondary)',
-                fontSize: 'var(--font-size-sm)',
+                fontWeight: 800,
+                color: 'var(--color-text-primary)',
+                fontSize: 'var(--font-size-base)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {tenantName}
@@ -69,10 +69,10 @@ function Layout() {
             </div>
           )}
 
-          {/* Đường kẻ phân tách — chỉ một cái duy nhất, dưới logo/tên */}
-          <div className="nav-separator" style={{ flexShrink: 0 }} />
+          {/* Phân cách dưới logo + tên */}
+          <div style={{ margin: '0 var(--spacing-lg) 4px', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
 
-          {/* Nav chính */}
+          {/* Nav chính — nhóm chức năng cốt lõi */}
           <nav className="sidebar-nav" style={{ flexShrink: 0 }}>
             {navItems.map(({ to, label, end }) => (
               <NavLink
@@ -86,11 +86,14 @@ function Layout() {
             ))}
           </nav>
 
-          {/* Nhóm Vận hành */}
+          {/* Phân cách trước nhóm vận hành */}
+          <div style={{ margin: '8px var(--spacing-lg) 0', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
+
+          {/* Nhóm Vận hành — nhãn mục */}
           <div style={{
-            padding: '12px var(--spacing-lg) 4px',
-            fontSize: 'var(--font-size-xs)', fontWeight: 700,
-            color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '10px var(--spacing-lg) 4px',
+            fontSize: '0.65rem', fontWeight: 700,
+            color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em',
             flexShrink: 0,
           }}>
             Vận hành
@@ -232,7 +235,8 @@ function Layout() {
             color: 'var(--color-text-muted)',
             fontSize: 'var(--font-size-xs)',
           }}>
-            © 2026 Sentrix. Bảo lưu mọi quyền.
+            Sentrix: AI-Powered Customer Experience Platform<br/>
+            © Copyright 2026 Prep. All rights reserved.
           </footer>
         </main>
       </div>

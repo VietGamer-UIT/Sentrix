@@ -255,15 +255,18 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     setIsSubmitting(true)
     const decodedLocation = decodeURIComponent(location)
 
-    // Khi ghi âm: dùng liveTranscript (SpeechRecognition trình duyệt) làm text_content
-    // để backend có fallback nếu Whisper không chạy được — cả hai field sẽ được gửi cùng.
-    // Backend ưu tiên Whisper; nếu Whisper fail → dùng text_content (= liveTranscript) này.
     const textFallback = mode === 'audio'
       ? (liveTranscript.trim() || null)
       : (textContent.trim() || null)
 
     // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có SĐT + (OTP verified hoặc skip mode)
     const effectiveVoucherEligible = !isAnonymous && (otpVerified || SKIP_OTP) && !!phone.trim()
+
+    // Chế độ thử nghiệm: bỏ qua API, navigate thẳng đến trang xác nhận
+    if (SKIP_OTP && import.meta.env.VITE_USE_MOCK_GAMIFICATION === 'true') {
+      navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
+      return
+    }
 
     try {
       const result = await submitFeedback({
@@ -288,9 +291,11 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     } catch (err) {
       // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
+    } finally {
+      setIsSubmitting(false)
     }
 
-    // Navigate SAU khi đã có kết quả (hoặc fail) — đảm bảo feedback_id đã được lưu
+    // Navigate SAU khi đã có kết quả (hoặc fail)
     navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
   }
 
