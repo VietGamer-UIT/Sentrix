@@ -72,6 +72,11 @@ from backend.db.firestore_ops import (
     get_tenant_config,
     _mask_phone,
 )
+# ── Module 1: Anti-Fraud Services ──────────────────────────────────────────
+from backend.services.audio_quality_service import analyze_audio_quality
+from backend.services.semantic_validity_service import check_semantic_validity
+from backend.services.rate_limit_service import check_rate_limit, record_submission
+from backend.services.otp_service import verify_otp_session
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +132,13 @@ class FeedbackAcceptedResponse(BaseModel):
     should_alert: bool                    # True nếu vượt ngưỡng → sẽ trigger ZNS (Giai đoạn 9)
     is_suspicious: bool
     suspicious_reason: Optional[str]
+    # ── Module 1: Anti-Fraud fields ────────────────────────────────────────
+    validity_status: str                  # "valid" | "invalid_short_audio" | "invalid_low_snr" | "invalid_semantic" | "rate_limited"
+    fraud_layer_rejected_at: Optional[int]  # Lớp nào reject (1|2|3|4|None)
+    voucher_eligible: bool                # False nếu phản hồi ẩn danh
+    snr_score: Optional[float]            # SNR đo được (dB)
+    audio_duration_sec: Optional[float]   # Thời lượng audio (giây)
+    voucher_issued: bool                  # True nếu đã phát voucher
 
 
 # ---------------------------------------------------------------------------
@@ -241,6 +253,10 @@ async def submit_feedback(
         description="So dien thoai khach hang (tuy chon). Dung de tinh RFMS. Se duoc hash truoc khi luu.",
         max_length=20,
     ),
+    voucher_eligible: bool = Form(
+        default=False,
+        description="True nếu khách hàng đồng ý nhập SĐT và muốn nhận voucher. False = ẩn danh, không cần OTP.",
+    ),
     total_spending: float = Form(
         default=0.0,
         description="Tong chi tieu lan nay (VND). Dung tinh M trong RFMS.",
@@ -251,8 +267,12 @@ async def submit_feedback(
     ),
 ) -> JSONResponse:
     """
-    Pipeline đầy đủ Giai đoạn 8: nhận → xử lý → lưu Firestore.
-    """
+    Pipeline đầy đủ Giai đoạn 8 + Module 1 Anti-Fraud:
+      LỚP 1: Rate limit + OTP (chỉ khi voucher_eligible=True)
+      LỚP 2: Audio quality gate (duration + SNR) → reject trước Whisper
+      LỚP 3: Semantic validity (LLM) → reject sau Whisper, trước ABSA
+      LỚP 4: Voucher budget → tích hợp trong /spin
+    """""
     # -----------------------------------------------------------------------
     # Bước 1: Validate đầu vào
     # -----------------------------------------------------------------------
@@ -295,7 +315,56 @@ async def submit_feedback(
         audio_bytes_count = len(audio_content)
 
     # -----------------------------------------------------------------------
-    # Bước 3: Fraud filter
+    # ANTI-FRAUD LỚP 1 — Rate Limiting + OTP (chỉ áp dụng khi voucher_eligible)
+    # -----------------------------------------------------------------------
+    # Phản hồi ẩn danh (voucher_eligible=False): bỏ qua OTP và rate limit.
+    # Lý do: ưu tiên thu thập dữ liệu; ẩn danh → không nhận voucher → ít động cơ gian lận.
+    validity_status: str = "valid"          # Track qua toàn bộ pipeline
+    fraud_layer_rejected_at: Optional[int] = None
+    effective_voucher_eligible: bool = voucher_eligible and bool(customer_phone)
+
+    if effective_voucher_eligible:
+        # 1a. Kiểm tra OTP đã verified chưa
+        otp_check = verify_otp_session(customer_phone, "__check_only__")
+        # verify_otp_session với code giả → sẽ fail, nhưng nếu session đã verified thì pass
+        # Cách đúng: đọc session từ Firestore để check verified flag
+        try:
+            from backend.db.firestore_client import get_firestore_client as _get_fs
+            from backend.services.otp_service import _hash_phone_for_otp as _hpo
+            _db = _get_fs()
+            _session_key = _hpo(customer_phone)
+            _otp_snap = _db.collection("otp_sessions").document(_session_key).get()
+            _otp_verified = _otp_snap.exists and (_otp_snap.to_dict() or {}).get("verified", False)
+        except Exception:
+            _otp_verified = True  # Firestore lỗi → cho qua (không chặn do lỗi hạ tầng)
+
+        if not _otp_verified:
+            _cleanup_temp_audio(temp_audio_path)
+            logger.warning(f"[Feedback] Chặn Lớp 1: OTP chưa verified | phone=****{customer_phone[-4:]}")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Vui lòng xác thực số điện thoại qua OTP trước khi nhận voucher.",
+            )
+
+        # 1b. Kiểm tra rate limit (1 lượt hợp lệ / 24h / SĐT)
+        _ip = None  # FastAPI không expose IP trực tiếp ở đây; thêm Request nếu cần
+        rate_result = check_rate_limit(
+            phone_number=customer_phone,
+            tenant_id=tenant_id,
+        )
+        if not rate_result.allowed:
+            # Rate limit KHÔNG phải gian lận — chỉ giới hạn hợp lệ
+            # Vẫn cho lưu feedback nhưng không nhận voucher
+            validity_status = "rate_limited"
+            fraud_layer_rejected_at = 1
+            effective_voucher_eligible = False
+            logger.info(
+                f"[Feedback] Rate limited (Lớp 1): phone=****{customer_phone[-4:]} "
+                f"— vẫn lưu feedback, không phát voucher"
+            )
+
+    # -----------------------------------------------------------------------
+    # Bước 3: Fraud filter sơ bộ (rule-based, giữ nguyên từ phiên bản cũ)
     # -----------------------------------------------------------------------
     text_to_check = text_content.strip() if has_text else None
     fraud_result = basic_fraud_filter(
@@ -317,8 +386,76 @@ async def submit_feedback(
     # -----------------------------------------------------------------------
     transcript: Optional[str] = text_to_check  # Nếu có text gốc thì dùng luôn
     audio_features: Optional[dict] = None
+    # Khởi tạo các biến audio quality (sẽ được gán trong block audio nếu có audio)
+    if not has_audio:
+        _audio_duration_sec = None
+        _snr_score = None
 
     if has_audio and temp_audio_path:
+        # ── ANTI-FRAUD LỚP 2: Audio Quality Gate ──────────────────────────────
+        # Chạy TRƯỚC Whisper để tiết kiệm chi phí API khi audio rác.
+        # Đọc lại bytes từ file tạm (đã lưu ở bước 2).
+        if validity_status == "valid" and fraud_layer_rejected_at is None:
+            try:
+                _audio_bytes_for_qc = Path(temp_audio_path).read_bytes()
+                _quality_result = analyze_audio_quality(_audio_bytes_for_qc)
+                _audio_duration_sec = _quality_result.duration_sec
+                _snr_score = _quality_result.snr_db
+
+                if not _quality_result.passed:
+                    # Reject ngay — KHÔNG gọi Whisper
+                    _cleanup_temp_audio(temp_audio_path)
+                    logger.warning(
+                        f"[Feedback] Reject Lớp 2 ({_quality_result.reject_reason}): "
+                        f"{_quality_result.reject_message}"
+                    )
+                    validity_status = _quality_result.reject_reason or "invalid_short_audio"
+                    fraud_layer_rejected_at = 2
+                    effective_voucher_eligible = False
+                    # Lưu partial feedback để audit và hiển thị % bị lọc trên dashboard
+                    _partial_doc = {
+                        "customer_id":          None,
+                        "phone_masked":          _mask_phone(customer_phone) if customer_phone else None,
+                        "location":             location,
+                        "input_type":           input_type,
+                        "transcript":           "",
+                        "aspects":              [],
+                        "sentiment_score":      None,
+                        "validity_status":      validity_status,
+                        "fraud_layer_rejected_at": fraud_layer_rejected_at,
+                        "voucher_eligible":     False,
+                        "voucher_issued":        False,
+                        "snr_score":             _snr_score,
+                        "audio_duration_sec":    _audio_duration_sec,
+                        "is_spam":              False,
+                        "is_suspicious":        False,
+                        "suspicious_reason":    None,
+                        "p_churn":              None,
+                        "processing_status":    "rejected_layer2",
+                        "request_id":           request_id,
+                    }
+                    _fid = save_feedback(tenant_id, _partial_doc, feedback_id_override=feedback_id)
+                    return JSONResponse(
+                        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                        content={
+                            "request_id": request_id,
+                            "feedback_id": _fid,
+                            "status": "rejected",
+                            "validity_status": validity_status,
+                            "fraud_layer_rejected_at": fraud_layer_rejected_at,
+                            "message": _quality_result.reject_message,
+                            "voucher_eligible": False,
+                            "voucher_issued": False,
+                        },
+                    )
+            except Exception as _qe:
+                logger.warning(f"[Feedback] Audio quality check lỗi (bỏ qua): {_qe}")
+                _audio_duration_sec = None
+                _snr_score = None
+        else:
+            _audio_duration_sec = None
+            _snr_score = None
+
         loop = asyncio.get_event_loop()
         _executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
@@ -398,7 +535,54 @@ async def submit_feedback(
 
     text_for_absa = transcript or text_to_check
 
-    if text_for_absa:
+    # ── ANTI-FRAUD LỚP 3: Semantic Validity (LLM Classifier) ────────────────────
+    # Chạy SAU Whisper (cần có transcript), TRƯỚC ABSA
+    # để không tốn LLM call ABSA cho các phản hồi vô nghĩa.
+    _semantic_validity_reason: str = ""
+    if text_for_absa and validity_status == "valid" and fraud_layer_rejected_at is None:
+        try:
+            # Lấy transcript lần trước của customer để phát hiện copy-paste
+            _last_transcript: Optional[str] = None
+            if customer_phone:
+                try:
+                    _cust_for_check = get_or_create_customer(tenant_id, customer_phone)
+                    _last_transcript = (_cust_for_check or {}).get("last_transcript")
+                except Exception:
+                    pass
+
+            logger.info("[Feedback] [LỚP 3] Semantic validity check ...")
+            _sem_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+            _sem_loop = asyncio.get_event_loop()
+            try:
+                _sem_result = await asyncio.wait_for(
+                    _sem_loop.run_in_executor(
+                        _sem_executor,
+                        check_semantic_validity,
+                        text_for_absa,
+                        _last_transcript,
+                    ),
+                    timeout=20,  # Timeout dài hơn 1 chút so với SEMANTIC_CHECK_TIMEOUT_SECONDS
+                )
+            except asyncio.TimeoutError:
+                _sem_result = None  # Fallback: tiếp tục xử lý
+            finally:
+                _sem_executor.shutdown(wait=False)
+
+            if _sem_result is not None and not _sem_result.is_valid:
+                validity_status = "invalid_semantic"
+                fraud_layer_rejected_at = 3
+                effective_voucher_eligible = False
+                _semantic_validity_reason = _sem_result.reason
+                logger.warning(
+                    f"[Feedback] Reject LỚp 3 (invalid_semantic): {_sem_result.reason}"
+                )
+                # Lưu vào Firestore (ẩn khỏi dashboard nhưng có thể audit)
+                # Tiếp tục xử lý (không early-exit) — vẫn luưu record ẩn
+        except Exception as _se:
+            logger.warning(f"[Feedback] Semantic validity lỗi (bỏ qua): {_se}")
+
+    # Bỏ qua ABSA nếu đã bị reject ở Lớp 3 — tiết kiệm 1 lần gọi Gemini
+    if text_for_absa and validity_status not in ("invalid_semantic",):
         try:
             logger.info(
                 f"[Feedback] [6] ABSA qua Gemini (timeout={GEMINI_ABSA_TIMEOUT_SECONDS}s) ..."
@@ -610,16 +794,23 @@ async def submit_feedback(
             # ZNS voucher fields — sẽ được cập nhật ở Bước 9 sau khi gửi ZNS thành công
             "zns_voucher_code":   None,
             "zns_sent_at":        None,
+            # ── Module 1: Anti-Fraud log fields ───────────────────────────────
+            "validity_status":       validity_status,
+            "fraud_layer_rejected_at": fraud_layer_rejected_at,
+            "voucher_eligible":      effective_voucher_eligible,
+            "voucher_issued":         False,  # sẽ cập nhật sau khi /spin chạy
+            "spin_used":             False,
+            "snr_score":             _snr_score,
+            "audio_duration_sec":    _audio_duration_sec,
         }
 
         feedback_id_created = save_feedback(tenant_id, feedback_doc, feedback_id_override=feedback_id)
         logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id_created}")
 
-        # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam)
-        # 0.A FIX: Gọi update_customer_rfms ngay cả khi rfms_normalized rỗng (do RFMS exception),
-        # để đảm bảo feedback_count và last_feedback_at luôn được cập nhật sau mỗi feedback hợp lệ.
-        # rfms_normalized có thể rỗng nếu RFMS bị exception → dùng safe defaults.
-        if customer_id and not is_suspicious_flag:
+        # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam hoặc invalid_semantic)
+        # Chỉ cập nhật RFMS khi feedback VALID để không làm sai model với dữ liệu rác.
+        # Feedback invalid vẫn được lưu Firestore (để audit) nhưng không ảnh hưởng RFMS.
+        if customer_id and not is_suspicious_flag and validity_status == "valid":
             update_customer_rfms(
                 tenant_id=tenant_id,
                 customer_id=customer_id,
@@ -632,6 +823,24 @@ async def submit_feedback(
                     _internal_sentiment_for_rfms  # internal [0,1] cho running avg
                 ),
             )
+            # Cập nhật last_transcript để Lớp 3 phát hiện duplicate lần sau
+            try:
+                from backend.db.firestore_client import get_firestore_client as _get_fs2
+                _db2 = _get_fs2()
+                _cust_ref2 = (
+                    _db2.collection("tenants").document(tenant_id)
+                    .collection("customers").document(customer_id)
+                )
+                _cust_ref2.update({"last_transcript": (transcript or "")[:500]})
+            except Exception as _lt_err:
+                logger.warning(f"[Feedback] Không cập nhật last_transcript: {_lt_err}")
+
+        # 8d. Ghi nhận rate limit sau khi đã lưu thành công (chỉ lượt valid có SĐT)
+        if validity_status == "valid" and customer_phone:
+            try:
+                record_submission(phone_number=customer_phone, tenant_id=tenant_id)
+            except Exception as _rl_err:
+                logger.warning(f"[Feedback] Không ghi rate limit: {_rl_err}")
 
     except (EnvironmentError, FileNotFoundError) as e:
         # Firebase credentials chưa cấu hình — cho phép chạy mà không cần Firestore
@@ -759,6 +968,7 @@ async def submit_feedback(
             message=(
                 "Phan hoi da duoc xu ly va luu thanh cong."
                 + (" Co dau hieu dang nghi ngo." if fraud_result.is_suspicious else "")
+                + (" (Noi dung khong hop le, khong tinh vao thong ke.)" if validity_status == "invalid_semantic" else "")
             ),
             tenant_id=tenant_id,
             location=location,
@@ -772,5 +982,12 @@ async def submit_feedback(
             should_alert=should_alert,
             is_suspicious=fraud_result.is_suspicious,
             suspicious_reason=fraud_result.reason if fraud_result.is_suspicious else None,
+            # ── Module 1: Anti-Fraud fields ─────────────────────────────────
+            validity_status=validity_status,
+            fraud_layer_rejected_at=fraud_layer_rejected_at,
+            voucher_eligible=effective_voucher_eligible,
+            snr_score=_snr_score,
+            audio_duration_sec=_audio_duration_sec,
+            voucher_issued=False,  # Luôn False ở đây — voucher phát qua /spin riêng
         ).model_dump(),
     )
