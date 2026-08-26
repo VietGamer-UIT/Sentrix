@@ -10,6 +10,13 @@ const navItems = [
   { to: '/customers', label: 'Khách hàng' },
 ]
 
+// Nav items nhóm "Vận hành" — Module 4
+const navItemsOps = [
+  { to: '/fraud',           label: '🛡️ Chống Gian Lận' },
+  { to: '/voucher-config',  label: '🎫 Cấu hình Voucher' },
+  { to: '/operating-cost',  label: '💰 Chi phí Vận hành' },
+]
+
 /**
  * Layout — App shell: sidebar trái + header + <Outlet>
  * Light Theme: sidebar trắng, accent #0688A6 (cyan Sentrix)
@@ -118,6 +125,27 @@ function Layout() {
                 key={to}
                 to={to}
                 end={end}
+                className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+              >
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Nhóm Vận hành — Module 4 */}
+          <div className="nav-separator" style={{ margin: '8px 0 0' }} />
+          <div style={{
+            padding: '8px var(--spacing-lg) 4px',
+            fontSize: 'var(--font-size-xs)', fontWeight: 700,
+            color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em',
+          }}>
+            Vận hành
+          </div>
+          <nav className="sidebar-nav" style={{ paddingTop: 0 }}>
+            {navItemsOps.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
                 className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
               >
                 {label}

@@ -5,6 +5,9 @@ import LoginPage from './pages/LoginPage.jsx'
 import OverviewPage from './pages/OverviewPage.jsx'
 import FeedbacksPage from './pages/FeedbacksPage.jsx'
 import CustomersPage from './pages/CustomersPage.jsx'
+import FraudMonitorPage from './pages/FraudMonitorPage.jsx'
+import VoucherConfigPage from './pages/VoucherConfigPage.jsx'
+import OperatingCostPage from './pages/OperatingCostPage.jsx'
 
 /**
  * App.jsx — Routing dashboard với Auth Guard
@@ -63,6 +66,10 @@ function App() {
         <Route index element={<OverviewPage />} />
         <Route path="feedbacks" element={<FeedbacksPage />} />
         <Route path="customers" element={<CustomersPage />} />
+        {/* Module 4 — 3 Panel mới */}
+        <Route path="fraud" element={<FraudMonitorPage />} />
+        <Route path="voucher-config" element={<VoucherConfigPage />} />
+        <Route path="operating-cost" element={<OperatingCostPage />} />
       </Route>
 
       {/* Catch-all */}
