@@ -1,25 +1,32 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import RecordingOverlay from '../components/RecordingOverlay.jsx'
+import ConsentWindow from '../components/ConsentWindow.jsx'
+import { useConsent } from '../hooks/useConsent.js'
 
 /**
  * LandingPage — Bước 2 trong user-flow.md
  *
- * Giai đoạn BUG FIX:
- * - KHÔNG redirect sang /record — mở overlay thu âm ngay tại trang này
- * - Copywriting chuẩn: "Nhấn để nói", "15 giây", ngắt dòng đúng
- * - Logo SVG inline chất lượng cao
- * - Bỏ bớt icon thừa
- * - Anti-spam: đọc sessionStorage để block spin nếu is_suspicious
+ * Module 2 (PDPA):
+ * - Kiểm tra consent qua useConsent() trước khi mở RecordingOverlay.
+ * - Nếu chưa có consent hợp lệ → hiển thị ConsentWindow (bottom-sheet).
+ * - Sau khi đồng ý → mở RecordingOverlay như bình thường.
+ * - Căn cứ: Điều 6.3 NĐ 356/2025/NĐ-CP (không được suy diễn đồng ý
+ *   từ việc bấm nút ghi âm — phải là hành động chủ động riêng biệt).
  */
 function LandingPage() {
   const [searchParams] = useSearchParams()
-  const [showOverlay, setShowOverlay] = useState(false)
-  const [overlayMode, setOverlayMode] = useState('audio')
+  const [showOverlay, setShowOverlay]         = useState(false)
+  const [overlayMode, setOverlayMode]         = useState('audio')
+  const [showConsentWindow, setShowConsentWindow] = useState(false)
+  const [pendingMode, setPendingMode]         = useState(null) // mode bị "pending" chờ consent
 
-  const tenantId  = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
-  const location  = searchParams.get('location') || 'Bàn 1'
+  const tenantId     = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
+  const location     = searchParams.get('location') || 'Bàn 1'
   const businessName = 'Phở Bà Lan'
+
+  // Hook quản lý consent — Điều 6.2 NĐ 356/2025/NĐ-CP
+  const { hasConsented } = useConsent(tenantId)
 
   // Xóa kết quả API cũ khi vào trang mới (session mới bắt đầu)
   useEffect(() => {
@@ -28,9 +35,30 @@ function LandingPage() {
     sessionStorage.removeItem('sentrix_is_suspicious')
   }, [])
 
+  /**
+   * Mở overlay thu âm — nhưng phải qua consent gate trước.
+   * Điều 6.3 NĐ 356/2025: KHÔNG được suy diễn đồng ý từ việc bấm nút.
+   */
   const openOverlay = (mode) => {
-    setOverlayMode(mode)
-    setShowOverlay(true)
+    if (hasConsented) {
+      // Đã có consent hợp lệ → vào thẳng
+      setOverlayMode(mode)
+      setShowOverlay(true)
+    } else {
+      // Chưa có consent → hiển thị ConsentWindow, ghi nhớ mode đang chờ
+      setPendingMode(mode)
+      setShowConsentWindow(true)
+    }
+  }
+
+  /** Callback khi user đồng ý ở ConsentWindow */
+  const handleConsented = () => {
+    setShowConsentWindow(false)
+    if (pendingMode) {
+      setOverlayMode(pendingMode)
+      setShowOverlay(true)
+      setPendingMode(null)
+    }
   }
 
   return (
@@ -133,7 +161,16 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* Recording Overlay — hiển thị đè lên trang, không redirect */}
+      {/* ConsentWindow — hiển thị khi chưa có consent */}
+      {showConsentWindow && (
+        <ConsentWindow
+          tenantId={tenantId}
+          businessName={businessName}
+          onConsented={handleConsented}
+        />
+      )}
+
+      {/* Recording Overlay — chỉ hiển thị sau khi đã consent */}
       {showOverlay && (
         <RecordingOverlay
           tenantId={tenantId}

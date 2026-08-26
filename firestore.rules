@@ -1,21 +1,29 @@
 // ═══════════════════════════════════════════════════════════════════════
 // firestore.rules — Sentrix Security Rules
 //
-// MỤC ĐÍCH: Chặn cross-tenant data leak (lỗ hổng IDOR)
+// MUC DICH: Chan cross-tenant data leak (lo hong IDOR)
 // DEPLOY: firebase deploy --only firestore:rules
 //
-// NGUYÊN TẮC:
-//   1. Firestore data của tenant X → chỉ đúng user mới đọc được
+// NGUYEN TAC:
+//   1. Firestore data cua tenant X → chi dung user moi doc duoc
 //   2. Ghi feedback: backend service account (Admin SDK, bypass rules)
 //   3. Dashboard: read-only cho authenticated users
-//   4. Web-client (unauthenticated): KHÔNG được phép ghi trực tiếp
-//      vào bất kỳ document nào — mọi ghi dữ liệu phải qua Backend API
+//   4. Web-client (unauthenticated): KHONG duoc phep ghi truc tiep
+//      vao bat ky document nao — moi ghi du lieu phai qua Backend API
 //
 // SEC-01 FIX (2026-08-19):
-//   Đã xóa rule `allow update` cho unauthenticated client trên feedbacks.
-//   Trước đây rule này cho phép bất kỳ ai biết tenant_id + feedback_id
-//   có thể ghi phone_masked và voucher_code giả mạo trực tiếp vào DB.
-//   Giờ: mọi update phải qua Backend Admin SDK (bypass rules theo thiết kế Firestore).
+//   Da xoa rule `allow update` cho unauthenticated client tren feedbacks.
+//   Truoc day rule nay cho phep bat ky ai biet tenant_id + feedback_id
+//   co the ghi phone_masked va voucher_code gia mao truc tiep vao DB.
+//   Gio: moi update phai qua Backend Admin SDK (bypass rules theo thiet ke Firestore).
+//
+// Module 1 & 2 (2026-08-26):
+//   Them rules cho cac collections moi:
+//   - rate_limits/{phone_hash}            — Module 1, ghi qua backend Admin SDK
+//   - otp_sessions/{phone_hash}           — Module 1, ghi qua backend Admin SDK
+//   - voucher_budget_config/{tenantId}    — Module 1, doc qua backend (khong expose)
+//   - consent_records/{tenantId}/records/ — Module 2, ghi qua backend Admin SDK
+//     Can cu phap ly: Dieu 6.2 ND 356/2025/ND-CP (bang chung dong y)
 // ═══════════════════════════════════════════════════════════════════════
 
 rules_version = '2';
@@ -23,35 +31,61 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─── Chặn tất cả truy cập mặc định (deny-by-default) ──────────────
+    // ─── Chan tat ca truy cap mac dinh (deny-by-default) ──────────────
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // ─── Tenants: chỉ đọc thông tin public của tenant ─────────────────
-    // Dashboard cần đọc business_name, settings từ tenants/{tenantId}
+    // ─── Tenants: chi doc thong tin public cua tenant ─────────────────
+    // Dashboard can doc business_name, settings tu tenants/{tenantId}
     match /tenants/{tenantId} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // ─── Feedbacks: chỉ đọc cho auth user ─────────────────────────────
-    // Ghi mới + update (phone, voucher, spin): chỉ qua Backend Admin SDK
-    // SEC-01 FIX: Xóa rule allow update từ unauthenticated client.
-    // SpinPage giờ gọi POST /api/v1/gamification/spin → backend dùng Admin SDK ghi.
+    // ─── Feedbacks: chi doc cho auth user ─────────────────────────────
+    // Ghi moi + update (phone, voucher, spin): chi qua Backend Admin SDK
+    // SEC-01 FIX: Xoa rule allow update tu unauthenticated client.
     match /tenants/{tenantId}/feedbacks/{feedbackId} {
-      // Dashboard (auth user) đọc được
       allow read: if request.auth != null;
-
-      // Tất cả ghi (create/update/delete): chỉ Backend Admin SDK
-      // Admin SDK bypass rules → không cần rule allow write ở đây
-      allow write: if false;
+      allow write: if false; // chi Backend Admin SDK
     }
 
-    // ─── Customers: chỉ đọc cho auth user ─────────────────────────────
+    // ─── Customers: chi doc cho auth user ─────────────────────────────
     match /tenants/{tenantId}/customers/{customerId} {
       allow read: if request.auth != null;
-      allow write: if false; // chỉ backend Admin SDK
+      allow write: if false; // chi backend Admin SDK
+    }
+
+    // ─── Module 1: Rate Limits ─────────────────────────────────────────
+    // Key = SHA-256(phone) — khong chua SDT plaintext.
+    // Chi backend Admin SDK doc/ghi; client khong co quyen.
+    match /rate_limits/{phoneHash} {
+      allow read, write: if false; // chi backend Admin SDK
+    }
+
+    // ─── Module 1: OTP Sessions ────────────────────────────────────────
+    // Key = SHA-256(phone) — khong chua SDT hay OTP code plaintext.
+    // OTP code luu dang hash mot chieu. TTL = 5 phut.
+    match /otp_sessions/{phoneHash} {
+      allow read, write: if false; // chi backend Admin SDK
+    }
+
+    // ─── Module 1: Voucher Budget Config ───────────────────────────────
+    // Chi tenant admin (auth user) doc; ghi qua backend Admin SDK.
+    match /voucher_budget_config/{tenantId} {
+      allow read: if request.auth != null;
+      allow write: if false; // chi backend Admin SDK
+    }
+
+    // ─── Module 2: Consent Records ─────────────────────────────────────
+    // Bang chung dong y theo Dieu 6.2 ND 356/2025/ND-CP.
+    // Can cu phap ly: bo kiem soat du lieu co trach nhiem luu giu bang chung.
+    // Dashboard admin co the doc de audit; web-client KHONG ghi truc tiep.
+    // Moi ghi qua POST /api/v1/consent/record → backend Admin SDK.
+    match /consent_records/{tenantId}/records/{recordId} {
+      allow read: if request.auth != null;
+      allow write: if false; // chi backend Admin SDK
     }
 
   }

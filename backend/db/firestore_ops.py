@@ -392,3 +392,79 @@ def get_customer_id_from_phone(phone_number: str) -> str:
     Hữu ích khi cần biết customer_id trước khi query.
     """
     return _hash_phone(phone_number)
+
+
+# ---------------------------------------------------------------------------
+# Module 2 — Tuân thủ Nghị định 356/2025/NĐ-CP
+# ---------------------------------------------------------------------------
+
+def save_consent_record(
+    tenant_id: str,
+    consent_version: str,
+    consent_given_at: datetime,
+    phone_hash: Optional[str],
+    user_agent: Optional[str],
+    ip_address: Optional[str],
+    data_categories: Optional[list] = None,
+) -> str:
+    """
+    Lưu bằng chứng đồng ý xử lý dữ liệu cá nhân vào Firestore.
+
+    Căn cứ pháp lý:
+      Điều 6.2 Nghị định 356/2025/NĐ-CP — bên kiểm soát dữ liệu (Sentrix)
+      có trách nhiệm lưu trữ và chứng minh bằng chứng đồng ý khi có tranh chấp.
+
+    Path: consent_records/{tenant_id}/records/{record_id}
+
+    Args:
+        tenant_id:        ID doanh nghiệp (tenant).
+        consent_version:  Phiên bản điều khoản đã đồng ý (vd "v1.0-356-2025").
+        consent_given_at: Thời điểm đồng ý (UTC).
+        phone_hash:       SHA-256 hash của SĐT nếu có (None nếu ẩn danh).
+        user_agent:       Browser user-agent để phục vụ audit.
+        ip_address:       IP address của request.
+        data_categories:  Danh mục dữ liệu đã đồng ý (default: voice + behavior).
+
+    Returns:
+        str: record_id của document consent vừa tạo.
+    """
+    db = get_firestore_client()
+
+    if data_categories is None:
+        # Mặc định: giọng nói (sinh trắc học — nhạy cảm Điều 4.1.đ) +
+        # hành vi sử dụng dịch vụ (nhạy cảm Điều 4.1.l) + SĐT (cơ bản Điều 3 khoản 7)
+        data_categories = [
+            "voice_biometric",       # Điều 4.1.đ — nhạy cảm
+            "behavior_tracking",     # Điều 4.1.l — nhạy cảm
+            "phone_number",          # Điều 3 khoản 7 — cơ bản (chỉ khi không ẩn danh)
+        ]
+
+    record = {
+        "tenant_id":        tenant_id,
+        "consent_version":  consent_version,
+        "consent_given_at": consent_given_at,
+        "phone_hash":       phone_hash,          # None nếu ẩn danh
+        "user_agent":       (user_agent or "")[:512],  # Giới hạn độ dài
+        "ip_address":       ip_address or "unknown",
+        "data_categories":  data_categories,
+        "legal_basis":      "Nghị định 356/2025/NĐ-CP Điều 6",
+        "recorded_at":      _now_utc(),
+    }
+
+    consent_ref = (
+        db.collection("consent_records")
+        .document(tenant_id)
+        .collection("records")
+        .document()
+    )
+    record_id = consent_ref.id
+    record["record_id"] = record_id
+    consent_ref.set(record)
+
+    logger.info(
+        f"[PDPA] Consent record đã lưu: "
+        f"consent_records/{tenant_id}/records/{record_id} "
+        f"| version={consent_version} | phone_hash={'[có]' if phone_hash else '[ẩn danh]'}"
+    )
+    return record_id
+

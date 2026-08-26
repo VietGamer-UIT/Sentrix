@@ -198,12 +198,33 @@ async def _read_and_validate_audio(
 
 
 def _cleanup_temp_audio(temp_path: Optional[str]) -> None:
-    """Xóa file audio tạm sau khi xử lý xong."""
+    """
+    Xóa file audio tạm sau khi Whisper API đã xử lý xong.
+
+    Căn cứ: Nguyên tắc Data Minimization theo Luật Bảo vệ dữ liệu cá nhân
+    số 91/2025/QH15 — không lưu giữ dữ liệu cá nhân lâu hơn mục đích cần thiết.
+    Giọng nói là dữ liệu sinh trắc học (nhạy cảm — Điều 4.1.đ NĐ 356/2025/NĐ-CP),
+    phải xóa ngay sau khi Whisper chuyển thành text thành công.
+
+    Log [Audit-PDPA] phục vụ kiểm toán nội bộ nếu bị cơ quan chức năng hỏi.
+    """
     if temp_path and Path(temp_path).exists():
         try:
             Path(temp_path).unlink()
-        except Exception:
-            pass  # Không crash vì lỗi xóa file tạm
+            # [Audit-PDPA] Log bắt buộc — bằng chứng xóa file audio tạm đúng hạn
+            logger.info(
+                f"[Audit-PDPA] Đã xóa file audio tạm sau xử lý: {Path(temp_path).name} "
+                f"| Tuân thủ nguyên tắc Data Minimization — Luật 91/2025/QH15"
+            )
+        except Exception as _del_err:
+            logger.warning(
+                f"[Audit-PDPA] CẢNH BÁO: Không xóa được file audio tạm: "
+                f"{Path(temp_path).name} — {_del_err}"
+            )
+    elif temp_path:
+        # File đã bị xóa trước đó (normal case cho early-reject paths)
+        logger.debug(f"[Audit-PDPA] File audio tạm đã không còn tồn tại: {temp_path}")
+
 
 
 # ---------------------------------------------------------------------------

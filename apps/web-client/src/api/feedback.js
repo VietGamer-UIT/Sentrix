@@ -41,6 +41,7 @@ export async function submitFeedback({
   customerPhone = null,
   totalSpending = 0,
   feedbackId = null,
+  voucherEligible = false,   // Module 2: false = ẩn danh, true = có SĐT + OTP verified
 }) {
   const formData = new FormData()
 
@@ -72,6 +73,11 @@ export async function submitFeedback({
     // Backend sẽ hash SĐT trước khi lưu — an toàn gửi thô
     formData.append('customer_phone', customerPhone.trim())
   }
+
+  // Module 2: voucher_eligible — backend dùng để biết có áp dụng OTP check không
+  // false = ẩn danh → bỏ qua Lớp 1 (OTP/rate-limit), không phát voucher
+  // true = đã qua OTP verified ở frontend → backend double-check OTP session
+  formData.append('voucher_eligible', String(voucherEligible))
 
   // total_spending: 0 là mặc định hợp lệ cho backend
   formData.append('total_spending', String(totalSpending))
