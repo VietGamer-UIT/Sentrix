@@ -29,12 +29,12 @@ import { useFeedbacks, useCustomers, IS_MOCK } from '../mocks/useFirestore.js'
 
 // Đơn giá mặc định — override qua .env dashboard
 const COST = {
-  whisper_per_call:   parseFloat(import.meta.env.VITE_COST_WHISPER_PER_CALL   || '0.003'),   // USD
-  gemini_per_call:    parseFloat(import.meta.env.VITE_COST_GEMINI_PER_CALL    || '0.0001'),  // USD
-  zns_per_message:    parseFloat(import.meta.env.VITE_COST_ZNS_PER_MSG        || '1000'),    // VNĐ
-  render_monthly:     parseFloat(import.meta.env.VITE_COST_RENDER_MONTHLY_USD || '0'),       // USD/tháng
-  vercel_monthly:     parseFloat(import.meta.env.VITE_COST_VERCEL_MONTHLY_USD || '0'),       // USD/tháng
-  usd_vnd_rate:       parseFloat(import.meta.env.VITE_USD_VND_RATE            || '25000'),   // 1 USD = ? VNĐ
+  whisper_per_call:   parseFloat(import.meta.env.VITE_COST_WHISPER_PER_CALL   || '0.0015'),  // USD (~15s x $0.006/phut)
+  gemini_per_call:    parseFloat(import.meta.env.VITE_COST_GEMINI_PER_CALL    || '0.0001'),  // USD (~400 token Flash-Lite)
+  zns_per_message:    parseFloat(import.meta.env.VITE_COST_ZNS_PER_MSG        || '400'),     // VND/tin
+  render_monthly:     parseFloat(import.meta.env.VITE_COST_RENDER_MONTHLY_USD || '0'),       // USD/thang
+  vercel_monthly:     parseFloat(import.meta.env.VITE_COST_VERCEL_MONTHLY_USD || '0'),       // USD/thang
+  usd_vnd_rate:       parseFloat(import.meta.env.VITE_USD_VND_RATE            || '25000'),   // 1 USD = ? VND
 }
 
 function fmtVND(amount) {
@@ -89,40 +89,37 @@ export default function OperatingCostPage() {
           unit:      'lượt audio',
           unitPrice: `${fmtUSD(COST.whisper_per_call)}/lượt`,
           vnd:       whisperVND,
-          note:      '~30s/lượt × $0.006/phút',
+          note:      '~15 giây/lượt, $0.006/phút',
         },
         {
           id: 'gemini',
-          label:     'Gemini ABSA (phân tích cảm xúc)',
-          icon:      '🤖',
+          label:     'Phân tích cảm xúc (Gemini)',
           provider:  'Google',
           count:     counts.processed,
           unit:      'lượt phản hồi',
           unitPrice: `${fmtUSD(COST.gemini_per_call)}/lượt`,
           vnd:       geminiVND,
-          note:      'Flash-Lite ~100K token/$0.01',
+          note:      'Flash-Lite, ~400 token/lượt',
         },
         {
           id: 'zns',
-          label:     'Zalo ZNS (tin nhắn chăm sóc khách)',
-          icon:      '💬',
+          label:     'Tin nhắn chăm sóc khách (Zalo ZNS)',
           provider:  'Zalo',
           count:     counts.zns,
-          unit:      'tin nhắn ZNS',
+          unit:      'tin nhắn',
           unitPrice: `${(COST.zns_per_message).toLocaleString('vi-VN')} ₫/tin`,
           vnd:       znsVND,
-          note:      'ZNS Notification Service',
+          note:      'Zalo Notification Service',
         },
         {
           id: 'hosting',
           label:     'Hosting (Render + Vercel)',
-          icon:      '☁️',
           provider:  'Render / Vercel',
           count:     1,
           unit:      'tháng',
           unitPrice: `${fmtUSD(hostingUSD)}/tháng`,
           vnd:       hostingVND,
-          note:      'Free tier, $0 hiện tại',
+          note:      'Gói miễn phí (MVP)',
         },
       ],
       totalVND,
@@ -134,21 +131,19 @@ export default function OperatingCostPage() {
 
   return (
     <div>
-      {/* Page Header */}
       <div style={{ marginBottom: 'var(--spacing-lg)' }}>
         <h2 style={{
           fontSize: 'var(--font-size-lg)', fontWeight: 800,
           color: 'var(--color-text-primary)', margin: 0
         }}>
-          💰 Tài Chính & Chi Phí Vận Hành
+          Chi phí vận hành
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 4 }}>
-          Ước tính OpEx từ số lượt API thực tế — phục vụ minh hoạ bảng COGS trong thuyết minh AISC'26
-          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>• Demo Data</span>}
+          Ước tính chi phí API thực tế từ dữ liệu phản hồi
+          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>— Dữ liệu mẫu</span>}
         </p>
       </div>
 
-      {/* Disclaimer nổi bật */}
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
         background: 'rgba(6,136,166,0.06)',
@@ -159,11 +154,9 @@ export default function OperatingCostPage() {
         fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)',
         lineHeight: 1.6,
       }}>
-        <span style={{ fontSize: 20 }}>ℹ️</span>
         <div>
           <strong>Ước tính nội bộ — không phải hóa đơn thật từ nhà cung cấp.</strong><br />
-          Số lượt đếm từ Firestore realtime. Đơn giá cấu hình qua biến môi trường <code>VITE_COST_*</code>.<br />
-          Tỷ giá: 1 USD = {COST.usd_vnd_rate.toLocaleString('vi-VN')} ₫ (cấu hình qua <code>VITE_USD_VND_RATE</code>).
+          Số lượt đếm từ dữ liệu Firestore. Tỷ giá: 1 USD = {COST.usd_vnd_rate.toLocaleString('vi-VN')} ₫.
         </div>
       </div>
 
@@ -177,11 +170,11 @@ export default function OperatingCostPage() {
           <div className="kpi-sub">tích lũy từ {feedbacks.length} phản hồi</div>
         </div>
         <div className="kpi-card glass-card">
-          <div className="kpi-label">Chi phí / phản hồi</div>
+          <div className="kpi-label">Chi phí mỗi lượt phản hồi</div>
           <div className="kpi-value" style={{ color: 'var(--color-text-primary)' }}>
             {loading || feedbacks.length === 0 ? '—' : fmtVND(costs.totalVND / feedbacks.length)}
           </div>
-          <div className="kpi-sub">trung bình COGS / feedback</div>
+          <div className="kpi-sub">trung bình mỗi lượt</div>
         </div>
         <div className="kpi-card glass-card">
           <div className="kpi-label">Lượt STT (Whisper)</div>
@@ -203,7 +196,7 @@ export default function OperatingCostPage() {
           fontWeight: 700, fontSize: 'var(--font-size-base)', color: 'var(--color-text-primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <span>📋 Bảng Chi Tiết Hạng Mục</span>
+          <span>Chi tiết từng hạng mục</span>
           <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 400 }}>
             Tích lũy từ lúc demo bắt đầu
           </span>
@@ -231,7 +224,6 @@ export default function OperatingCostPage() {
                   {/* Hạng mục */}
                   <td style={{ padding: '14px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 20 }}>{item.icon}</span>
                       <div>
                         <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                           {item.label}
@@ -300,7 +292,7 @@ export default function OperatingCostPage() {
           borderBottom: '1px solid var(--color-border)',
           fontWeight: 700, fontSize: 'var(--font-size-base)', color: 'var(--color-text-primary)',
         }}>
-          📊 Tỷ Trọng Chi Phí
+          Tỷ trọng chi phí
         </div>
         <div style={{ padding: 'var(--spacing-lg)', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {costs.items.map(item => {
@@ -312,7 +304,7 @@ export default function OperatingCostPage() {
               <div key={item.id}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
-                    {item.icon} {item.label}
+                    {item.label}
                   </span>
                   <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 700, color: barColor }}>
                     {loading ? '—' : `${pct.toFixed(1)}%`}
@@ -330,22 +322,6 @@ export default function OperatingCostPage() {
           })}
         </div>
 
-        {/* Hướng dẫn chỉnh đơn giá */}
-        <div style={{
-          margin: '0 var(--spacing-lg) var(--spacing-lg)',
-          padding: '10px 14px',
-          background: 'var(--color-bg)',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)',
-          lineHeight: 1.6,
-        }}>
-          <strong>Chỉnh đơn giá:</strong> Thêm vào <code>apps/dashboard/.env</code>:
-          <br />
-          <code>VITE_COST_WHISPER_PER_CALL=0.003</code> &nbsp;
-          <code>VITE_COST_GEMINI_PER_CALL=0.0001</code> &nbsp;
-          <code>VITE_COST_ZNS_PER_MSG=1000</code> &nbsp;
-          <code>VITE_USD_VND_RATE=25000</code>
-        </div>
       </div>
     </div>
   )

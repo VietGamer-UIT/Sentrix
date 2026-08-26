@@ -78,14 +78,13 @@ export default function FeedbacksPage() {
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: 'var(--spacing-2xl)', color: 'var(--color-text-muted)' }}>
-      <div style={{ fontSize: '2rem', marginBottom: 'var(--spacing-md)' }}>⏳</div>
-      <p>Đang tải phản hồi từ Firestore...</p>
+      <p>Đang tải phản hồi...</p>
     </div>
   )
 
   if (error) return (
     <div style={{ padding: 'var(--spacing-xl)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 'var(--radius-md)', color: 'var(--color-danger)' }}>
-      <strong>⚠️ Lỗi Firestore:</strong> {error}
+      <strong>Lỗi kết nối Firestore:</strong> {error}
     </div>
   )
 
@@ -94,7 +93,7 @@ export default function FeedbacksPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 'var(--spacing-sm)', flexWrap: 'wrap', marginBottom: 'var(--spacing-lg)', alignItems: 'center' }}>
         <input
-          type="text" placeholder="🔍 Tìm trong transcript..."
+          type="text" placeholder="Tìm trong nội dung phản hồi..."
           value={search} onChange={e => setSearch(e.target.value)}
           style={{ ...selectStyle, flex: 1, minWidth: 200 }}
         />
@@ -109,10 +108,9 @@ export default function FeedbacksPage() {
           {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
         </select>
         <select value={filterType} onChange={e => setFilterType(e.target.value)} style={selectStyle}>
-          <option value="all">Audio & Text</option>
+          <option value="all">Ghi âm và văn bản</option>
           <option value="audio">Ghi âm</option>
           <option value="text">Văn bản</option>
-          <option value="audio_and_text">Cả hai</option>
         </select>
         <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
           {filtered.length} / {feedbacks.length} kết quả
@@ -122,7 +120,6 @@ export default function FeedbacksPage() {
       {feedbacks.length === 0 ? (
         <div className="card">
           <div className="empty-state">
-            <div className="empty-state-icon">📭</div>
             <p>Chưa có phản hồi nào trong Firestore.<br/>
               <small style={{ color: 'var(--color-text-muted)' }}>Khách hàng quét QR và gửi phản hồi để bắt đầu.</small>
             </p>
@@ -160,7 +157,7 @@ export default function FeedbacksPage() {
                         {timeAgo(fb.timestamp)}
                       </td>
                       <td style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-xs)' }}>{fb.location}</td>
-                      <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>{fb.input_type === 'audio' ? 'Ghi âm' : fb.input_type === 'audio_and_text' ? 'Âm + Chữ' : 'Văn bản'}</td>
+                      <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>{fb.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'}</td>
                       <td style={{ maxWidth: 280 }}>
                         {fb.processing_status === 'processing' ? (
                           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--font-size-xs)' }}>⏳ Đang phân tích...</span>
@@ -169,12 +166,12 @@ export default function FeedbacksPage() {
                             {fb.transcript || <span style={{ color: 'var(--color-text-muted)' }}>(Trống)</span>}
                           </span>
                         )}
-                        {fb.is_sarcasm && <span className="sarcasm-flag" style={{ marginTop: 4, display: 'inline-flex' }}>⚠️ Mỉa mai</span>}
+                        {fb.is_sarcasm && <span className="sarcasm-flag" style={{ marginTop: 4, display: 'inline-flex' }}>Mỉa mai</span>}
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         {fb.is_suspicious ? (
                           <span className="sentiment-badge" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                            🚨 SPAM
+                            SPAM
                           </span>
                         ) : fb.processing_status === 'done' ? (
                           <span className={`sentiment-badge sentiment-badge--${sentCls}`}>

@@ -97,17 +97,16 @@ export default function VoucherConfigPage() {
 
   return (
     <div>
-      {/* Page Header */}
       <div style={{ marginBottom: 'var(--spacing-lg)' }}>
         <h2 style={{
           fontSize: 'var(--font-size-lg)', fontWeight: 800,
           color: 'var(--color-text-primary)', margin: 0
         }}>
-          🎫 Cấu Hình Voucher & Ngân Sách
+          Cấu hình phát voucher
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 4 }}>
           Kiểm soát số lượng và tỷ lệ phát voucher mỗi ngày
-          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>• Demo Mode — thay đổi sẽ không lưu</span>}
+          {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>— Dữ liệu mẫu, thay đổi sẽ không lưu</span>}
         </p>
       </div>
 
@@ -121,7 +120,7 @@ export default function VoucherConfigPage() {
               borderBottom: '1px solid var(--color-border)',
               fontWeight: 700, fontSize: 'var(--font-size-base)', color: 'var(--color-text-primary)',
             }}>
-              📊 Tiến Độ Phát Voucher Hôm Nay
+              Tiến độ phát voucher hôm nay
             </div>
             <div style={{ padding: 'var(--spacing-xl) var(--spacing-lg)' }}>
 
@@ -174,7 +173,7 @@ export default function VoucherConfigPage() {
                   borderRadius: 'var(--radius-sm)', padding: '10px 14px',
                   color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', fontWeight: 600,
                 }}>
-                  ⚠️ {progressPct >= 100 ? 'Đã đạt giới hạn! Vòng quay bị tắt.' : `Sắp đạt giới hạn (${progressPct}%). Cân nhắc tăng daily_voucher_limit.`}
+                  {progressPct >= 100 ? 'Đã đạt giới hạn! Vòng quay tự động tắt.' : `Sắp đạt giới hạn (${progressPct}%). Cân nhắc tăng số lượng giới hạn.`}
                 </div>
               )}
 
@@ -185,7 +184,7 @@ export default function VoucherConfigPage() {
                 fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)',
                 textAlign: 'center',
               }}>
-                🔄 Bộ đếm tự reset lúc 00:00 ICT mỗi ngày
+                Bộ đếm tự đặt lại lúc nửa đêm mỗi ngày
               </div>
             </div>
           </div>
@@ -215,7 +214,7 @@ export default function VoucherConfigPage() {
             borderBottom: '1px solid var(--color-border)',
             fontWeight: 700, fontSize: 'var(--font-size-base)', color: 'var(--color-text-primary)',
           }}>
-            ⚙️ Cấu Hình
+            Cài đặt
           </div>
           <form onSubmit={handleSave} style={{ padding: 'var(--spacing-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
 
@@ -307,7 +306,7 @@ export default function VoucherConfigPage() {
                   opacity: saving ? 0.7 : 1,
                 }}
               >
-                {saving ? '⏳ Đang lưu...' : dirty ? '💾 Lưu cấu hình' : '✓ Đã lưu'}
+                {saving ? 'Đang lưu...' : dirty ? 'Lưu cấu hình' : 'Đã lưu'}
               </button>
             </div>
 
@@ -326,18 +325,6 @@ export default function VoucherConfigPage() {
               </div>
             )}
 
-            {/* Ghi chú kỹ thuật */}
-            <div style={{
-              padding: '10px 14px',
-              background: 'var(--color-bg)', borderRadius: 'var(--radius-sm)',
-              fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)',
-              lineHeight: 1.6,
-            }}>
-              <strong>Ghi chú kỹ thuật:</strong><br />
-              • Config lưu vào Firestore <code>tenants/{'{tenantId}'}</code><br />
-              • Budget check chạy tại route <code>POST /api/v1/gamification/spin</code><br />
-              • Voucher phát đến SĐT qua Zalo ZNS khi p_churn &gt; 0.85
-            </div>
           </form>
         </div>
       </div>
