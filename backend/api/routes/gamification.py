@@ -18,7 +18,7 @@ LÝ DO:
 import logging
 from fastapi import APIRouter, Form, HTTPException, status
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any
 
 from backend.db.firestore_client import get_firestore_client
 from backend.db.firestore_ops import (
@@ -32,6 +32,48 @@ from backend.services.voucher_budget_service import issue_voucher, mark_feedback
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+router = APIRouter()
+
+
+class VoucherConfigRequest(BaseModel):
+    tenant_id: str
+    daily_voucher_limit: int
+    win_rate_percent: float
+
+
+@router.get("/voucher-config", summary="Lấy cấu hình voucher hiện tại")
+async def get_voucher_config(tenant_id: str):
+    try:
+        db = get_firestore_client()
+        tenant_ref = db.collection("tenants").document(tenant_id)
+        snap = tenant_ref.get()
+        if snap.exists:
+            data = snap.to_dict()
+            return {
+                "daily_voucher_limit": data.get("daily_voucher_limit", 100),
+                "win_rate_percent": data.get("win_rate_percent", 30.0),
+            }
+        return {"daily_voucher_limit": 100, "win_rate_percent": 30.0}
+    except Exception as e:
+        logger.error(f"[Gamification] Lấy voucher config lỗi: {e}")
+        raise HTTPException(status_code=500, detail="Lỗi đọc Firestore")
+
+
+@router.put("/voucher-config", summary="Cập nhật ngân sách voucher")
+async def update_voucher_config(payload: VoucherConfigRequest):
+    try:
+        db = get_firestore_client()
+        tenant_ref = db.collection("tenants").document(payload.tenant_id)
+        tenant_ref.set({
+            "daily_voucher_limit": payload.daily_voucher_limit,
+            "win_rate_percent": payload.win_rate_percent
+        }, merge=True)
+        return {"status": "success", "message": "Cập nhật cấu hình thành công"}
+    except Exception as e:
+        logger.error(f"[Gamification] Lưu voucher config lỗi: {e}")
+        raise HTTPException(status_code=500, detail="Lỗi lưu Firestore")
 
 
 def _validate_feedback_for_spin(tenant_id: str, feedback_id: str) -> dict:
