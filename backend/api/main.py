@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
 
-from backend.api.routes import health, feedback, analyze, gamification
+from backend.api.routes import health, feedback, analyze, gamification, otp, tenant_config
 
 # Load biến môi trường từ file .env (nếu chạy local)
 load_dotenv()
@@ -84,3 +84,5 @@ app.include_router(health.router, tags=["Health"])
 app.include_router(feedback.router, prefix="/api/v1", tags=["Feedback"])
 app.include_router(analyze.router, prefix="/api/v1", tags=["ABSA Analysis"])
 app.include_router(gamification.router, prefix="/api/v1/gamification", tags=["Gamification"])
+app.include_router(otp.router, prefix="/api/v1", tags=["OTP"])
+app.include_router(tenant_config.router, prefix="/api/v1", tags=["Tenant Config"])
