@@ -84,6 +84,70 @@ function ConsentWindow({ tenantId, businessName, onConsented }) {
         </div>
 
         {/* ── Nội dung chính ── */}
+        {/* 3 Summary Cards — tóm tắt nhanh trước khi khách đọc chi tiết */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+          {[
+            {
+              title: 'Bảo mật tuyệt đối',
+              desc: 'Dữ liệu mã hoá end-to-end, chỉ dùng nội bộ',
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0688A6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              ),
+            },
+            {
+              title: 'Không lưu SĐT định danh',
+              desc: 'SĐT chỉ lưu dạng mã hoá một chiều nếu bạn đồng ý',
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0688A6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                  <line x1="12" y1="18" x2="12.01" y2="18"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ),
+            },
+            {
+              title: 'Tự động xoá giọng nói',
+              desc: 'File âm thanh bị xoá ngay sau khi chuyển thành văn bản',
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0688A6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6"/>
+                  <path d="M10 11v6"/>
+                  <path d="M14 11v6"/>
+                  <path d="M9 6V4h6v2"/>
+                </svg>
+              ),
+            },
+          ].map(({ title, desc, icon }) => (
+            <div key={title} style={{
+              flex: 1,
+              background: '#F0F9FB',
+              border: '1px solid rgba(6,136,166,0.15)',
+              borderRadius: 12,
+              padding: '10px 8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 5,
+              textAlign: 'center',
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: 'rgba(6,136,166,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                {icon}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{title}</span>
+              <span style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.4 }}>{desc}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Chi tiết pháp lý — thu gọn phía dưới */}
         <div style={{
           background: '#F9FAFB', borderRadius: 16,
           padding: '16px', marginBottom: 16,
@@ -103,7 +167,7 @@ function ConsentWindow({ tenantId, businessName, onConsented }) {
             border: '1px solid rgba(239,68,68,0.15)',
           }}>
             <p style={{ fontSize: 12, color: '#B91C1C', margin: 0, lineHeight: 1.6 }}>
-              <strong>⚠️ Dữ liệu nhạy cảm (Điều 4.1.đ NĐ 356/2025):</strong> Giọng nói
+              <strong>Dữ liệu nhạy cảm (Điều 4.1.đ NĐ 356/2025):</strong> Giọng nói
               của bạn được phân loại là <strong>dữ liệu sinh trắc học</strong> — một loại
               dữ liệu cá nhân nhạy cảm được pháp luật bảo vệ đặc biệt.
             </p>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTenant } from '../mocks/useFirestore.js'
@@ -20,7 +20,14 @@ function Layout() {
   const location         = useLocation()
   const { user, logout } = useAuth()
   const { tenant }       = useTenant()
+
+  // collapsed: dùng cho desktop (thu sidebar)
   const [collapsed, setCollapsed] = useState(false)
+  // mobileOpen: dùng cho mobile overlay
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  // Tự đóng mobile sidebar khi chuyển trang
+  useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
   const tenantName = tenant?.business_name ?? null
 
@@ -29,19 +36,29 @@ function Layout() {
     n.end ? location.pathname === '/' : location.pathname.startsWith('/' + n.to.slice(1))
   )
 
+  // Desktop: sidebar width thu gọn
   const sidebarWidth = collapsed ? 0 : 240
 
   return (
     <div className="app-shell">
 
+      {/* === Mobile overlay backdrop === */}
+      {mobileOpen && (
+        <div
+          className="mobile-sidebar-backdrop"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       {/* === Sidebar === */}
       <aside
-        className="sidebar"
+        className={`sidebar${mobileOpen ? ' sidebar--mobile-open' : ''}`}
         style={{
+          // Desktop: thu gọn theo state
           width: sidebarWidth,
           minWidth: sidebarWidth,
           overflow: 'hidden',
-          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), min-width 0.28s cubic-bezier(0.4,0,0.2,1)',
+          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), min-width 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
         <div style={{ width: 240, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -113,7 +130,7 @@ function Layout() {
           {/* Spacer — đẩy footer xuống đáy */}
           <div style={{ flex: 1 }} />
 
-          {/* Footer sidebar — không bao giờ bị ẩn */}
+          {/* Footer sidebar */}
           <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--spacing-md) var(--spacing-lg)', flexShrink: 0 }}>
             {IS_MOCK && (
               <div style={{
@@ -172,10 +189,18 @@ function Layout() {
         {/* Top Header — hamburger luôn ở đây */}
         <header className="top-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+            {/* Desktop: thu/mở sidebar | Mobile: overlay toggle */}
             <button
               id="btn-toggle-sidebar"
-              onClick={() => setCollapsed(c => !c)}
-              title={collapsed ? 'Mở thanh điều hướng' : 'Thu thanh điều hướng'}
+              onClick={() => {
+                // Trên mobile (< 768px): dùng overlay; trên desktop: collapse
+                if (window.innerWidth < 768) {
+                  setMobileOpen(v => !v)
+                } else {
+                  setCollapsed(c => !c)
+                }
+              }}
+              title="Menu"
               style={{
                 width: 34, height: 34,
                 borderRadius: 'var(--radius-sm)',
@@ -217,7 +242,7 @@ function Layout() {
               }} />
               {IS_MOCK ? 'Dữ liệu mẫu' : 'Firestore Live'}
             </span>
-            <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+            <span className="header-date" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               {new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
             </span>
           </div>

@@ -41,6 +41,65 @@ function scoreToColor(s) {
 }
 
 /**
+ * Chip khía cạnh, hỗ trợ hiển thị đủ 6 khía cạnh với nút expand/collapse.
+ * Giải quyết vấn đề "+N" bấm không được: bây giờ click vào "+N" sẽ expand.
+ */
+function AspectCellExpanded({ aspects }) {
+  const [expanded, setExpanded] = useState(false)
+  if (!aspects || aspects.length === 0) return null
+
+  const visible = expanded ? aspects : aspects.slice(0, 3)
+  const remaining = aspects.length - 3
+
+  return (
+    <div>
+      {visible.map((a, i) => {
+        const cat  = getAspectCategory(a)
+        const sent = getAspectSentimentEn(a)
+        const sc   = getAspectScore(a)
+        return (
+          <span key={i} className="aspect-chip" style={{ fontSize: '0.65rem' }}>
+            {ASPECT_LABELS[cat] || cat}
+            <span style={{ color: scoreToColor(sc), marginLeft: 4 }}>
+              {sent === 'positive' ? '+' : sent === 'negative' ? '-' : '–'}
+            </span>
+          </span>
+        )
+      })}
+      {aspects.length > 3 && (
+        <button
+          onClick={e => { e.stopPropagation(); setExpanded(v => !v) }}
+          style={{
+            display: 'inline-flex', alignItems: 'center',
+            padding: '2px 8px', margin: 2,
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '0.65rem', fontWeight: 700,
+            background: 'var(--color-primary-light)',
+            color: 'var(--color-primary)',
+            border: '1px solid rgba(6,136,166,0.2)',
+            cursor: 'pointer',
+          }}
+        >
+          {expanded ? 'Thu gọn' : `+${remaining}`}
+        </button>
+      )}
+    </div>
+  )
+}
+
+function SkeletonRows() {
+  return (
+    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ padding: 'var(--spacing-md) var(--spacing-lg)' }}>
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} className="skeleton-box" style={{ height: 44, marginBottom: 8, borderRadius: 8 }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
  * FeedbacksPage — Bảng toàn bộ phản hồi có filter
  * Giai đoạn 6: Dùng useFeedbacks() hook — Firestore thật hoặc mock tùy env
  */
@@ -77,8 +136,13 @@ export default function FeedbacksPage() {
   }
 
   if (loading) return (
-    <div style={{ textAlign: 'center', padding: 'var(--spacing-2xl)', color: 'var(--color-text-muted)' }}>
-      <p>Đang tải phản hồi...</p>
+    <div>
+      <div style={{ display: 'flex', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)', flexWrap: 'wrap' }}>
+        <div className="skeleton-box" style={{ height: 36, flex: 1, minWidth: 200, borderRadius: 6 }} />
+        <div className="skeleton-box" style={{ height: 36, width: 140, borderRadius: 6 }} />
+        <div className="skeleton-box" style={{ height: 36, width: 140, borderRadius: 6 }} />
+      </div>
+      <SkeletonRows />
     </div>
   )
 
@@ -99,9 +163,9 @@ export default function FeedbacksPage() {
         />
         <select value={filterSentiment} onChange={e => setFilterSentiment(e.target.value)} style={selectStyle}>
           <option value="all">Tất cả cảm xúc</option>
-          <option value="positive">Tích cực ▲</option>
-          <option value="neutral">Trung lập –</option>
-          <option value="negative">Tiêu cực ▼</option>
+          <option value="positive">Tích cực</option>
+          <option value="neutral">Trung lập</option>
+          <option value="negative">Tiêu cực</option>
         </select>
         <select value={filterLocation} onChange={e => setFilterLocation(e.target.value)} style={selectStyle}>
           <option value="all">Tất cả vị trí</option>
@@ -120,6 +184,7 @@ export default function FeedbacksPage() {
       {feedbacks.length === 0 ? (
         <div className="card">
           <div className="empty-state">
+            <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 72, opacity: 0.35, marginBottom: 'var(--spacing-md)' }} />
             <p>Chưa có phản hồi nào trong Firestore.<br/>
               <small style={{ color: 'var(--color-text-muted)' }}>Khách hàng quét QR và gửi phản hồi để bắt đầu.</small>
             </p>
@@ -134,7 +199,7 @@ export default function FeedbacksPage() {
                   <th>Thời gian</th>
                   <th>Vị trí</th>
                   <th>Loại</th>
-                  <th>Transcript</th>
+                  <th>Nội dung phản hồi</th>
                   <th>Cảm xúc</th>
                   <th>Khía cạnh</th>
                   <th>Trạng thái</th>
@@ -143,7 +208,9 @@ export default function FeedbacksPage() {
               <tbody>
                 {filtered.length === 0 && (
                   <tr><td colSpan={7}>
-                    <div className="empty-state"><div className="empty-state-icon">🔍</div><p>Không có kết quả phù hợp</p></div>
+                    <div className="empty-state">
+                      <p>Không có kết quả phù hợp với bộ lọc.</p>
+                    </div>
                   </td></tr>
                 )}
                 {filtered.map(fb => {
@@ -157,10 +224,12 @@ export default function FeedbacksPage() {
                         {timeAgo(fb.timestamp)}
                       </td>
                       <td style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-xs)' }}>{fb.location}</td>
-                      <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>{fb.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'}</td>
+                      <td style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
+                        {fb.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'}
+                      </td>
                       <td style={{ maxWidth: 280 }}>
                         {fb.processing_status === 'processing' ? (
-                          <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--font-size-xs)' }}>⏳ Đang phân tích...</span>
+                          <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--font-size-xs)' }}>Đang phân tích...</span>
                         ) : (
                           <span style={{ fontSize: 'var(--font-size-xs)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                             {fb.transcript || <span style={{ color: 'var(--color-text-muted)' }}>(Trống)</span>}
@@ -179,25 +248,19 @@ export default function FeedbacksPage() {
                           </span>
                         ) : '—'}
                       </td>
-                      <td style={{ maxWidth: 180 }}>
-                        {(fb.aspects || []).slice(0, 3).map((a, i) => {
-                          const cat  = getAspectCategory(a)
-                          const sent = getAspectSentimentEn(a)
-                          const sc   = getAspectScore(a)
-                          return (
-                            <span key={i} className="aspect-chip" style={{ fontSize: '0.65rem' }}>
-                              {ASPECT_LABELS[cat] || cat}
-                              <span style={{ color: scoreToColor(sc), marginLeft: 4 }}>
-                                {sent === 'positive' ? '▲' : sent === 'negative' ? '▼' : '–'}
-                              </span>
-                            </span>
-                          )
-                        })}
-                        {(fb.aspects?.length ?? 0) > 3 && <span className="aspect-chip">+{fb.aspects.length - 3}</span>}
+                      <td style={{ maxWidth: 200 }}>
+                        {/* AspectCellExpanded: bấm "+N" để expand đầy đủ các khía cạnh */}
+                        <AspectCellExpanded aspects={fb.aspects} />
                       </td>
                       <td>
-                        <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600 }}>
-                          {fb.processing_status === 'done' ? 'Xong' : fb.processing_status === 'processing' ? 'Xử lý...' : fb.processing_status === 'error' ? 'Lỗi' : 'Chờ'}
+                        <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600,
+                          color: fb.processing_status === 'done' ? 'var(--color-success)'
+                               : fb.processing_status === 'processing' ? 'var(--color-warning)'
+                               : 'var(--color-text-muted)'
+                        }}>
+                          {fb.processing_status === 'done' ? 'Xong'
+                           : fb.processing_status === 'processing' ? 'Xử lý...'
+                           : fb.processing_status === 'error' ? 'Lỗi' : 'Chờ'}
                         </span>
                       </td>
                     </tr>

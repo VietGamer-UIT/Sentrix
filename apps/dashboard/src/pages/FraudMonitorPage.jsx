@@ -18,18 +18,18 @@ import { isToday, isThisWeek } from 'date-fns'
 
 // Map validity_status → metadata
 const LAYER_META = {
-  invalid_short_audio: { lop: 1, label: 'Audio quá ngắn',       color: '#FFA412', textColor: '#fff' },
-  invalid_low_snr:     { lop: 1, label: 'Nhiễu âm thanh',       color: '#FFA412', textColor: '#fff' },
-  rate_limited:        { lop: 2, label: 'Vượt tần suất gửi',    color: '#EF4444', textColor: '#fff' },
-  invalid_semantic:    { lop: 3, label: 'Nội dung vô nghĩa',    color: '#8B5CF6', textColor: '#fff' },
-  valid:               { lop: null, label: 'Hợp lệ',            color: '#00B69B', textColor: '#fff' },
+  invalid_short_audio: { lop: 1, label: 'Audio quá ngắn',       color: '#FFA412' },
+  invalid_low_snr:     { lop: 1, label: 'Nhiễu âm thanh',       color: '#FFA412' },
+  rate_limited:        { lop: 2, label: 'Vượt tần suất gửi',    color: '#EF4444' },
+  invalid_semantic:    { lop: 3, label: 'Nội dung vô nghĩa',    color: '#8B5CF6' },
+  valid:               { lop: null, label: 'Hợp lệ',            color: '#00B69B' },
 }
 
 function getLayerMeta(f) {
   if (f.is_suspicious && f.validity_status === 'valid') {
-    return { lop: 4, label: 'Bất thường', color: '#EF4444', textColor: '#fff' }
+    return { lop: 4, label: 'Bất thường', color: '#EF4444' }
   }
-  return LAYER_META[f.validity_status] || { lop: null, label: f.validity_status || 'Không rõ', color: '#9CA3AF', textColor: '#fff' }
+  return LAYER_META[f.validity_status] || { lop: null, label: f.validity_status || 'Không rõ', color: '#9CA3AF' }
 }
 
 function LayerBadge({ meta }) {
@@ -56,6 +56,37 @@ function StatCard({ label, value, sub, color }) {
         {value}
       </div>
       {sub && <div className="kpi-sub" style={{ color: 'var(--color-text-muted)' }}>{sub}</div>}
+    </div>
+  )
+}
+
+/**
+ * EmptyFraud — Hiển thị khi không có gian lận nào.
+ * Dùng logo chính thức Sentrix thay vì icon/emoji.
+ */
+function EmptyFraud({ layerFilter }) {
+  const isGlobal = layerFilter === 'all'
+  return (
+    <div style={{
+      padding: 'var(--spacing-2xl) var(--spacing-lg)',
+      textAlign: 'center',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-md)',
+    }}>
+      <img
+        src="/sentrix-logo.png"
+        alt="Sentrix"
+        style={{ width: 80, opacity: 0.55, objectFit: 'contain' }}
+      />
+      <div>
+        <p style={{ fontSize: 'var(--font-size-base)', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 6 }}>
+          {isGlobal ? 'Không phát hiện gian lận nào.' : `Không có gian lận ở Lớp ${layerFilter}.`}
+        </p>
+        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
+          {isGlobal
+            ? 'Hệ thống chống gian lận 3 lớp hoạt động bình thường. Tất cả phản hồi đầu vào đều hợp lệ.'
+            : 'Không có lượt bị chặn ở lớp này trong bộ nhớ hiện tại.'}
+        </p>
+      </div>
     </div>
   )
 }
@@ -104,7 +135,8 @@ export default function FraudMonitorPage() {
         <div className="kpi-grid">
           {[1,2,3,4].map(i => <div key={i} className="kpi-card skeleton-box" style={{ height: 90 }} />)}
         </div>
-        <div className="card skeleton-box" style={{ height: 400 }} />
+        <div className="card skeleton-box" style={{ height: 200, marginBottom: 'var(--spacing-xl)' }} />
+        <div className="card skeleton-box" style={{ height: 360 }} />
       </div>
     )
   }
@@ -157,7 +189,7 @@ export default function FraudMonitorPage() {
           color="#FFA412"
         />
         <StatCard
-          label="LỜp 2 và 3 — Kiểm tra nội dung"
+          label="Lớp 2 và 3 — Nội dung"
           value={(byLayer[2] || 0) + (byLayer[3] || 0)}
           sub={`Quá tần suất: ${byLayer[2]||0}  •  Vô nghĩa: ${byLayer[3]||0}`}
           color="#EF4444"
@@ -219,7 +251,7 @@ export default function FraudMonitorPage() {
             Lượt bị đánh dấu gần nhất
           </span>
           {/* Filter theo lớp */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {[
               { v: 'all', label: 'Tất cả' },
               { v: '1',   label: 'Lớp 1' },
@@ -247,14 +279,12 @@ export default function FraudMonitorPage() {
 
         <div style={{ overflowX: 'auto' }}>
           {tableRows.length === 0 ? (
-            <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-              Không có lượt bị chặn {layerFilter !== 'all' ? `ở LỚp ${layerFilter}` : ''} trong bộ nhớ hiện tại
-            </div>
+            <EmptyFraud layerFilter={layerFilter} />
           ) : (
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['Thời gian', 'Vị trí', 'Loại', 'SĐT (mask)', 'Lý do chặn', 'Lớp'].map(h => (
+                  {['Thời gian', 'Vị trí', 'Loại', 'Nội dung / Lý do', 'Lớp chặn'].map(h => (
                     <th key={h} style={{
                       padding: '10px 16px', textAlign: 'left',
                       fontSize: 'var(--font-size-xs)', fontWeight: 700,
@@ -278,7 +308,7 @@ export default function FraudMonitorPage() {
                       <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
                         {f.location || '—'}
                       </td>
-                       <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
+                      <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)' }}>
                         <span style={{
                           padding: '2px 8px', borderRadius: 4,
                           background: f.input_type === 'audio' ? 'rgba(6,136,166,0.1)' : 'rgba(107,114,128,0.1)',
@@ -288,14 +318,19 @@ export default function FraudMonitorPage() {
                           {f.input_type === 'audio' ? 'Ghi âm' : 'Văn bản'}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)', fontFamily: 'monospace', color: 'var(--color-text-secondary)' }}>
-                        {f.phone_masked || '—'}
+                      <td style={{ padding: '10px 16px', maxWidth: 260 }}>
+                        {f.transcript ? (
+                          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', fontFamily: 'monospace' }}>
+                            "{f.transcript.slice(0, 60)}{f.transcript.length > 60 ? '…' : ''}"
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
+                            {meta.label}
+                          </span>
+                        )}
                       </td>
                       <td style={{ padding: '10px 16px' }}>
                         <LayerBadge meta={meta} />
-                      </td>
-                      <td style={{ padding: '10px 16px', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
-                        {meta.lop ? `Lớp ${meta.lop}` : '—'}
                       </td>
                     </tr>
                   )
