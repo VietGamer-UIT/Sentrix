@@ -611,3 +611,104 @@ tr:hover td {
     background-position: 468px 0;
   }
 }
+
+/* ============================================================
+   Responsive — Mobile (≤ 768px)
+   Chủ quán F&B thường xem dashboard bằng điện thoại.
+   ============================================================ */
+
+/* === Mobile Sidebar Overlay === */
+.mobile-sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Backdrop mờ khi sidebar mở trên mobile */
+  .mobile-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(0, 0, 0, 0.40);
+    backdrop-filter: blur(2px);
+  }
+
+  /* Sidebar: ẩn sang trái, hiện lên khi có class --mobile-open */
+  .sidebar {
+    width: 240px !important;
+    min-width: 240px !important;
+    transform: translateX(-100%);
+    z-index: 50;
+  }
+
+  .sidebar--mobile-open {
+    transform: translateX(0) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Main content: không margin-left trên mobile */
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  /* Header: giảm padding, ẩn ngày dài */
+  .top-header {
+    padding: 0 var(--spacing-md);
+  }
+
+  .header-date {
+    display: none;
+  }
+
+  /* Page content: giảm padding */
+  .page-content {
+    padding: var(--spacing-md);
+  }
+
+  /* KPI grid: 2 cột thay vì auto-fit nhiều cột */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--spacing-sm);
+  }
+
+  .kpi-value {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Charts và cards: stack dọc */
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Bảng: cho phép cuộn ngang — không vỡ layout */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 580px; /* đảm bảo bảng không bị ép quá nhỏ */
+  }
+
+  /* Card: bỏ padding bên trong để tận dụng không gian */
+  .card {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Điện thoại nhỏ (≤ 480px) */
+@media (max-width: 480px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: var(--spacing-xs);
+  }
+
+  .kpi-card {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .kpi-value {
+    font-size: var(--font-size-lg);
+  }
+}
