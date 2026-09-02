@@ -137,9 +137,6 @@ function RecordingPage() {
 
   const handleStartRecording = useCallback(async () => {
     if (isSubmitting) return
-    setError('Tính năng ghi âm tạm thời bảo trì. Vui lòng sử dụng tính năng gõ văn bản!')
-    setShowText(true)
-    return
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream

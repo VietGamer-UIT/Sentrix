@@ -22,6 +22,7 @@ from backend.ai_pipeline.stt_whisper import (
     WhisperAuthError,
     WhisperFormatError,
     WhisperTimeoutError,
+    WhisperRateLimitError,
     WhisperAPIError,
     WHISPER_MAX_SIZE_BYTES,
 )
@@ -86,11 +87,11 @@ class TestFileValidation:
 
 class TestAPIKeyValidation:
     def test_missing_api_key_raises(self, valid_webm_file: Path):
-        """Không có WHISPER_API_KEY và OPENAI_API_KEY → WhisperAuthError."""
-        # Đảm bảo xóa cả 2 biến môi trường
+        """Không có GROQ_API_KEY, WHISPER_API_KEY và OPENAI_API_KEY → WhisperAuthError."""
+        # Đảm bảo xóa cả 3 biến môi trường
         env_without_keys = {
             k: v for k, v in os.environ.items()
-            if k not in ("WHISPER_API_KEY", "OPENAI_API_KEY")
+            if k not in ("GROQ_API_KEY", "WHISPER_API_KEY", "OPENAI_API_KEY")
         }
         with patch.dict(os.environ, env_without_keys, clear=True):
             with pytest.raises(WhisperAuthError, match="Chưa thiết lập API key"):
@@ -105,8 +106,8 @@ class TestAPIErrorHandling:
     """Mock OpenAI client để test xử lý lỗi mà không gọi API thật."""
 
     def _setup_env(self):
-        """Trả về dict môi trường có API key giả."""
-        return {"WHISPER_API_KEY": "sk-fake-key-for-testing"}
+        """Trả về dict môi trường có GROQ_API_KEY giả."""
+        return {"GROQ_API_KEY": "gsk_fake-key-for-testing"}
 
     def test_auth_error_from_api_raises_whisper_auth_error(self, valid_webm_file: Path):
         """AuthenticationError từ OpenAI → WhisperAuthError."""
@@ -162,6 +163,26 @@ class TestAPIErrorHandling:
                 with pytest.raises(WhisperTimeoutError):
                     transcribe_audio(str(valid_webm_file))
 
+    def test_rate_limit_raises_whisper_rate_limit_error(self, valid_webm_file: Path):
+        """RateLimitError (HTTP 429) từ Groq → WhisperRateLimitError với thông báo thân thiện."""
+        from openai import RateLimitError
+
+        mock_response = MagicMock()
+        mock_response.status_code = 429
+        mock_response.json.return_value = {"error": {"message": "Rate limit exceeded"}}
+
+        with patch.dict(os.environ, self._setup_env()):
+            with patch("backend.ai_pipeline.stt_whisper.OpenAI") as mock_openai_cls:
+                mock_client = MagicMock()
+                mock_openai_cls.return_value = mock_client
+                mock_client.audio.transcriptions.create.side_effect = RateLimitError(
+                    message="Rate limit exceeded",
+                    response=mock_response,
+                    body={"error": {"message": "Rate limit exceeded"}},
+                )
+                with pytest.raises(WhisperRateLimitError, match="Hệ thống đang bận"):
+                    transcribe_audio(str(valid_webm_file))
+
     def test_successful_transcription_returns_text(self, valid_webm_file: Path):
         """Mock API trả về text → hàm trả về đúng chuỗi đó."""
         expected_text = "Phục vụ tốt quá ha, đợi có 20 phút mà"
@@ -187,9 +208,9 @@ class TestAPIErrorHandling:
                 assert result == "Phục vụ tốt"
 
     def test_fallback_to_openai_api_key(self, valid_webm_file: Path):
-        """Ưu tiên WHISPER_API_KEY, fallback sang OPENAI_API_KEY nếu không có."""
+        """Ưu tiên GROQ_API_KEY; fallback WHISPER_API_KEY → OPENAI_API_KEY nếu không có."""
         expected = "Món ăn ngon lắm"
-        env = {"OPENAI_API_KEY": "sk-fallback-key"}  # Không có WHISPER_API_KEY
+        env = {"OPENAI_API_KEY": "sk-fallback-key"}  # Không có GROQ_API_KEY hay WHISPER_API_KEY
 
         with patch.dict(os.environ, env, clear=True):
             with patch("backend.ai_pipeline.stt_whisper.OpenAI") as mock_openai_cls:

@@ -50,6 +50,7 @@ from backend.ai_pipeline.stt_whisper import (
     WhisperAuthError,
     WhisperFormatError,
     WhisperTimeoutError,
+    WhisperRateLimitError,
 )
 from backend.ai_pipeline.audio_features_librosa import (
     extract_audio_features,
@@ -483,11 +484,11 @@ async def submit_feedback(
         # --- Wrapper chạy Whisper trong thread ---
         def _run_whisper() -> Optional[str]:
             try:
-                logger.info("[Feedback] [4] Whisper STT (thread) ...")
+                logger.info("[Feedback] [4] Groq Whisper STT (thread) ...")
                 result = transcribe_audio(temp_audio_path, language="vi")
-                logger.info(f"[Feedback] Whisper xong: {repr((result or '')[:80])}")
+                logger.info(f"[Feedback] Groq Whisper xong: {repr((result or '')[:80])}")
                 return result
-            except WhisperAuthError:
+            except (WhisperAuthError, WhisperRateLimitError):
                 raise  # Sẽ được xử lý ở bên ngoài
             except (WhisperFormatError, WhisperTimeoutError, WhisperError) as e:
                 logger.warning(f"[Feedback] Whisper loi (bo qua): {type(e).__name__}: {e}")
@@ -516,7 +517,13 @@ async def submit_feedback(
             )
 
             # Xử lý kết quả Whisper
-            if isinstance(whisper_result, WhisperAuthError):
+            if isinstance(whisper_result, WhisperRateLimitError):
+                _cleanup_temp_audio(temp_audio_path)
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Hệ thống đang bận, vui lòng thử lại sau vài giây.",
+                )
+            elif isinstance(whisper_result, WhisperAuthError):
                 _cleanup_temp_audio(temp_audio_path)
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
