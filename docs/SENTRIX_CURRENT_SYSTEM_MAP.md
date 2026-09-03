@@ -1,42 +1,25 @@
-﻿# SENTRIX — CURRENT SYSTEM MAP
+# SENTRIX - CURRENT SYSTEM MAP
 Generated: 2026-09-03 | Phase: DEMO / MVP / PILOT-READY
-Source: Code scan thuc te, khong gia dinh
+Source: Code scan thực tế, không giả định
 
-## BASELINE TEST RESULTS (2026-09-03)
-Total: 141 tests | PASS: 133 | FAIL: 8
+## WORKING FEATURES (Cập nhật từ Codebase hiện tại)
+- **Đa phương thức đầu vào:** Khách hàng quét QR để gửi phản hồi qua Voice hoặc Text (không cần cài app).
+- **Luồng xử lý Voice:** Voice -> Whisper STT (Groq) -> NLP Analysis -> Firestore.
+- **Phân tích NLP:** Sử dụng Gemini Flash-Lite để thực hiện ABSA (phân tích cảm xúc theo khía cạnh: món ăn, nhân viên, không gian, tốc độ phục vụ...).
+- **Action-oriented (Hướng hành động):** Nhận diện yêu cầu hỗ trợ (SUPPORT_REQUEST) từ khách hàng để tạo cảnh báo (alert) ngay cho nhân viên. Phân loại luồng FEEDBACK và INVALID.
+- **Chống gian lận 4 lớp:** 
+  1. Tần suất (Hash số điện thoại).
+  2. Chất lượng dữ liệu (Thời lượng, SNR gate).
+  3. Ngữ nghĩa (Semantic Validity qua LLM).
+  4. Ngân sách voucher.
+- **Bảo mật và quyền riêng tư (Theo NĐ 356/2025/NĐ-CP):** Xóa audio gốc trên server ngay sau khi xử lý STT thành công. Hỗ trợ phản hồi ẩn danh.
+- **Gamification:** Cơ chế phát voucher theo ngân sách và vòng quay may mắn (spin) trên Web Client.
+- **Dashboard quản trị:** 
+  - Giao diện thời gian thực cho chủ quán.
+  - Auth qua Firebase Google Sign-In.
 
-FAIL list:
-1. test_valid_audio_returns_202 — fake x00 bytes rejected by audio quality gate (422 not 202)
-2. test_both_audio_and_text_returns_202 — same
-3. test_sentiment_score_in_range — fusion sarcasm path returns score outside [0,1]
-4. test_missing_all_credentials_raises_environment_error — Firebase init doesn not raise EnvironmentError
-5. test_logic_only (RFMS) — p_churn=0.49 -> medium, test expects low
-6. test_normalize_aspects_list_adds_fields — missing category field
-7. test_normalize_unknown_sentiment_defaults_neutral — missing sentiment_en field
-8. test_nhan_vien_phuc_vu_kem_gets_negative_score — text_sentiment_score scale mismatch
-
-## HARD-CODED VALUES
-- LandingPage.jsx:26 — businessName = Pho Ba Lan (PILOT BLOCKER)
-- RecordingPage.jsx:89 — tenantId fallback hardcode
-- useFirestore.js:27 — VITE_DEMO_TENANT_ID fallback
-
-## MISSING FEATURES vs SPECIFICATION
-1. Intent Classification (SUPPORT_REQUEST/FEEDBACK/INVALID) — NOT IMPLEMENTED
-2. Staff Alert System (alerts collection) — NOT IMPLEMENTED  
-3. Dashboard Alerts Tab + realtime — NOT IMPLEMENTED
-4. Alert lifecycle API (acknowledge/resolve) — NOT IMPLEMENTED
-5. businessName from tenant API — Hard-coded only
-6. Tenant validation (valid/invalid/inactive) — NOT IMPLEMENTED
-7. Recovery Action (review invitation) — NOT IMPLEMENTED
-8. Audit Events in Firestore — Logs only
-
-## WORKING FEATURES
-- Voice recording -> Groq Whisper STT -> Firestore (end-to-end)
-- Text -> Gemini ABSA -> Firestore (end-to-end)
-- Anti-fraud 4 layers (rate limit, audio quality, semantic validity, voucher budget)
-- RFMS + P_churn calculation
-- Consent PDPA recording
-- Audio deletion after STT
-- Voucher budget system + gamification spin
-- Dashboard realtime (Firestore onSnapshot when VITE_USE_MOCK_FIRESTORE=false)
-- Dashboard auth (Firebase Google Sign-In)
+## THÔNG TIN CẦN XỬ LÝ (Kế hoạch / Định hướng)
+- **Feedback Recovery & Review Invitation:** Luồng phân loại khách tích cực (mời chia sẻ Google Maps) và tiêu cực (giữ lại xử lý nội bộ) đang được thử nghiệm, tích hợp tự động đang nằm trong kế hoạch.
+- **Mô hình RFMS + P_churn:** Hiện đang ở mức thử nghiệm với hệ số giả định. Sẽ cập nhật và huấn luyện trên dữ liệu thật sau Pilot.
+- **Zalo ZNS Production:** Việc cảnh báo qua Zalo ZNS khi P_churn cao đang nằm trong định hướng thương mại hóa, cần phê duyệt template chính thức.
+- **Staff Alert Lifecycle:** Giao diện chi tiết để nhân viên đánh dấu (acknowledge/resolve) các alert trên Dashboard cần được hoàn thiện thêm.

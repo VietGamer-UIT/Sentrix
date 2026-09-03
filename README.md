@@ -1,46 +1,78 @@
-# Sentrix — AI-Powered Multimodal Customer Experience Analytics Platform
+# Sentrix - Hệ thống thu thập phản hồi và hỗ trợ cải thiện trải nghiệm khách hàng
 
-Nền tảng phân tích trải nghiệm khách hàng đa phương thức (giọng nói + văn bản) dành cho ngành F&B Việt Nam. Dùng Whisper STT, Gemini ABSA, Librosa audio features, RFMS churn model và Zalo ZNS.
+Sentrix (AI-Powered Customer Feedback and Service Recovery Platform) là hệ thống giúp cửa hàng thu thập phản hồi nhanh, hiểu vấn đề và xử lý ngay trong lúc khách hàng đang trải nghiệm dịch vụ.
+
+Giai đoạn AISC'26 và Pilot tập trung vào quán ăn, quán cà phê tại khu vực Làng Đại học.
+
+Giá trị cốt lõi của Sentrix không nằm ở việc sử dụng AI phức tạp, mà ở khả năng rút ngắn khoảng cách giữa phản hồi và hành động. Hệ thống hỗ trợ nhân viên hành động kịp thời, không thay thế nhân viên.
 
 ---
 
-## 🏗️ Cấu trúc dự án
+## 🚀 Tính năng hiện tại (MVP)
+
+- **Đa phương thức đầu vào:** Khách hàng quét QR tại bàn, có thể phản hồi bằng giọng nói (Voice) hoặc văn bản (Text) mà không cần tải App.
+- **Phân tích âm thanh và ngôn ngữ tự nhiên:**
+  - Chuyển đổi giọng nói thành văn bản (Speech-to-Text) bằng Whisper API (Groq).
+  - Phân tích cảm xúc theo khía cạnh (ABSA) bằng mô hình Gemini Flash-Lite.
+- **Action-oriented (Hướng hành động):** 
+  - Phân biệt phản hồi và yêu cầu hỗ trợ. Ví dụ: "Tôi cần một ly trà đá" sẽ tạo ra cảnh báo (alert) ngay cho nhân viên.
+- **Feedback Recovery & Review Invitation:** Phân luồng phản hồi. Phản hồi tốt có thể mời đánh giá công khai (kèm voucher), phản hồi chưa tốt được ưu tiên giữ lại để cửa hàng xử lý nội bộ.
+- **Cơ chế chống gian lận (Anti-fraud) 4 lớp:** Kiểm soát tần suất (hash số điện thoại), kiểm tra chất lượng dữ liệu (thời lượng, SNR trước khi STT), kiểm tra ngữ nghĩa (bỏ qua nội dung vô nghĩa) và kiểm soát ngân sách voucher.
+
+---
+
+## 🏗️ Kiến trúc hệ thống
 
 ```
 Sentrix/
-├── backend/          # FastAPI — AI pipeline, RFMS, Firestore ops
+├── backend/          - FastAPI backend (AI pipeline, Firestore)
 ├── apps/
-│   ├── web-client/   # React — giao diện khách hàng (quét QR → ghi âm → quay thưởng)
-│   └── dashboard/    # React — dashboard chủ quán (báo cáo, churn alert)
-├── docs/             # Tài liệu kỹ thuật
-├── design/           # Figma exports, assets
-├── firestore.rules   # Firestore Security Rules
-└── render.yaml       # Render deploy config
+│   ├── web-client/   - React + Web Audio API (Khách hàng quét QR)
+│   └── dashboard/    - React (Dashboard thời gian thực cho chủ quán)
+├── docs/             - Tài liệu kỹ thuật
+├── design/           - Thiết kế UI/UX
+├── firestore.rules   - Cấu hình bảo mật Firestore
+└── render.yaml       - Cấu hình triển khai Render
 ```
 
 ---
 
-## 🚀 Cài đặt & Chạy local
+## 🔄 Luồng trải nghiệm khách hàng
 
-### Backend (Python 3.11+)
+1. Quét QR tại bàn/quầy.
+2. Nói hoặc nhập text.
+3. Hoàn tất phản hồi (dữ liệu được xử lý ngầm: Voice -> STT -> NLP/ABSA).
+4. Khách không cần chờ nhân viên tổng hợp, có thể tiếp tục trải nghiệm.
+5. Nếu là yêu cầu hỗ trợ, nhân viên nhận alert và xử lý ngay.
+6. Khách xem kết quả đánh giá (Feedback Recovery & Review Invitation).
+7. Chọn chia sẻ công khai nếu được mời.
+8. Nhận voucher nếu đủ điều kiện và hệ thống kiểm tra gian lận thành công.
+
+*Lưu ý bảo mật (Nghị định 356/2025/NĐ-CP): Audio thô được dùng cho STT và ưu tiên xóa ngay sau khi chuyển đổi thành công. Dữ liệu định danh được băm (hash).*
+
+---
+
+## 🚀 Hướng dẫn cài đặt và chạy local
+
+### Backend (Python 3.11+, FastAPI)
 
 ```bash
 cd backend
 pip install -r requirements.txt
-cp ../.env.example ../.env   # điền các API key thật
+cp ../.env.example ../.env   # Cấu hình API key
 uvicorn backend.main:app --reload --port 8000
 ```
 
-### Web Client (Node 18+)
+### Web Client (Node 18+, React, Vercel)
 
 ```bash
 cd apps/web-client
 npm install
-cp .env.example .env         # điền VITE_API_BASE_URL
+cp .env.example .env         # Cấu hình VITE_API_BASE_URL
 npm run dev                  # http://localhost:5173
 ```
 
-### Dashboard
+### Dashboard (Node 18+, React, Vercel)
 
 ```bash
 cd apps/dashboard
@@ -49,52 +81,47 @@ cp .env.example .env
 npm run dev                  # http://localhost:5174
 ```
 
-### Biến môi trường cần thiết
+---
 
-Xem [`.env.example`](.env.example) ở root. Các key cần có:
+## 🔐 Cấu hình biến môi trường
 
-| Biến | Mô tả |
-|---|---|
-| `FIREBASE_PROJECT_ID` | Firebase project |
-| `FIREBASE_CLIENT_EMAIL` | Service account email |
-| `FIREBASE_PRIVATE_KEY` | Service account private key |
-| `WHISPER_API_KEY` | OpenAI API key (Whisper STT) |
-| `GEMINI_API_KEY` | Google AI Studio key |
-| `GEMINI_MODEL_NAME` | Mặc định: `gemini-3.1-flash-lite` |
+Vui lòng xem file `.env.example` để biết chi tiết. Các biến môi trường quan trọng:
+
+- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`: Cấu hình kết nối Firestore đa khách hàng (Real-time Native NoSQL).
+- `WHISPER_API_KEY`: Dành cho Groq Whisper STT (Tối ưu xử lý tạp âm quán ăn).
+- `GEMINI_API_KEY`: Dành cho module phân tích NLP/ABSA (Gemini Flash-Lite tốc độ cao).
 
 ---
 
-## 🔧 Luồng dữ liệu chính
+## 🧪 Kiểm thử (Testing)
 
-```
-Khách quét QR → Ghi âm/Gõ text
-  → POST /api/v1/feedback (FastAPI)
-    → Fraud Filter → Whisper STT ‖ Librosa (song song)
-    → Gemini ABSA → Fusion (text + audio weights)
-    → RFMS Calculator → Churn Model → Firestore
-  → 202 Accepted (sentiment, p_churn, feedback_id)
-  → SpinPage: POST /api/v1/gamification/spin (backend quyết định prize)
-  → Dashboard hiển thị realtime
+Hệ thống có bộ unit test tự động (28/28 kịch bản PASS cho chống gian lận, voucher và pipeline).
+```bash
+pytest backend/tests/ -v
 ```
 
-Chi tiết: xem [`docs/`](docs/) và [`backend/README.md`](backend/README.md).
+---
+
+## 🛠️ Triển khai (Deployment)
+
+- **Backend:** Triển khai qua dịch vụ Web Service của Render (Tối ưu tự động hóa CI/CD với Docker).
+- **Frontend:** Tự động triển khai trên Vercel (Edge CDN).
+- **Cơ sở dữ liệu:** Firebase Firestore.
 
 ---
 
-## 🛠️ Deploy
+## 🔮 Định hướng tương lai (Roadmap)
 
-- **Backend:** Render (Web Service, `render.yaml`)
-- **Frontend:** Vercel (auto-deploy từ `main`)
-- **Database:** Firestore (Firebase)
-- **Firestore Rules:** `firebase deploy --only firestore:rules`
-
-> **Cold start:** Render free tier ngủ sau ~15 phút không có traffic. Cài cron job (cron-job.org) ping `GET /health` mỗi 10 phút để giữ container ấm khi demo.
+- **RFMS nâng cấp:** Mô hình RFMS hỗ trợ quản trị và dự báo rời bỏ hiện ở mức thử nghiệm. Chỉ nâng cấp chế độ huấn luyện bằng dữ liệu thật sau Pilot.
+- **Hoàn thiện Review Invitation:** Hoàn thiện cơ chế kết nối nền tảng đánh giá theo khả năng tích hợp thực tế.
+- **Mở rộng đa phương thức:** Nâng cấp phân tích đa phương thức ở mức mô hình chỉ sau khi dữ liệu Pilot đủ lớn.
+- **Zalo ZNS:** Gửi tin nhắn cảnh báo/chăm sóc dựa trên ngưỡng rủi ro, dự kiến triển khai thương mại hóa.
 
 ---
 
-## 📚 Tài liệu kỹ thuật
+## 📚 Tài liệu kỹ thuật chi tiết
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — Quy trình git & commit
-- [`backend/README.md`](backend/README.md) — API reference, cấu trúc backend
-- [`backend/db/schema.md`](backend/db/schema.md) — Firestore schema
-- [`docs/api-contract.md`](docs/api-contract.md) — API contract frontend–backend
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Quy định làm việc chung.
+- [backend/README.md](backend/README.md) - Chi tiết Backend API.
+- [backend/db/schema.md](backend/db/schema.md) - Cấu trúc dữ liệu Firestore.
+- [docs/api-contract.md](docs/api-contract.md) - Đặc tả API kết nối Frontend và Backend.
