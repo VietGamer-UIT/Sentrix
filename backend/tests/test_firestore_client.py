@@ -16,7 +16,18 @@ import pytest
 # Đảm bảo không có biến Firebase nào từ môi trường thật can thiệp vào test
 @pytest.fixture(autouse=True)
 def clean_firebase_env(monkeypatch):
-    """Xóa mọi biến môi trường Firebase trước mỗi test."""
+    """Reset Firebase singleton + xóa mọi biến môi trường Firebase trước mỗi test.
+
+    Quan trọng: reset_firestore_client() phải chạy TRƯỚC khi xóa env vars (và
+    trước yield) để đảm bảo firebase_admin._apps bị xóa. Nếu không, một test
+    trước đó đã init Firebase App thì _initialize_firebase_app() sẽ thấy _apps
+    đã có và return sớm (line 59-61 firestore_client.py) mà không raise EnvironmentError.
+    """
+    # Bước 1: Reset singleton TRƯỚC để đảm bảo Firebase App bị xóa hoàn toàn
+    from backend.db.firestore_client import reset_firestore_client
+    reset_firestore_client()
+
+    # Bước 2: Xóa mọi biến môi trường Firebase để test ở trạng thái "không credentials"
     for var in [
         "FIREBASE_CREDENTIALS_PATH",
         "FIREBASE_PROJECT_ID",
@@ -24,9 +35,10 @@ def clean_firebase_env(monkeypatch):
         "FIREBASE_CLIENT_EMAIL",
     ]:
         monkeypatch.delenv(var, raising=False)
+
     yield
-    # Sau mỗi test, reset lại client singleton
-    from backend.db.firestore_client import reset_firestore_client
+
+    # Teardown: reset lại sau mỗi test để test tiếp theo bắt đầu sạch
     reset_firestore_client()
 
 

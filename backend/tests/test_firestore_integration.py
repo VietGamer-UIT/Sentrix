@@ -106,16 +106,25 @@ def test_logic_only():
     # --- Test risk level ---
     print("\n[3/5] Test _sentiment_to_risk_level (xep muc rui ro)")
     from backend.db.firestore_ops import _sentiment_to_risk_level
+    # Ngưỡng thực tế (firestore_ops.py line 84-89):
+    #   p_churn < 0.30  → 'low'
+    #   0.30 <= p < 0.85 → 'medium'
+    #   p >= 0.85       → 'high'
     cases = [
-        (0.10, "low"), (0.49, "low"),
-        (0.50, "medium"), (0.84, "medium"),
-        (0.85, "high"), (0.99, "high"),
+        (0.10, "low"),    # 0.10 < 0.30 → low
+        (0.29, "low"),    # 0.29 < 0.30 → low (boundary)
+        (0.30, "medium"), # 0.30 >= 0.30 → medium
+        (0.49, "medium"), # 0.49 >= 0.30 và < 0.85 → medium (trước đây test sai là 'low')
+        (0.50, "medium"), # 0.50 → medium
+        (0.84, "medium"), # 0.84 < 0.85 → medium (boundary)
+        (0.85, "high"),   # 0.85 >= 0.85 → high
+        (0.99, "high"),   # 0.99 → high
     ]
     for p, expected in cases:
         result = _sentiment_to_risk_level(p)
         print(f"  p_churn={p:.2f} → '{result}'  (mong doi: '{expected}')")
         assert result == expected, f"FAIL: p_churn={p} → {result} != {expected}"
-    print("  OK: risk level dung nguong")
+    print("  OK: risk level dung nguong (< 0.30 = low, 0.30-0.85 = medium, >= 0.85 = high)")
 
     # --- Test feedback document structure ---
     print("\n[4/5] Test feedback_doc structure (khong gui Firebase)")

@@ -298,12 +298,21 @@ class TestDynamicWeightedFusion:
             assert field in result, f"Thiếu field: {field}"
 
     def test_sentiment_score_in_range(self):
-        """sentiment_score luôn nằm trong [0, 1]."""
+        """sentiment_score luôn nằm trong [-1, +1] (external scale theo schema.md).
+
+        Lý do: fusion.py convert internal [0,1] → external [-1,+1] theo công thức:
+            external = (internal - 0.5) * 2
+        Vậy:
+            internal 0.0  → external -1.0  (rất tiêu cực)
+            internal 0.5  → external  0.0  (trung lập)
+            internal 1.0  → external +1.0  (rất tích cực)
+        Khi sarcasm (conflict path) final_score có thể ở đầu dải internal, vẫn hợp lệ.
+        """
         for stress in [0.0, 0.3, 0.5, 0.7, 1.0]:
             result = dynamic_weighted_fusion(
                 self._make_absa([{"aspect": "A", "sentiment": "Tích cực"}]),
                 self._make_audio(stress)
             )
-            assert 0.0 <= result["sentiment_score"] <= 1.0, (
-                f"sentiment_score={result['sentiment_score']} ngoài [0,1] với stress={stress}"
+            assert -1.0 <= result["sentiment_score"] <= 1.0, (
+                f"sentiment_score={result['sentiment_score']} ngoài [-1,+1] với stress={stress}"
             )

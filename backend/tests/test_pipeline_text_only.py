@@ -90,7 +90,19 @@ class TestAspectNormalization:
         )
 
     def test_normalize_aspects_list_adds_fields(self):
-        """normalize_aspects_for_db() phải thêm đủ các field cần thiết."""
+        """normalize_aspects_for_db() phải thêm đủ các field cần thiết.
+
+        Schema output (khớp schema.md + fusion.py normalize_aspects_for_db docstring):
+            aspect:      ENUM (ví dụ: 'mon_an') — dùng để filter/query
+            aspect_text: text gốc từ LLM — chỉ để hiển thị
+            sentiment:   English lowercase ('positive', 'negative', 'neutral')
+            score:       numeric [-1.0, 1.0]
+            reason:      từ LLM
+            confidence:  None (khi LLM không trả về)
+
+        Lưu ý: không có field 'category' (trước đây được merge vào 'aspect') và
+               không có field 'sentiment_en' (giờ đã được đặt tên lại là 'sentiment').
+        """
         aspects = [
             {"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon lắm"},
             {"aspect": "Thái độ nhân viên", "sentiment": "Tiêu cực", "reason": "Lạnh lùng"},
@@ -101,16 +113,20 @@ class TestAspectNormalization:
 
         # Kiểm tra item tích cực
         pos = result[0]
-        assert pos["category"] == "mon_an"
-        assert pos["sentiment_en"] == "positive"
+        assert pos["aspect"] == "mon_an", (
+            f"'aspect' field phải là ENUM 'mon_an', got '{pos.get('aspect')}'"
+        )
+        assert pos["aspect_text"] == "Chất lượng món ăn"
+        assert pos["sentiment"] == "positive", (
+            f"'sentiment' field phải là English lowercase, got '{pos.get('sentiment')}'"
+        )
         assert pos["score"] == 1.0
-        assert pos["aspect"] == "Chất lượng món ăn"
         assert pos["reason"] == "Ngon lắm"
 
         # Kiểm tra item tiêu cực
         neg = result[1]
-        assert neg["category"] == "nhan_vien"
-        assert neg["sentiment_en"] == "negative"
+        assert neg["aspect"] == "nhan_vien"
+        assert neg["sentiment"] == "negative"
         assert neg["score"] == -1.0
 
     def test_normalize_empty_aspects_returns_empty(self):
@@ -118,10 +134,15 @@ class TestAspectNormalization:
         assert result == []
 
     def test_normalize_unknown_sentiment_defaults_neutral(self):
-        """Sentiment không nhận ra → neutral (0.0)."""
+        """Sentiment không nhận ra → neutral (score=0.0).
+
+        field 'sentiment' là English lowercase ('neutral'), field 'score' là 0.0.
+        """
         aspects = [{"aspect": "Món ăn", "sentiment": "Không rõ", "reason": ""}]
         result = normalize_aspects_for_db(aspects)
-        assert result[0]["sentiment_en"] == "neutral"
+        assert result[0]["sentiment"] == "neutral", (
+            f"Expected 'neutral', got '{result[0].get('sentiment')}'"
+        )
         assert result[0]["score"] == 0.0
 
     def test_sarcasm_flag_preserved(self):
@@ -177,34 +198,51 @@ class TestFusionTextOnlySentiment:
         assert result["text_sentiment_score"] == 1.0
 
     def test_nhan_vien_phuc_vu_kem_gets_negative_score(self):
-        """'nhân viên phục vụ kém' → sentiment_score = 0.0, overall = Tiêu cực."""
+        """'nhân viên phục vụ kém' → sentiment_score < 0, overall = Tiêu cực.
+
+        text_sentiment_score trả về external scale [-1,+1]:
+            Tiêu cực (internal=0.0) → (0.0-0.5)*2 = -1.0 (external)
+        """
         absa = self._make_negative_absa()
         result = dynamic_weighted_fusion(absa, None)
 
         assert result["is_spam"] is False
         assert result["fusion_mode"] == "text_only"
-        assert result["sentiment_score"] < 0.5, (
-            f"Mong < 0.5 nhưng got {result['sentiment_score']}"
+        assert result["sentiment_score"] < 0.0, (
+            f"Mong < 0.0 nhưng got {result['sentiment_score']}"
         )
         assert result["overall_sentiment"] == "Tiêu cực"
-        assert result["text_sentiment_score"] == 0.0
+        # external: (0.0 - 0.5) * 2 = -1.0
+        assert result["text_sentiment_score"] == -1.0, (
+            f"Expected -1.0 (external), got {result['text_sentiment_score']}"
+        )
 
     def test_text_only_aspects_normalized(self):
-        """Aspects sau fusion phải có đủ field category, score, sentiment_en."""
+        """Aspects sau fusion phải có đủ field aspect (ENUM), score, sentiment (English).
+
+        field 'aspect' = ENUM (ví dụ: 'mon_an'), không phải text tự do.
+        field 'sentiment' = English lowercase ('positive'/'negative'/'neutral').
+        """
         absa = self._make_positive_absa()
         result = dynamic_weighted_fusion(absa, None)
 
         aspects = result["aspects"]
         assert len(aspects) == 1
-        assert "category" in aspects[0]
+        assert "aspect" in aspects[0]
         assert "score" in aspects[0]
-        assert "sentiment_en" in aspects[0]
-        assert aspects[0]["category"] == "mon_an"
-        assert aspects[0]["sentiment_en"] == "positive"
+        assert "sentiment" in aspects[0]
+        assert aspects[0]["aspect"] == "mon_an", (
+            f"'aspect' phải là ENUM 'mon_an', got '{aspects[0].get('aspect')}'"
+        )
+        assert aspects[0]["sentiment"] == "positive"
         assert aspects[0]["score"] == 1.0
 
     def test_mixed_aspects_neutral_overall(self):
-        """1 tích cực + 1 tiêu cực → trung lập (score = 0.5)."""
+        """1 tích cực + 1 tiêu cực → trung lập.
+
+        Internal score = (1.0 + 0.0) / 2 = 0.5
+        External score = (0.5 - 0.5) * 2 = 0.0 (trung lập theo external scale)
+        """
         absa = {
             "is_spam": False,
             "aspects": [
@@ -214,8 +252,10 @@ class TestFusionTextOnlySentiment:
             "raw_llm_output": "",
         }
         result = dynamic_weighted_fusion(absa, None)
-        # score = (1.0 + 0.0) / 2 = 0.5 → Trung lập
-        assert result["text_sentiment_score"] == 0.5
+        # internal = 0.5 → external = (0.5-0.5)*2 = 0.0 (trước đây test expect 0.5 là internal)
+        assert result["text_sentiment_score"] == 0.0, (
+            f"Expected 0.0 (external scale), got {result['text_sentiment_score']}"
+        )
         assert result["overall_sentiment"] == "Trung lập"
 
 

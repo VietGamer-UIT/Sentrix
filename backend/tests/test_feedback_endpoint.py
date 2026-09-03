@@ -15,9 +15,21 @@ Bao gồm test:
 
 import io
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from backend.api.main import app
+from backend.services.audio_quality_service import AudioQualityResult
+
+
+def _make_audio_quality_passed(duration_sec: float = 5.0, snr_db: float = 20.0) -> AudioQualityResult:
+    """Helper: trả AudioQualityResult passed=True để bypass audio gate trong tests."""
+    return AudioQualityResult(
+        passed=True,
+        reject_reason=None,
+        reject_message=None,
+        duration_sec=duration_sec,
+        snr_db=snr_db,
+    )
 
 client = TestClient(app)
 
@@ -93,9 +105,16 @@ class TestTextOnlyFeedback:
 
 class TestAudioOnlyFeedback:
     def test_valid_audio_returns_202(self):
-        """Gửi audio webm hợp lệ (10KB) → 202 Accepted."""
+        """Gửi audio webm hợp lệ (10KB) → 202 Accepted.
+
+        Note: Fake bytes (\x00*N) không decode được bởi librosa, vì vậy cần mock
+        cả analyze_audio_quality (Lớp 2) lẫn transcribe_audio (Groq Whisper).
+        Đây là đúng behavior của integration test — isolate từng dependency.
+        """
         audio_content = make_fake_audio(10_000)
-        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"):
+        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"), \
+             patch("backend.api.routes.feedback.analyze_audio_quality",
+                   return_value=_make_audio_quality_passed()):
             response = client.post(
                 "/api/v1/feedback",
                 data=VALID_FORM_BASE,
@@ -151,9 +170,14 @@ class TestAudioOnlyFeedback:
 
 class TestAudioAndTextFeedback:
     def test_both_audio_and_text_returns_202(self):
-        """Gửi cả audio + text → 202 với input_type='audio_and_text'."""
+        """Gửi cả audio + text → 202 với input_type='audio_and_text'.
+
+        Note: Mock analyze_audio_quality vì fake bytes không decode được bởi librosa.
+        """
         audio_content = make_fake_audio(10_000)
-        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"):
+        with patch("backend.api.routes.feedback.transcribe_audio", return_value="Phục vụ tốt"), \
+             patch("backend.api.routes.feedback.analyze_audio_quality",
+                   return_value=_make_audio_quality_passed()):
             response = client.post(
                 "/api/v1/feedback",
                 data={**VALID_FORM_BASE, "text_content": "Phục vụ tốt"},
