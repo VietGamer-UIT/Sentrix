@@ -1,9 +1,4 @@
-> **Duy trì bởi:** Đoàn Hoàng Việt (Trưởng nhóm)
-> **Tuyền xác nhận:** phần backend (endpoint, request/response format)
-> **Tuấn tham chiếu:** khi code frontend gọi API
->
-> **Cập nhật lần cuối:** 2026-08-20
-> **Phiên bản:** 1.2
+> **Phiên bản:** 1.3
 
 ---
 
@@ -11,8 +6,8 @@
 
 | Biểu tượng | Ý nghĩa |
 |---|---|
-| 🟢 **CAM KẾT** | Endpoint đã có thật trong code, đã test, **không đổi tùy tiện** — Tuấn code frontend chắc chắn theo format này |
-| 🟡 **ĐANG THƯƠNG LƯỢNG** | Tuyền có thể còn đổi khi code các giai đoạn tiếp theo — Tuấn nên dùng mock data tạm, chờ xác nhận mới gọi thật |
+| 🟢 **CAM KẾT** | Endpoint đã có thật trong code, đã test, **không đổi tùy tiện**. |
+| 🟡 **ĐANG THƯƠNG LƯỢNG** | Có thể thay đổi trong tương lai, cần chờ xác nhận mới gọi thật. |
 | 🔴 **CHƯA CÓ** | Endpoint chưa tồn tại trong backend, chỉ có trong thiết kế — **KHÔNG gọi từ frontend** |
 
 ---
@@ -29,7 +24,7 @@
 ## 1. 🟢 `GET /health` — CAM KẾT
 
 > **File:** `backend/api/routes/health.py`
-> **Mục đích:** Kiểm tra server đang sống. Render.com dùng health-check, Việt dùng xác nhận backend đã deploy xong.
+> **Mục đích:** Kiểm tra server đang sống. Dùng cho health-check trên nền tảng deploy.
 
 **Request:** Không có body/params.
 
@@ -70,9 +65,9 @@
 
 ### MIME types chấp nhận cho `audio_file`
 `audio/webm`, `audio/mpeg`, `audio/wav`, `audio/ogg`, `audio/mp4`, `audio/x-m4a`, `application/octet-stream`
-> ⚠️ Backend tự strip codec suffix (ví dụ `audio/webm;codecs=opus` → `audio/webm`). Tuấn không cần xử lý thêm.
+> ⚠️ Backend tự strip codec suffix (ví dụ `audio/webm;codecs=opus` → `audio/webm`). Frontend không cần xử lý thêm.
 
-### Response `202 Accepted` (Full Pipeline — Giai đoạn 8)
+### Response `202 Accepted` (Full Pipeline)
 ```json
 {
   "request_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -102,9 +97,10 @@
 | `sentiment_score` | `float` | Điểm cảm xúc tổng hợp **[-1.0 → +1.0]** (âm = tiêu cực, dương = tích cực) |
 | `overall_sentiment` | `string` | `"Tích cực"` / `"Tiêu cực"` / `"Trung lập"` |
 | `is_sarcasm_suspected` | `boolean` | True nếu phát hiện mỉa mai |
-| `p_churn` | `float` | Xác suất rời bỏ [0.0 → 1.0] |
+| `p_churn` | `float` | Xác suất rời bỏ [0.0 → 1.0] (tín hiệu quản trị, không phải dự đoán chắc chắn) |
 | `churn_risk_level` | `string` | `"low"` / `"medium"` / `"high"` |
-| `should_alert` | `boolean` | True nếu cần gửi Zalo ZNS |
+| `should_alert` | `boolean` | True nếu cần Staff Alert (Yêu cầu hỗ trợ hoặc Cảnh báo rủi ro) |
+| `zns_status` | `string` | Roadmap / future integration (hiện tại không trả về hoặc để null) |
 
 ### Các mã lỗi
 
@@ -115,54 +111,21 @@
 | `422` | Lỗi validation form fields (FastAPI tự sinh) | `{"detail": [...]}` |
 | `503` | Whisper API key lỗi xác thực | `{"detail": "STT service không khả dụng..."}` |
 
-### Luồng xử lý đầy đủ (đã tích hợp giai đoạn 3-9)
+### Luồng xử lý đầy đủ
 ```
-Nhận → validate → fraud filter → Whisper STT → Librosa features
-→ Phân tích NLP (Gemini) → Fusion cơ bản (Roadmap: Multimodal Fusion) → RFMS + P_churn
-→ Lưu Firestore (multi-tenant) → [nếu P_churn > threshold] Zalo ZNS → 202 Accepted
+POST feedback → validation → fraud checks
+→ voice → STT → intent / feedback classification
+→ phân tích cảm xúc (NLP) → action (staff alert nếu cần)
+→ lưu Firestore
 ```
-
----
-
-## 3. 🟡 `POST /api/v1/analyze` — ĐANG THƯƠNG LƯỢNG
-
-> **File:** `backend/api/routes/analyze.py`
-> **Mục đích:** Endpoint ABSA riêng lẻ — nhận text, trả về danh sách aspects + sentiment. Tách biệt với `/feedback`.
-
-### ⚠️ Lưu ý quan trọng
-Endpoint này **đã có code thật** nhưng đánh dấu 🟡 vì:
-1. Nó import `SentimentAnalyzer` từ `backend.ai_pipeline.llM_few_shot_generator` — module này thuộc PR ABSA LLM của Tuyền **đang chờ sửa** (dataset lớn, model khai tử).
-2. Tuyền có thể đổi request/response format khi sửa xong PR.
-3. Chưa rõ endpoint này sẽ tồn tại song song với `/feedback` hay sẽ gộp vào.
-
-### Request — `application/json`
-```json
-{
-  "text": "Phục vụ tốt quá ha, đợi có 20 phút mà"
-}
-```
-
-### Response `200 OK`
-```json
-{
-  "status": "success",
-  "aspects": [
-    {
-      "phrase": "đợi có 20 phút",
-      "category": "toc_do_phuc_vu",
-      "sentiment": "negative"
-    }
-  ],
-  "error": null
-}
-```
+*(Zalo ZNS, Multimodal Fusion là tính năng Roadmap)*
 
 ---
 
 ## 4. 🟢 `POST /api/v1/gamification/spin` — CAM KẾT
 
 > **File:** `backend/api/routes/gamification.py`
-> **Cập nhật:** 2026-08-20 — Endpoint đã **LIVE trên Render**. Tuấn cập nhật `gamification.js` để gọi thật, xóa mock.
+> **Cập nhật:** 2026-08-20 — Endpoint đã **LIVE trên Render**. Gọi API thật, không dùng mock.
 > **Trạng thái trước:** 🔴 CHƯA CÓ (doc cũ ngày 05/08 — đã lỗi thời)
 
 ### Request — `multipart/form-data`
@@ -201,7 +164,7 @@ Endpoint này **đã có code thật** nhưng đánh dấu 🟡 vì:
 | `uong_mien_phi` | 5% | ✅ `SENTRIX-FREE-{4 số cuối SĐT}` |
 | `chuc_may_man` | 5% | ❌ (rỗng) |
 
-> ✅ **Tuấn:** Gọi API thật tại `${VITE_API_BASE_URL}/api/v1/gamification/spin`.
+> ✅ Gọi API thật tại `${VITE_API_BASE_URL}/api/v1/gamification/spin`.
 > KHÔNG dùng mock random ở client — prize được quyết định server-side (bảo mật, không hack được JS).
 > `gamification.js` đã được cập nhật để gọi endpoint thật. Đảm bảo `VITE_API_BASE_URL` đúng trên Vercel.
 
@@ -212,7 +175,7 @@ Endpoint này **đã có code thật** nhưng đánh dấu 🟡 vì:
 > **Mục đích:** Tổng hợp KPI cho dashboard chủ doanh nghiệp.
 > **Trạng thái thật:** Dashboard hiện thiết kế đọc **trực tiếp Firestore** (không qua REST API) theo `docs/database-schema.md`.
 
-### Cách Tuấn nên code Dashboard hiện tại
+### Cách truy xuất Dashboard hiện tại
 Thay vì gọi API endpoint, đọc trực tiếp từ Firestore SDK:
 
 ```javascript
@@ -229,7 +192,7 @@ db.collection(`tenants/${tenantId}/customers`)
   .onSnapshot(snapshot => { ... })
 ```
 
-*(Nguồn: docs/database-schema.md - Dashboard - Hướng dẫn nhanh cho Việt)*
+*(Nguồn: docs/database-schema.md)*
 
 > ⚠️ Dashboard dùng React. Deploy lên Vercel cùng web-client.
 
@@ -238,11 +201,11 @@ db.collection(`tenants/${tenantId}/customers`)
 ## 6. 🔴 `GET /api/dashboard/churn-alerts` — CHƯA CÓ (có thể không cần)
 
 > **Tương tự mục 5** — Dashboard đọc trực tiếp Firestore collection `customers` với filter `churn_risk_level == "high"`.
-> Nếu sau này cần REST API riêng (ví dụ: để Mobile App gọi), Tuyền sẽ thêm — lúc đó Việt cập nhật contract.
+> Nếu sau này cần REST API riêng (ví dụ: để Mobile App gọi), hợp đồng API sẽ được cập nhật.
 
 ---
 
-## Firestore Schema Reference (Tóm tắt cho Tuấn)
+## Firestore Schema Reference
 
 > Chi tiết đầy đủ: xem `docs/database-schema.md`
 
@@ -273,8 +236,8 @@ db.collection(`tenants/${tenantId}/customers`)
 
 | Ngày | Thay đổi | Người |
 |---|---|---|
-| 2026-08-05 | Tạo bản đầu tiên — 3 endpoint cam kết, 3 endpoint chưa có | Việt |
-| 2026-08-20 | **v1.2:** Cập nhật mục 4 gamification/spin từ 🔴→🟢 (endpoint đã LIVE). Cập nhật mục 2 feedback response schema đầy đủ. Cập nhật Production URL. Thêm churn risk level thresholds đúng. | Việt (hỗ trợ AI) |
+| 2026-08-05 | Tạo bản đầu tiên — 3 endpoint cam kết, 3 endpoint chưa có | Team |
+| 2026-08-20 | **v1.2:** Cập nhật mục 4 gamification/spin từ 🔴→🟢 (endpoint đã LIVE). Cập nhật mục 2 feedback response schema đầy đủ. Cập nhật Production URL. Thêm churn risk level thresholds đúng. | Team |
 
 
 

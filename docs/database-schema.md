@@ -1,11 +1,9 @@
 # Firestore Schema - Sentrix Multi-Tenant
 
-**Author:** Nguyễn Thanh Tuyền
 **Phiên bản:** 1.0
 **Cập nhật lần cuối:** 2026-08-02
-**Đọc bởi:** Tuyền, Việt
 
-> **Việt lưu ý:** Mọi truy vấn Firestore từ Dashboard phải dùng **đúng tên collection và field** như tài liệu này. Nếu cần thêm field mới, nhắn nhóm để Tuyền cập nhật schema trước, không tự thêm field vào Firestore vì sẽ phá vỡ Security Rules và RFMS model.
+> **Lưu ý:** Mọi truy vấn Firestore từ Dashboard phải dùng **đúng tên collection và field** như tài liệu này. Việc thay đổi schema tùy tiện có thể phá vỡ Security Rules và RFMS model.
 
 ---
 
@@ -59,13 +57,13 @@ Lưu thông tin doanh nghiệp đăng ký sử dụng Sentrix. Mỗi document l�
 | Field | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
 | `business_name` | `string` | Có | Tên doanh nghiệp |
-| `industry` | `string` | Có | Ngành: `fnb`, `spa`, `dental`, `clinic` |
+| `industry` | `string` | Có | Ngành: `fnb` (Current Pilot). (`spa`, `dental`, `clinic` reserved for future) |
 | `plan` | `string` | Có | Gói dịch vụ: `free`, `pro`, `enterprise` |
 | `owner_email` | `string` | Có | Email chủ tài khoản |
 | `created_at` | `timestamp` | Có | Thời điểm đăng ký |
 | `is_active` | `boolean` | Có | Trạng thái gói dịch vụ |
-| `zalo_phone` | `string` | Không | SĐT Zalo nhận cảnh báo ZNS (kế hoạch tương lai) |
-| `churn_threshold` | `number` | Không | Ngưỡng P_churn trigger ZNS. Mặc định: 0.85 |
+| `zalo_phone` | `string` | Không | (Kế hoạch tương lai / Reserved) SĐT Zalo nhận cảnh báo ZNS |
+| `churn_threshold` | `number` | Không | (Kế hoạch tương lai / Reserved) Ngưỡng P_churn trigger ZNS. Mặc định: 0.85 |
 
 ---
 
@@ -94,10 +92,10 @@ Sinh tự động bởi Firestore.
 | `audio_features.shimmer` | `number` | Không | Độ biến thiên biên độ |
 | `audio_features.stress_score` | `number` | Không | Điểm căng thẳng từ Librosa |
 | `aspects` | `array<map>` | Có | Mảng các khía cạnh từ ABSA |
-| `sentiment_score` | `number` | Có | Điểm cảm xúc tổng hợp sau Fusion |
+| `sentiment_score` | `number` | Có | Điểm cảm xúc tổng hợp từ pipeline phân tích hiện tại. (Voice được chuyển thành transcript trước khi NLP phân tích) |
 | `is_sarcasm` | `boolean` | Có | Phát hiện mỉa mai |
-| `fusion_weight_audio` | `number` | Không | Trọng số âm thanh dùng trong Fusion |
-| `fusion_weight_text` | `number` | Không | Trọng số văn bản dùng trong Fusion |
+| `fusion_weight_audio` | `number` | Không | (Roadmap) Trọng số âm thanh dùng cho Multimodal Fusion |
+| `fusion_weight_text` | `number` | Không | (Roadmap) Trọng số văn bản dùng cho Multimodal Fusion |
 | `processing_status` | `string` | Có | Trạng thái xử lý |
 | `error_message` | `string` | Không | Thông báo lỗi |
 
@@ -136,8 +134,8 @@ Hồ sơ khách hàng ẩn danh hoá. Số điện thoại được hash bằng 
 | `rfms_s` | `number` | Có | Điểm Sentiment đã chuẩn hoá |
 | `p_churn` | `number` | Có | Xác suất rời bỏ |
 | `churn_risk_level` | `string` | Có | Phân loại rủi ro |
-| `zns_sent_at` | `timestamp` | Không | Thời điểm gửi cảnh báo ZNS gần nhất |
-| `zns_voucher_code` | `string` | Không | Mã voucher đã gửi kèm ZNS |
+| `zns_sent_at` | `timestamp` | Không | (Kế hoạch tương lai / Reserved) Thời điểm gửi cảnh báo ZNS gần nhất |
+| `zns_voucher_code` | `string` | Không | (Kế hoạch tương lai / Reserved) Mã voucher đã gửi kèm ZNS |
 | `updated_at` | `timestamp` | Có | Thời điểm cập nhật gần nhất |
 
 ---

@@ -1,5 +1,4 @@
 # RFMS Model - Tài liệu kỹ thuật
-**Author:** Nguyễn Thanh Tuyền, hỗ trợ bởi Đoàn Hoàng Việt
 **Giai đoạn:** 7 - Mô hình RFMS và Churn Probability
 
 ---
@@ -28,7 +27,7 @@ P_churn = 1 / (1 + e^-(αR - βF - γM - δS + ε))
 Chúng được đặt dựa trên kiến thức ngành F&B tại Việt Nam và tham khảo nghiên cứu học thuật, **KHÔNG phải** là kết quả của quá trình học máy trên dữ liệu thực tế.
 
 Hệ quả:
-- P_churn tính ra mang tính chất tương đối.
+- P_churn tính ra mang tính chất tương đối (tín hiệu hỗ trợ quản trị, không phải dự đoán chắc chắn khách sẽ rời bỏ).
 - Ngưỡng cảnh báo 85% là khởi điểm giả định, cần điều chỉnh trong tương lai.
 - Tính năng này mang tính chất Pilot, sẽ được nâng cấp thành mô hình học từ dữ liệu thật sau khi có đủ dữ liệu.
 
@@ -95,17 +94,16 @@ result = calculate_churn_full(
 )
 
 print(result["p_churn"])       # -> 0.412
-print(result["risk_level"])    # -> "Trung bình"
-print(result["should_alert"])  # -> False (chưa vượt ngưỡng 85%)
+print(result["risk_level"])    # -> "medium"
+print(result["should_alert"])  # -> False (chưa vượt ngưỡng 0.85)
 ```
 
 ---
 
 ## Ngưỡng cảnh báo mặc định
 
-| P_churn | Mức rủi ro | Hành động |
+| P_churn | Mức rủi ro (risk_level) | Hành động |
 |---------|-----------|-----------|
-| < 0.30 | 🟢 Thấp | Không cần can thiệp |
-| 0.30 - 0.59 | 🟡 Trung bình | Theo dõi thêm |
-| 0.60 - 0.84 | 🟠 Cao | Lên kế hoạch re-engagement |
-| >= 0.85 | 🔴 Nguy hiểm | Kích hoạt cảnh báo (Tương lai sẽ gọi Zalo ZNS) |
+| < 0.30 | 🟢 Thấp (`low`) | Không cần can thiệp |
+| 0.30 - < 0.85 | 🟡 Trung bình (`medium`) | Theo dõi thêm |
+| >= 0.85 | 🔴 Cao (`high`) | Kích hoạt cảnh báo Staff Alert (Tương lai sẽ gọi Zalo ZNS) |

@@ -16,8 +16,11 @@ Giá trị cốt lõi của Sentrix không nằm ở việc sử dụng AI phứ
   - Phân tích cảm xúc theo khía cạnh (ABSA) bằng mô hình Gemini Flash-Lite.
 - **Action-oriented (Hướng hành động):** 
   - Phân biệt phản hồi và yêu cầu hỗ trợ. Ví dụ: "Tôi cần một ly trà đá" sẽ tạo ra cảnh báo (alert) ngay cho nhân viên.
-- **Feedback Recovery & Review Invitation:** Phân luồng phản hồi. Phản hồi tốt có thể mời đánh giá công khai (kèm voucher), phản hồi chưa tốt được ưu tiên giữ lại để cửa hàng xử lý nội bộ.
 - **Cơ chế chống gian lận (Anti-fraud) 4 lớp:** Kiểm soát tần suất (hash số điện thoại), kiểm tra chất lượng dữ liệu (thời lượng, SNR trước khi STT), kiểm tra ngữ nghĩa (bỏ qua nội dung vô nghĩa) và kiểm soát ngân sách voucher.
+
+## 🔬 Tính năng Pilot / đang thử nghiệm
+
+- **Feedback Recovery & Review Invitation:** Phân luồng phản hồi. Phản hồi tốt có thể mời đánh giá công khai (Google Review automation chưa được công bố hoàn thiện), phản hồi chưa tốt được ưu tiên giữ lại để cửa hàng xử lý nội bộ.
 
 ---
 
@@ -43,8 +46,8 @@ Sentrix/
 3. Hoàn tất phản hồi (dữ liệu được xử lý ngầm: Voice -> STT -> NLP/ABSA).
 4. Khách không cần chờ nhân viên tổng hợp, có thể tiếp tục trải nghiệm.
 5. Nếu là yêu cầu hỗ trợ, nhân viên nhận alert và xử lý ngay.
-6. Khách xem kết quả đánh giá (Feedback Recovery & Review Invitation).
-7. Chọn chia sẻ công khai nếu được mời.
+6. Khách xem kết quả đánh giá (thuộc định hướng Feedback Recovery & Review Invitation).
+7. Chọn chia sẻ công khai nếu được mời (Pilot).
 8. Nhận voucher nếu đủ điều kiện và hệ thống kiểm tra gian lận thành công.
 
 *Lưu ý bảo mật (Nghị định 356/2025/NĐ-CP): Audio thô được dùng cho STT và ưu tiên xóa ngay sau khi chuyển đổi thành công. Dữ liệu định danh được băm (hash).*
@@ -94,7 +97,7 @@ Vui lòng xem file `.env.example` để biết chi tiết. Các biến môi trư
 
 ## 🧪 Kiểm thử (Testing)
 
-Hệ thống có bộ unit test tự động (28/28 kịch bản PASS cho chống gian lận, voucher và pipeline).
+Hệ thống có bộ unit test tự động (28/28 kịch bản kiểm thử về anti-fraud, voucher và pipeline hiện tại đã PASS).
 ```bash
 pytest backend/tests/ -v
 ```
@@ -103,8 +106,8 @@ pytest backend/tests/ -v
 
 ## 🛠️ Triển khai (Deployment)
 
-- **Backend:** Triển khai qua dịch vụ Web Service của Render (Tối ưu tự động hóa CI/CD với Docker).
-- **Frontend:** Tự động triển khai trên Vercel (Edge CDN).
+- **Backend:** Render Web Service.
+- **Frontend:** Vercel.
 - **Cơ sở dữ liệu:** Firebase Firestore.
 
 ---

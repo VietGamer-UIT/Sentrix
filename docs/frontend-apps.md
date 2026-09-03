@@ -1,16 +1,14 @@
-# LÃNH ĐỊA FRONTEND VÀ DASHBOARD (TUẤN)
+# Frontend Apps Architecture
 
-**Người phụ trách chính:** Nguyễn Quốc Tuấn
-**DevOps và Hỗ trợ:** Đoàn Hoàng Việt (Trưởng nhóm)
+Tài liệu mô tả kiến trúc và quy định phát triển của các ứng dụng Frontend trong hệ thống Sentrix.
 
 ---
 
-## QUY TẮC CỦA LÃNH ĐỊA NÀY
+## QUY TẮC PHÁT TRIỂN FRONTEND
 
-1. **Tuấn chịu trách nhiệm toàn bộ code giao diện (React).** Việt chỉ can thiệp khi cần thiết lập cấu hình deploy, biến môi trường, hoặc sửa lỗi phức tạp. Tuyền nếu cần thay đổi gì liên quan đến frontend thì nhắn nhóm cho Tuấn.
-2. Code Frontend phải chia Component rõ ràng, không viết nguyên 1 file 1000 dòng.
-3. Tuân thủ tuyệt đối thiết kế Figma và tài liệu UX/UI mà Tuấn đã chốt. Nếu thấy thiết kế vô lý, hãy cập nhật thiết kế trước, code theo sau.
-4. **KHÔNG được đụng vào `backend/`** dù chỉ để "tiện tay sửa", chỉ được đọc để lấy thông tin API/schema.
+1. Code Frontend phải chia Component rõ ràng, module hóa cao.
+2. Tuân thủ thiết kế Figma và tài liệu UX/UI.
+3. Tách biệt hoàn toàn với Backend, chỉ giao tiếp thông qua API đã thống nhất. Tránh thay đổi trực tiếp `backend/` từ phía frontend.
 
 ---
 
@@ -45,7 +43,7 @@ Không tự sáng tác thêm tính năng. Đây là nguồn sự thật duy nh�
 
 ---
 
-## CHECKLIST CÔNG VIỆC (Tuấn)
+## TIẾN ĐỘ FRONTEND
 
 - [x] Giai đoạn 1: Cập nhật tài liệu minh bạch về thay đổi phân công
 - [x] Giai đoạn 2: Dựng khung React cho `web-client/`
