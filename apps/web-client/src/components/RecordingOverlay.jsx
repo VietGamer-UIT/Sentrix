@@ -122,6 +122,17 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      
+      // Log devices for Phase 9
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        const audioInputs = devices.filter(d => d.kind === 'audioinput')
+        console.log('[Voice E2E] Available microphones:', audioInputs.map(d => d.label || 'Unknown mic'))
+        const activeTrack = stream.getAudioTracks()[0]
+        console.log('[Voice E2E] Selected microphone track:', activeTrack ? activeTrack.label : 'None')
+      } catch (e) {
+        console.warn('[Voice E2E] Cannot enumerate devices:', e)
+      }
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
@@ -130,13 +141,27 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       const recorder = new MediaRecorder(stream, { mimeType })
       mediaRecorderRef.current = recorder
       chunksRef.current = []
+      
+      const startTime = Date.now()
+      console.log(`[Voice E2E] recording started at ${startTime}`)
 
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.ondataavailable = (e) => { 
+        if (e.data.size > 0) chunksRef.current.push(e.data) 
+      }
       recorder.onstop = () => {
+        const stopTime = Date.now()
+        const durationMs = stopTime - startTime
+        console.log(`[Voice E2E] recording stopped at ${stopTime}`)
+        console.log(`[Voice E2E] duration_ms = ${durationMs}`)
+        console.log(`[Voice E2E] chunks = ${chunksRef.current.length}`)
+        
         const blob = new Blob(chunksRef.current, { type: mimeType })
+        console.log(`[Voice E2E] blob_size = ${blob.size}`)
+        console.log(`[Voice E2E] blob_type = ${blob.type}`)
+        
         setAudioBlob(blob)
         stream.getTracks().forEach(t => t.stop())
-        setAudioDurationSec(Math.min(MAX_DURATION_SEC - timeLeft + 1, MAX_DURATION_SEC))
+        setAudioDurationSec(Math.max(1, Math.round(durationMs / 1000)))
       }
 
       recorder.start(200)
@@ -294,7 +319,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       console.log('[Voice E2E] response status:', err.statusCode || 'Unknown Error')
       // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
-      setError('Không thể gửi phản hồi. Vui lòng thử lại.')
+      setError(err.message || 'Không thể gửi phản hồi. Vui lòng thử lại.')
       setIsSubmitting(false)
       return
     } finally {

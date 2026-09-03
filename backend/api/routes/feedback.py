@@ -880,11 +880,16 @@ async def submit_feedback(
         logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id_created}")
 
         # 8b-alert. Tạo Alert nếu intent là SUPPORT_REQUEST (Milestone 4)
+        alert_created = False
+        alert_id_str = "NONE"
+        support_branch = "SKIPPED"
+
         if (
             _intent_result.get("intent") == "SUPPORT_REQUEST"
             and validity_status not in ("invalid_semantic",)
             and not (absa_result or {}).get("is_spam", False)
         ):
+            support_branch = "ENTERED"
             try:
                 _alert_id = create_alert(
                     tenant_id=tenant_id,
@@ -894,9 +899,22 @@ async def submit_feedback(
                     intent="SUPPORT_REQUEST",
                 )
                 logger.info(f"[Feedback] Alert tao thanh cong: {_alert_id}")
+                alert_created = True
+                alert_id_str = str(_alert_id)
             except Exception as _ae:
                 # Alert creation không block feedback — chỉ log lỗi
                 logger.warning(f"[Feedback] Khong tao duoc alert: {_ae}")
+
+        logger.info(
+            "\n[Voice E2E]\n"
+            f"transcript = {(transcript or text_content or '')[:200]}\n"
+            f"semantic_validity = {validity_status}\n"
+            f"intent = {_intent_result.get('intent', 'FEEDBACK')}\n"
+            f"intent_confidence = {_intent_result.get('confidence', 0.0)}\n"
+            f"SUPPORT_REQUEST branch = {support_branch}\n"
+            f"create_alert = {'CALLED' if alert_created else 'NOT_CALLED'}\n"
+            f"alert_id = {alert_id_str}\n"
+        )
 
         # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam hoặc invalid_semantic)
         # Chỉ cập nhật RFMS khi feedback VALID để không làm sai model với dữ liệu rác.
