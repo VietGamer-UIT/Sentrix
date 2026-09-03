@@ -39,14 +39,15 @@ Dự án Sentrix Backend API. Đội ngũ phát triển tập trung vào AI Pipe
    [4] Trích xuất đặc trưng (Librosa)
        MFCC, F0, Jitter, Shimmer
               │
-              └─────────────┬──────────────┘
+               └─────────────┬──────────────┘
                             ▼
-                 [5] ABSA qua Gemini Flash-Lite
-                     Phân tích từng khía cạnh
+                 [5] Phân tích NLP (Gemini)
+                     Chuyển âm thanh thành văn bản
+                     Phân tích cảm xúc theo khía cạnh
                             │
                             ▼
-                 [6] Fusion
-                     Kết hợp text + audio
+                 [6] Xử lý Kết quả (Fusion cơ bản)
+                     Chỉ kết hợp văn bản và điểm đặc trưng âm thanh phụ (Roadmap: Multimodal thực thụ)
                      -> sentiment_score
                             │
                             ▼

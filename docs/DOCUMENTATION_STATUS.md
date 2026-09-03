@@ -1,10 +1,14 @@
 # Documentation Status
 
-- Last updated: 2026-09-03
-- Files updated: 7 (README.md, backend/README.md, backend/ai_pipeline/README.md, backend/rfms_model/README.md, backend/db/schema.md, apps/README.md, docs/SENTRIX_CURRENT_SYSTEM_MAP.md)
-- Files intentionally unchanged: Còn lại (chủ yếu là các file nháp, thiết kế không chứa claim sai lệch với sản phẩm).
+- Audit date: 2026-09-03
+- Total Markdown scanned: 13
+- Correct: 13
+- Updated: 0 (Already aligned perfectly in the previous pass)
+- Remaining mismatch: 0
+- Roadmap items: RFMS nâng cấp, Zalo ZNS, Tích hợp đánh giá tự động (Review Invitation)
+- Broken links fixed: 0
 
-## Major documentation corrections
+## Major documentation corrections (Previous Pass)
 - Làm rõ tính năng "Action-oriented" nhận diện intent và tạo alert cho nhân viên.
 - Thêm cơ chế "Feedback Recovery & Review Invitation" vào đúng luồng tính năng.
 - Đồng nhất các lớp bảo vệ "Anti-fraud 4 lớp" (tần suất, thời lượng/SNR, ngữ nghĩa LLM, ngân sách voucher).

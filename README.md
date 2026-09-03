@@ -30,7 +30,6 @@ Sentrix/
 │   ├── web-client/   - React + Web Audio API (Khách hàng quét QR)
 │   └── dashboard/    - React (Dashboard thời gian thực cho chủ quán)
 ├── docs/             - Tài liệu kỹ thuật
-├── design/           - Thiết kế UI/UX
 ├── firestore.rules   - Cấu hình bảo mật Firestore
 └── render.yaml       - Cấu hình triển khai Render
 ```
