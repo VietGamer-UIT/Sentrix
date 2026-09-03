@@ -106,8 +106,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       }
       setLiveTranscript(transcript)
     }
-    rec.onerror = () => { /* silent */ }
-    try { rec.start() } catch {}
+    rec.onerror = (err) => { console.warn('SpeechRecognition error:', err.error) }
+    try { rec.start() } catch (err) { console.warn('SpeechRecognition start error:', err) }
     recognitionRef.current = rec
   }
 
@@ -263,6 +263,12 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     // Bỏ chế độ bypass API vì nó làm hỏng M6 Voice E2E.
     // Dù có mock hay không, audio vẫn PHẢI được gửi về backend để STT.
 
+    console.log('[Voice E2E] submit started')
+    console.log('[Voice E2E] blob size:', audioBlob ? audioBlob.size : 0)
+    console.log('[Voice E2E] blob type:', audioBlob ? audioBlob.type : 'none')
+    console.log('[Voice E2E] API URL:', API_BASE_URL)
+    console.log('[Voice E2E] request sent')
+
     try {
       const result = await submitFeedback({
         tenantId,
@@ -273,6 +279,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         totalSpending: 0,
         voucherEligible: effectiveVoucherEligible,
       })
+      console.log('[Voice E2E] response status: 202 (Accepted)')
       // Lưu kết quả + feedback_id vào sessionStorage trước khi navigate
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
@@ -284,8 +291,12 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         }
       } catch { /* ignore storage errors */ }
     } catch (err) {
+      console.log('[Voice E2E] response status:', err.statusCode || 'Unknown Error')
       // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
+      setError('Không thể gửi phản hồi. Vui lòng thử lại.')
+      setIsSubmitting(false)
+      return
     } finally {
       setIsSubmitting(false)
     }
@@ -374,7 +385,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
             </div>
 
             {/* Live transcript realtime — mờ, font italic */}
-            {isRecording && liveTranscript && (
+            {isRecording && (
               <div style={{
                 minHeight: 36, marginBottom: 8,
                 padding: '8px 12px',
@@ -384,7 +395,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                 textAlign: 'left', lineHeight: 1.5,
                 transition: 'all 0.2s',
               }}>
-                "{liveTranscript}"
+                {!speechSupported 
+                  ? 'Live transcript không khả dụng trên browser này.' 
+                  : (liveTranscript ? `"${liveTranscript}"` : '🎙 Đang nghe...')}
               </div>
             )}
 
