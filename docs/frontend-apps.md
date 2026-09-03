@@ -9,7 +9,7 @@
 
 1. **Tuấn chịu trách nhiệm toàn bộ code giao diện (React).** Việt chỉ can thiệp khi cần thiết lập cấu hình deploy, biến môi trường, hoặc sửa lỗi phức tạp. Tuyền nếu cần thay đổi gì liên quan đến frontend thì nhắn nhóm cho Tuấn.
 2. Code Frontend phải chia Component rõ ràng, không viết nguyên 1 file 1000 dòng.
-3. Tuân thủ tuyệt đối thiết kế Figma và tài liệu UX/UI mà Tuấn đã chốt trong `design/ux-ui/`. Nếu thấy thiết kế vô lý, cập nhật `design/ux-ui/` trước, code theo sau.
+3. Tuân thủ tuyệt đối thiết kế Figma và tài liệu UX/UI mà Tuấn đã chốt. Nếu thấy thiết kế vô lý, hãy cập nhật thiết kế trước, code theo sau.
 4. **KHÔNG được đụng vào `backend/`** dù chỉ để "tiện tay sửa", chỉ được đọc để lấy thông tin API/schema.
 
 ---
@@ -27,10 +27,10 @@ Không tự sáng tác thêm tính năng. Đây là nguồn sự thật duy nh�
 
 | Tài liệu | Mục đích |
 |---|---|
-| `design/ux-ui/01-customer-flow/user-flow.md` | Luồng UX từng bước cho `web-client/` |
-| `design/ux-ui/03-dashboard-reference/de-xuat-ux.md` | Layout và widget cụ thể cho `dashboard/` |
-| `design/ux-ui/figma-link.md` | Link Figma tham khảo phong cách UI |
-| `backend/db/schema.md` | Tên field Firestore chính xác |
+| `docs/user-flow.md` | Luồng UX từng bước cho `web-client/` |
+| `docs/dashboard-ux.md` | Layout và widget cụ thể cho `dashboard/` |
+| `docs/figma-link.md` | Link Figma tham khảo phong cách UI |
+| `docs/database-schema.md` | Tên field Firestore chính xác |
 
 ---
 

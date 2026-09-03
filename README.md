@@ -122,6 +122,9 @@ pytest backend/tests/ -v
 ## 📚 Tài liệu kỹ thuật chi tiết
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Quy định làm việc chung.
-- [backend/README.md](backend/README.md) - Chi tiết Backend API.
-- [backend/db/schema.md](backend/db/schema.md) - Cấu trúc dữ liệu Firestore.
+- [docs/backend-api.md](docs/backend-api.md) - Chi tiết Backend API.
+- [docs/ai-pipeline.md](docs/ai-pipeline.md) - Chi tiết AI Pipeline.
+- [docs/rfms-model.md](docs/rfms-model.md) - Chi tiết RFMS Model.
+- [docs/database-schema.md](docs/database-schema.md) - Cấu trúc dữ liệu Firestore.
 - [docs/api-contract.md](docs/api-contract.md) - Đặc tả API kết nối Frontend và Backend.
+- [docs/frontend-apps.md](docs/frontend-apps.md) - Giao diện Frontend và Dashboard.

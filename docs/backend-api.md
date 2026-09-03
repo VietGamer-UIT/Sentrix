@@ -85,18 +85,15 @@ backend/
 │   ├── stt_whisper.py                 - STT sử dụng API Whisper
 │   ├── audio_features_librosa.py      - Tính toán đặc trưng Librosa
 │   ├── absa_llm.py                    - Khởi tạo Gemini Flash-Lite ABSA
-│   ├── fusion.py                      - Gộp đặc trưng đa phương thức
-│   └── README.md                      
+│   └── fusion.py                      - Gộp đặc trưng đa phương thức
 │
 ├── rfms_model/
 │   ├── rfms_calculator.py             - Cập nhật chỉ số RFMS
-│   ├── churn_model.py                 - Thuật toán cảnh báo sớm
-│   └── README.md                      
+│   └── churn_model.py                 - Thuật toán cảnh báo sớm
 │
 ├── db/
 │   ├── firestore_client.py            - Khởi tạo Firebase Admin
-│   ├── firestore_ops.py               - Các thao tác DB
-│   └── schema.md                      - Sơ đồ dữ liệu
+│   └── firestore_ops.py               - Các thao tác DB
 │
 ├── webhooks/
 │   └── zalo_zns.py                    - Hook webhook (tính năng roadmap)
@@ -110,7 +107,6 @@ backend/
 │   └── test_zalo_zns.py               
 │
 ├── requirements.txt                   - Dependencies
-└── README.md                          
 ```
 
 ---
