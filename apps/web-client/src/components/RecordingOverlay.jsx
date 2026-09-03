@@ -101,7 +101,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     rec.interimResults = true
     rec.onresult = (e) => {
       let transcript = ''
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      for (let i = 0; i < e.results.length; i++) {
         transcript += e.results[i][0].transcript
       }
       setLiveTranscript(transcript)
@@ -260,11 +260,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có SĐT + (OTP verified hoặc skip mode)
     const effectiveVoucherEligible = !isAnonymous && (otpVerified || SKIP_OTP) && !!phone.trim()
 
-    // Chế độ thử nghiệm: bỏ qua API, navigate thẳng đến trang xác nhận
-    if (SKIP_OTP && import.meta.env.VITE_USE_MOCK_GAMIFICATION === 'true') {
-      navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
-      return
-    }
+    // Bỏ chế độ bypass API vì nó làm hỏng M6 Voice E2E.
+    // Dù có mock hay không, audio vẫn PHẢI được gửi về backend để STT.
 
     try {
       const result = await submitFeedback({
