@@ -114,11 +114,11 @@ def analyze_audio_quality(file_bytes: bytes) -> AudioQualityResult:
         audio_buf = io.BytesIO(file_bytes)
         y, sr = librosa.load(audio_buf, sr=_LIBROSA_SR, mono=True)
     except Exception as e:
-        logger.warning(f"[AudioQuality] Không decode được audio bytes: {e}")
+        logger.warning(f"[AudioQuality] Không decode được audio bytes: {e}. Bỏ qua kiểm tra chất lượng để Whisper xử lý.")
         return AudioQualityResult(
-            passed=False,
-            reject_reason="invalid_audio_decode",
-            reject_message="File âm thanh không hợp lệ hoặc bị lỗi. Vui lòng ghi âm lại.",
+            passed=True,
+            reject_reason=None,
+            reject_message=None,
             duration_sec=None,
             snr_db=None,
         )

@@ -468,3 +468,147 @@ def save_consent_record(
     )
     return record_id
 
+
+# ---------------------------------------------------------------------------
+# Alert CRUD — Milestone 4 (Staff Alert)
+# ---------------------------------------------------------------------------
+# Collection path: tenants/{tenant_id}/alerts/{alert_id}
+#
+# Schema:
+#   alert_id       string   — Firestore auto-ID
+#   feedback_id    string   — liên kết feedback
+#   location       string   — bàn/khu vực
+#   status         string   — "CREATED" | "ACKNOWLEDGED" | "RESOLVED"
+#   intent         string   — "SUPPORT_REQUEST" (luôn là SUPPORT_REQUEST)
+#   transcript     string   — nội dung yêu cầu của khách
+#   created_at     datetime
+#   acknowledged_at datetime|None
+#   resolved_at    datetime|None
+# ---------------------------------------------------------------------------
+
+ALERT_STATUS_CREATED      = "CREATED"
+ALERT_STATUS_ACKNOWLEDGED = "ACKNOWLEDGED"
+ALERT_STATUS_RESOLVED     = "RESOLVED"
+
+
+def create_alert(
+    tenant_id: str,
+    feedback_id: str,
+    location: str,
+    transcript: str,
+    intent: str = "SUPPORT_REQUEST",
+) -> str:
+    """
+    Tạo alert mới trong Firestore khi khách có SUPPORT_REQUEST.
+
+    Returns:
+        alert_id — Firestore document ID
+    """
+    db = get_firestore_client()
+    alerts_ref = (
+        db.collection("tenants").document(tenant_id)
+        .collection("alerts")
+    )
+    alert_doc = {
+        "feedback_id":      feedback_id,
+        "location":         location,
+        "status":           ALERT_STATUS_CREATED,
+        "intent":           intent,
+        "transcript":       transcript[:500],   # Giới hạn 500 ký tự để tránh doc quá lớn
+        "created_at":       _now_utc(),
+        "acknowledged_at":  None,
+        "resolved_at":      None,
+    }
+    new_ref = alerts_ref.add(alert_doc)[1]
+    alert_id = new_ref.id
+    logger.info(
+        f"[Alert] Tạo alert mới: tenants/{tenant_id}/alerts/{alert_id} "
+        f"| location={location} | intent={intent}"
+    )
+    return alert_id
+
+
+def get_alerts(
+    tenant_id: str,
+    limit: int = 50,
+    status_filter: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    """
+    Lấy danh sách alerts của tenant, sắp xếp mới nhất trước.
+
+    Args:
+        tenant_id:     Tenant ID
+        limit:         Số lượng tối đa (mặc định 50)
+        status_filter: Lọc theo status ("CREATED"|"ACKNOWLEDGED"|"RESOLVED")
+                       None = lấy tất cả
+
+    Returns:
+        List[dict] — mỗi dict là alert document kèm alert_id
+    """
+    db = get_firestore_client()
+    query = (
+        db.collection("tenants").document(tenant_id)
+        .collection("alerts")
+        .order_by("created_at", direction="DESCENDING")
+        .limit(limit)
+    )
+    if status_filter:
+        query = query.where("status", "==", status_filter)
+
+    docs = query.stream()
+    result = []
+    for doc in docs:
+        data = doc.to_dict()
+        data["alert_id"] = doc.id
+        result.append(data)
+    return result
+
+
+def acknowledge_alert(tenant_id: str, alert_id: str) -> bool:
+    """
+    Chuyển alert sang trạng thái ACKNOWLEDGED (nhân viên đã ghi nhận).
+
+    Returns:
+        True nếu thành công, False nếu alert không tồn tại
+    """
+    db = get_firestore_client()
+    ref = (
+        db.collection("tenants").document(tenant_id)
+        .collection("alerts").document(alert_id)
+    )
+    snap = ref.get()
+    if not snap.exists:
+        logger.warning(f"[Alert] acknowledge_alert: alert {alert_id} không tồn tại")
+        return False
+
+    ref.update({
+        "status":           ALERT_STATUS_ACKNOWLEDGED,
+        "acknowledged_at":  _now_utc(),
+    })
+    logger.info(f"[Alert] ACKNOWLEDGED: tenants/{tenant_id}/alerts/{alert_id}")
+    return True
+
+
+def resolve_alert(tenant_id: str, alert_id: str) -> bool:
+    """
+    Chuyển alert sang trạng thái RESOLVED (nhân viên đã xử lý xong).
+
+    Returns:
+        True nếu thành công, False nếu alert không tồn tại
+    """
+    db = get_firestore_client()
+    ref = (
+        db.collection("tenants").document(tenant_id)
+        .collection("alerts").document(alert_id)
+    )
+    snap = ref.get()
+    if not snap.exists:
+        logger.warning(f"[Alert] resolve_alert: alert {alert_id} không tồn tại")
+        return False
+
+    ref.update({
+        "status":       ALERT_STATUS_RESOLVED,
+        "resolved_at":  _now_utc(),
+    })
+    logger.info(f"[Alert] RESOLVED: tenants/{tenant_id}/alerts/{alert_id}")
+    return True

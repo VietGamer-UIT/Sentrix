@@ -101,13 +101,13 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     rec.interimResults = true
     rec.onresult = (e) => {
       let transcript = ''
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      for (let i = 0; i < e.results.length; i++) {
         transcript += e.results[i][0].transcript
       }
       setLiveTranscript(transcript)
     }
-    rec.onerror = () => { /* silent */ }
-    try { rec.start() } catch {}
+    rec.onerror = (err) => { console.warn('SpeechRecognition error:', err.error) }
+    try { rec.start() } catch (err) { console.warn('SpeechRecognition start error:', err) }
     recognitionRef.current = rec
   }
 
@@ -122,6 +122,17 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      
+      // Log devices for Phase 9
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        const audioInputs = devices.filter(d => d.kind === 'audioinput')
+        console.log('[Voice E2E] Available microphones:', audioInputs.map(d => d.label || 'Unknown mic'))
+        const activeTrack = stream.getAudioTracks()[0]
+        console.log('[Voice E2E] Selected microphone track:', activeTrack ? activeTrack.label : 'None')
+      } catch (e) {
+        console.warn('[Voice E2E] Cannot enumerate devices:', e)
+      }
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
@@ -130,13 +141,27 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       const recorder = new MediaRecorder(stream, { mimeType })
       mediaRecorderRef.current = recorder
       chunksRef.current = []
+      
+      const startTime = Date.now()
+      console.log(`[Voice E2E] recording started at ${startTime}`)
 
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.ondataavailable = (e) => { 
+        if (e.data.size > 0) chunksRef.current.push(e.data) 
+      }
       recorder.onstop = () => {
+        const stopTime = Date.now()
+        const durationMs = stopTime - startTime
+        console.log(`[Voice E2E] recording stopped at ${stopTime}`)
+        console.log(`[Voice E2E] duration_ms = ${durationMs}`)
+        console.log(`[Voice E2E] chunks = ${chunksRef.current.length}`)
+        
         const blob = new Blob(chunksRef.current, { type: mimeType })
+        console.log(`[Voice E2E] blob_size = ${blob.size}`)
+        console.log(`[Voice E2E] blob_type = ${blob.type}`)
+        
         setAudioBlob(blob)
         stream.getTracks().forEach(t => t.stop())
-        setAudioDurationSec(Math.min(MAX_DURATION_SEC - timeLeft + 1, MAX_DURATION_SEC))
+        setAudioDurationSec(Math.max(1, Math.round(durationMs / 1000)))
       }
 
       recorder.start(200)
@@ -260,11 +285,14 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có SĐT + (OTP verified hoặc skip mode)
     const effectiveVoucherEligible = !isAnonymous && (otpVerified || SKIP_OTP) && !!phone.trim()
 
-    // Chế độ thử nghiệm: bỏ qua API, navigate thẳng đến trang xác nhận
-    if (SKIP_OTP && import.meta.env.VITE_USE_MOCK_GAMIFICATION === 'true') {
-      navigate(`/done?tenant_id=${tenantId}&location=${encodeURIComponent(decodedLocation)}`)
-      return
-    }
+    // Bỏ chế độ bypass API vì nó làm hỏng M6 Voice E2E.
+    // Dù có mock hay không, audio vẫn PHẢI được gửi về backend để STT.
+
+    console.log('[Voice E2E] submit started')
+    console.log('[Voice E2E] blob size:', audioBlob ? audioBlob.size : 0)
+    console.log('[Voice E2E] blob type:', audioBlob ? audioBlob.type : 'none')
+    console.log('[Voice E2E] API URL:', API_BASE_URL)
+    console.log('[Voice E2E] request sent')
 
     try {
       const result = await submitFeedback({
@@ -276,6 +304,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         totalSpending: 0,
         voucherEligible: effectiveVoucherEligible,
       })
+      console.log('[Voice E2E] response status: 202 (Accepted)')
       // Lưu kết quả + feedback_id vào sessionStorage trước khi navigate
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
@@ -287,8 +316,12 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         }
       } catch { /* ignore storage errors */ }
     } catch (err) {
+      console.log('[Voice E2E] response status:', err.statusCode || 'Unknown Error')
       // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
+      setError(err.message || 'Không thể gửi phản hồi. Vui lòng thử lại.')
+      setIsSubmitting(false)
+      return
     } finally {
       setIsSubmitting(false)
     }
@@ -377,7 +410,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
             </div>
 
             {/* Live transcript realtime — mờ, font italic */}
-            {isRecording && liveTranscript && (
+            {isRecording && (
               <div style={{
                 minHeight: 36, marginBottom: 8,
                 padding: '8px 12px',
@@ -387,7 +420,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                 textAlign: 'left', lineHeight: 1.5,
                 transition: 'all 0.2s',
               }}>
-                "{liveTranscript}"
+                {!speechSupported 
+                  ? 'Live transcript không khả dụng trên browser này.' 
+                  : (liveTranscript ? `"${liveTranscript}"` : '🎙 Đang nghe...')}
               </div>
             )}
 

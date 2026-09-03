@@ -3,11 +3,13 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useTenant } from '../mocks/useFirestore.js'
 import { IS_MOCK } from '../mocks/useFirestore.js'
+import { useLiveAlerts } from '../hooks/useLiveAlerts.js'
 
 const navItems = [
   { to: '/', label: 'Tổng quan', end: true },
   { to: '/feedbacks', label: 'Phản hồi' },
   { to: '/customers', label: 'Khách hàng' },
+  { to: '/alerts', label: 'Yêu cầu hỗ trợ', isAlerts: true },
 ]
 
 const navItemsOps = [
@@ -30,6 +32,7 @@ function Layout() {
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
   const tenantName = tenant?.business_name ?? null
+  const { pendingCount } = useLiveAlerts()
 
   const allNavItems = [...navItems, ...navItemsOps]
   const currentPage = allNavItems.find(n =>
@@ -91,14 +94,30 @@ function Layout() {
 
           {/* Nav chính — nhóm chức năng cốt lõi */}
           <nav className="sidebar-nav" style={{ flexShrink: 0 }}>
-            {navItems.map(({ to, label, end }) => (
+            {navItems.map(({ to, label, end, isAlerts }) => (
               <NavLink
                 key={to}
                 to={to}
                 end={end}
                 className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
               >
-                {label}
+                <span>{label}</span>
+                {isAlerts && pendingCount > 0 && (
+                  <span style={{
+                    background: '#EF4444',
+                    color: '#fff',
+                    borderRadius: 20,
+                    padding: '0 7px',
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    lineHeight: '18px',
+                    minWidth: 18,
+                    textAlign: 'center',
+                  }}>
+                    {pendingCount}
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>

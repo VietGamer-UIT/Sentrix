@@ -72,7 +72,8 @@ Tiêu chí INVALID (bất kỳ một trong các điều kiện sau):
 
 Tiêu chí VALID:
 - Bất kỳ nhận xét nào về đồ ăn, đồ uống, phục vụ, không gian, vệ sinh, giá cả, chờ đợi, v.v.
-- Kể cả phản hồi rất ngắn nhưng có nội dung ("ngon lắm", "hơi mặn", "chờ lâu")
+- Các yêu cầu hỗ trợ trực tiếp từ khách hàng (ví dụ: xin thêm nước đá, tính tiền, lấy khăn, gọi nhân viên).
+- Kể cả phản hồi rất ngắn nhưng có nội dung ("ngon lắm", "hơi mặn", "chờ lâu", "cho xin ly nước")
 - Kể cả phản hồi tiêu cực/chửi bới NẾU có kèm theo lý do về dịch vụ
 
 Trả về JSON CHÍNH XÁC theo format sau (KHÔNG có text nào khác):

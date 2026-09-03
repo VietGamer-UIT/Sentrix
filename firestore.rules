@@ -57,6 +57,12 @@ service cloud.firestore {
       allow write: if false; // chi backend Admin SDK
     }
 
+    // ─── Alerts: chi doc cho auth user ────────────────────────────────
+    match /tenants/{tenantId}/alerts/{alertId} {
+      allow read: if request.auth != null;
+      allow write: if false; // chi backend Admin SDK
+    }
+
     // ─── Module 1: Rate Limits ─────────────────────────────────────────
     // Key = SHA-256(phone) — khong chua SDT plaintext.
     // Chi backend Admin SDK doc/ghi; client khong co quyen.

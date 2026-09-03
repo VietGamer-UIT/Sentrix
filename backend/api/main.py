@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
 
-from backend.api.routes import health, feedback, analyze, gamification, otp, tenant_config, consent, rfms
+from backend.api.routes import health, feedback, analyze, gamification, otp, tenant_config, consent, rfms, alerts
 
 # Load biến môi trường từ file .env (nếu chạy local)
 load_dotenv()
@@ -73,7 +73,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -88,3 +88,4 @@ app.include_router(otp.router, prefix="/api/v1", tags=["OTP"])
 app.include_router(tenant_config.router, prefix="/api/v1", tags=["Tenant Config"])
 app.include_router(consent.router, prefix="/api/v1", tags=["PDPA Consent"])
 app.include_router(rfms.router, prefix="/api/v1/rfms", tags=["RFMS Pipeline"])
+app.include_router(alerts.router, tags=["Staff Alerts"])  # Milestone 4

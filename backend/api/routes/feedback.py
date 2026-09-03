@@ -72,12 +72,15 @@ from backend.db.firestore_ops import (
     update_customer_rfms,
     get_tenant_config,
     _mask_phone,
+    create_alert,    # Milestone 4
 )
 # ── Module 1: Anti-Fraud Services ──────────────────────────────────────────
 from backend.services.audio_quality_service import analyze_audio_quality
 from backend.services.semantic_validity_service import check_semantic_validity
 from backend.services.rate_limit_service import check_rate_limit, record_submission
 from backend.services.otp_service import verify_otp_session
+# ── Module 3: Intent Classification ────────────────────────────────────────
+from backend.services.intent_service import classify_intent
 
 logger = logging.getLogger(__name__)
 
@@ -609,6 +612,37 @@ async def submit_feedback(
         except Exception as _se:
             logger.warning(f"[Feedback] Semantic validity lỗi (bỏ qua): {_se}")
 
+    # ── INTENT CLASSIFICATION (Milestone 3) ───────────────────────────────────
+    # Chạy SAU Semantic Validity, TRƯỚC ABSA để:
+    #   - SUPPORT_REQUEST → tạo Alert (không cần chạy ABSA phân tích sentiment)
+    #   - INVALID         → không block (ABSA sẽ detect spam), chỉ ghi flag
+    #   - FEEDBACK        → tiếp tục pipeline bình thường
+    _intent_result: dict = {"intent": "FEEDBACK", "confidence": 0.5, "reason": "not_run"}
+    if text_for_absa and validity_status not in ("invalid_semantic",):
+        try:
+            _intent_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+            _intent_loop     = asyncio.get_event_loop()
+            _intent_result = await asyncio.wait_for(
+                _intent_loop.run_in_executor(
+                    _intent_executor,
+                    classify_intent,
+                    text_for_absa,
+                ),
+                timeout=12,
+            )
+            _intent_executor.shutdown(wait=False)
+            logger.info(
+                f"[Feedback] [Intent] {_intent_result['intent']} "
+                f"(confidence={_intent_result.get('confidence', 0):.2f})"
+            )
+            # INVALID intent → không cấp voucher
+            if _intent_result["intent"] == "INVALID":
+                effective_voucher_eligible = False
+        except asyncio.TimeoutError:
+            logger.warning("[Feedback] Intent classification timeout — fallback FEEDBACK")
+        except Exception as _ie:
+            logger.warning(f"[Feedback] Intent classification lỗi (bỏ qua): {_ie}")
+
     # Bỏ qua ABSA nếu đã bị reject ở Lớp 3 — tiết kiệm 1 lần gọi Gemini
     if text_for_absa and validity_status not in ("invalid_semantic",):
         try:
@@ -805,6 +839,7 @@ async def submit_feedback(
             "audio_features":     audio_features_to_save,
             "aspects":            aspects_to_save,
             "sentiment_score":    sentiment_score,
+            "overall_sentiment":  overall_sentiment,
             # V2: overall_sentiment float [-1,+1] từ ABSA LLM (không phải string)
             # Khác với sentiment_score (fusion text+audio). Dùng cho dashboard biểu đồ aspect.
             "overall_sentiment_float": (absa_result or {}).get("overall_sentiment"),
@@ -836,10 +871,50 @@ async def submit_feedback(
             "spin_used":             False,
             "snr_score":             _snr_score,
             "audio_duration_sec":    _audio_duration_sec,
+            # ── Module 3: Intent Classification ───────────────────────────────
+            "intent":               _intent_result.get("intent", "FEEDBACK"),
+            "intent_confidence":    _intent_result.get("confidence", 0.5),
         }
 
         feedback_id_created = save_feedback(tenant_id, feedback_doc, feedback_id_override=feedback_id)
         logger.info(f"[Feedback] Luu feedback thanh cong: {feedback_id_created}")
+
+        # 8b-alert. Tạo Alert nếu intent là SUPPORT_REQUEST (Milestone 4)
+        alert_created = False
+        alert_id_str = "NONE"
+        support_branch = "SKIPPED"
+
+        if (
+            _intent_result.get("intent") == "SUPPORT_REQUEST"
+            and validity_status not in ("invalid_semantic",)
+            and not (absa_result or {}).get("is_spam", False)
+        ):
+            support_branch = "ENTERED"
+            try:
+                _alert_id = create_alert(
+                    tenant_id=tenant_id,
+                    feedback_id=feedback_id_created,
+                    location=location,
+                    transcript=(transcript or text_content or ""),
+                    intent="SUPPORT_REQUEST",
+                )
+                logger.info(f"[Feedback] Alert tao thanh cong: {_alert_id}")
+                alert_created = True
+                alert_id_str = str(_alert_id)
+            except Exception as _ae:
+                # Alert creation không block feedback — chỉ log lỗi
+                logger.warning(f"[Feedback] Khong tao duoc alert: {_ae}")
+
+        logger.info(
+            "\n[Voice E2E]\n"
+            f"transcript = {(transcript or text_content or '')[:200]}\n"
+            f"semantic_validity = {validity_status}\n"
+            f"intent = {_intent_result.get('intent', 'FEEDBACK')}\n"
+            f"intent_confidence = {_intent_result.get('confidence', 0.0)}\n"
+            f"SUPPORT_REQUEST branch = {support_branch}\n"
+            f"create_alert = {'CALLED' if alert_created else 'NOT_CALLED'}\n"
+            f"alert_id = {alert_id_str}\n"
+        )
 
         # 8c. Cập nhật RFMS cho customer nếu có (bỏ qua nếu spam hoặc invalid_semantic)
         # Chỉ cập nhật RFMS khi feedback VALID để không làm sai model với dữ liệu rác.

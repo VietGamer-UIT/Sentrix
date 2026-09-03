@@ -90,6 +90,7 @@ export async function submitFeedback({
       // KHÔNG set Content-Type — browser tự set multipart/form-data với boundary
     })
   } catch (networkErr) {
+    console.error('[Voice E2E] fetch network error:', networkErr)
     throw new FeedbackError(
       'Không kết nối được tới server. Vui lòng thử lại sau.',
       0,
@@ -97,17 +98,34 @@ export async function submitFeedback({
     )
   }
 
+  console.log('[Voice E2E] response status:', response.status)
+  console.log('[Voice E2E] response ok:', response.ok)
+  console.log('[Voice E2E] response content-type:', response.headers.get('content-type'))
+
+  let responseBodyText = ''
+  try {
+    responseBodyText = await response.text()
+    console.log('[Voice E2E] response body:', responseBodyText.substring(0, 500))
+  } catch (textErr) {
+    console.log('[Voice E2E] could not read body text:', textErr)
+  }
+
   if (response.ok) {
-    return response.json()
+    try {
+      return JSON.parse(responseBodyText)
+    } catch (parseErr) {
+      console.error('[Voice E2E] JSON parse error on successful response:', parseErr)
+      throw new FeedbackError('Lỗi phản hồi từ máy chủ (JSON parse failed)', response.status, parseErr.message)
+    }
   }
 
   // Xử lý lỗi từ backend
   let errorDetail = 'Lỗi không xác định'
   try {
-    const errorBody = await response.json()
+    const errorBody = JSON.parse(responseBodyText)
     errorDetail = errorBody.detail || errorBody.error || JSON.stringify(errorBody)
   } catch {
-    errorDetail = response.statusText
+    errorDetail = response.statusText || responseBodyText.substring(0, 100)
   }
 
   throw new FeedbackError(
