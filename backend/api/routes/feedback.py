@@ -839,6 +839,7 @@ async def submit_feedback(
             "audio_features":     audio_features_to_save,
             "aspects":            aspects_to_save,
             "sentiment_score":    sentiment_score,
+            "overall_sentiment":  overall_sentiment,
             # V2: overall_sentiment float [-1,+1] từ ABSA LLM (không phải string)
             # Khác với sentiment_score (fusion text+audio). Dùng cho dashboard biểu đồ aspect.
             "overall_sentiment_float": (absa_result or {}).get("overall_sentiment"),
