@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import RecordingOverlay from '../components/RecordingOverlay.jsx'
 import ConsentWindow from '../components/ConsentWindow.jsx'
 import { useConsent } from '../hooks/useConsent.js'
+import { useTenantInfo } from '../hooks/useTenantInfo.js'
 
 /**
  * LandingPage — Bước 2 trong user-flow.md
@@ -16,14 +17,16 @@ import { useConsent } from '../hooks/useConsent.js'
  */
 function LandingPage() {
   const [searchParams] = useSearchParams()
-  const [showOverlay, setShowOverlay]         = useState(false)
-  const [overlayMode, setOverlayMode]         = useState('audio')
+  const [showOverlay, setShowOverlay]             = useState(false)
+  const [overlayMode, setOverlayMode]             = useState('audio')
   const [showConsentWindow, setShowConsentWindow] = useState(false)
-  const [pendingMode, setPendingMode]         = useState(null) // mode bị "pending" chờ consent
+  const [pendingMode, setPendingMode]             = useState(null)
 
-  const tenantId     = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
-  const location     = searchParams.get('location') || 'Bàn 1'
-  const businessName = 'Phở Bà Lan'
+  const tenantId = searchParams.get('tenant_id') || 'pho-ba-lan_1722500000000'
+  const location = searchParams.get('location') || 'Bàn 1'
+
+  // Milestone 4: Lấy business_name từ Firestore thay vì hard-code
+  const { businessName, isActive, loading: tenantLoading, error: tenantError } = useTenantInfo(tenantId)
 
   // Hook quản lý consent — Điều 6.2 NĐ 356/2025/NĐ-CP
   const { hasConsented } = useConsent(tenantId)
@@ -63,6 +66,32 @@ function LandingPage() {
 
   return (
     <>
+      {/* Tenant inactive / not found screen */}
+      {!tenantLoading && (!isActive || tenantError) && (
+        <div className="page">
+          <div className="bg-glow bg-glow--primary" />
+          <div className="bg-glow bg-glow--accent" />
+          <div className="page-content">
+            <div className="card fade-up" style={{ width: '100%', textAlign: 'center' }}>
+              <p style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 12 }}>⚠️</p>
+              <p style={{
+                fontSize: 'var(--font-size-base)',
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+                marginBottom: 8
+              }}>
+                {businessName}
+              </p>
+              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+                {tenantError || 'Quán này hiện chưa kích hoạt dịch vụ Sentrix.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main screen — chỉ hiển khi tenant active */}
+      {(tenantLoading || isActive) && (
       <div className="page">
         <div className="bg-glow bg-glow--primary" />
         <div className="bg-glow bg-glow--accent" />
@@ -160,6 +189,7 @@ function LandingPage() {
 
         </div>
       </div>
+      )} {/* end (tenantLoading || isActive) */}
 
       {/* ConsentWindow — hiển thị khi chưa có consent */}
       {showConsentWindow && (

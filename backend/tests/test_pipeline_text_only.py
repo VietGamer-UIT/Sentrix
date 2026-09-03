@@ -116,7 +116,9 @@ class TestAspectNormalization:
         assert pos["aspect"] == "mon_an", (
             f"'aspect' field phải là ENUM 'mon_an', got '{pos.get('aspect')}'"
         )
-        assert pos["aspect_text"] == "Chất lượng món ăn"
+        assert pos["label_vi"] == "Chất lượng món ăn", (
+            f"'label_vi' phải giữ text gốc từ LLM, got '{pos.get('label_vi')}'"
+        )
         assert pos["sentiment"] == "positive", (
             f"'sentiment' field phải là English lowercase, got '{pos.get('sentiment')}'"
         )
