@@ -114,10 +114,10 @@ export function Pilot() {
               padding: 'var(--s-5)',
             }}>
               <p style={{ fontSize: 'var(--t-sm)', fontWeight: 700, color: 'var(--teal)', marginBottom: 6 }}>
-                Ưu tiên Pilot tại Làng Đại học Quốc gia Hà Nội
+                Ưu tiên Pilot tại Làng Đại học Quốc gia Thành phố Hồ Chí Minh
               </p>
               <p style={{ fontSize: 'var(--t-sm)', color: 'var(--grey-500)', lineHeight: 1.6 }}>
-                Giai đoạn hiện tại Sentrix ưu tiên hỗ trợ các quán cà phê và quán ăn trong khu vực Làng ĐH QGHN (Quốc Oai, Hà Nội). Miễn phí hoàn toàn trong giai đoạn Pilot.
+                Giai đoạn hiện tại Sentrix ưu tiên hỗ trợ các quán cà phê và quán ăn trong khu vực Làng ĐH QG TP.HCM (Thủ Đức, TP.HCM). Miễn phí hoàn toàn trong giai đoạn Pilot.
               </p>
             </div>
           </div>

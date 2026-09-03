@@ -465,7 +465,7 @@ function Positioning() {
     { label: 'Giao diện khách', value: 'React (Vite)' },
     { label: 'Backend', value: 'FastAPI (Python)' },
     { label: 'Giọng nói → Văn bản', value: 'Whisper STT' },
-    { label: 'Phân tích NLP', value: 'Gemini 2.0 Flash' },
+    { label: 'Phân tích NLP', value: 'Gemini' },
     { label: 'Cơ sở dữ liệu', value: 'Firestore' },
     { label: 'Hạ tầng', value: 'Firebase + Render' },
   ]
