@@ -23,13 +23,13 @@ Trong ảnh có 3 widget: Customers (Donut chart), Featured Product, và Sales A
 - **Nội dung:** Hiển thị danh sách **"Phản hồi rủi ro cao"** (Top các phản hồi tiêu cực nhất trong ngày, được AI phân tích).
 - **UX Hành động:** 
   - Mỗi hàng phản hồi (list item) sẽ hiện tên khách (ẩn một phần), điểm Sentiment, và lý do (vd: "Đồ ăn nguội").
-  - **BẮT BUỘC:** Bên cạnh mỗi dòng, đặt một nút bấm nổi bật: **"Gửi ZNS Voucher"**. 
-  - Khi chủ quán click, hệ thống tự động gọi API đẩy tin nhắn Zalo kèm voucher xin lỗi đến khách hàng đó để giữ chân họ ngay lập tức.
+  - **BẮT BUỘC:** Bên cạnh mỗi dòng, đặt một nút bấm nổi bật: **"Xử lý phản hồi"** (Recovery action). 
+  - Khi chủ quán click, hệ thống ghi nhận trạng thái xử lý hoặc cấp mã voucher. (Tích hợp gửi tự động qua Zalo ZNS là định hướng mở rộng tương lai).
 
 ### Widget 3 (Bên phải - Thay cho Sales Analytics Line Chart)
 - **Đề xuất:** Sử dụng biểu đồ đường (Line chart) này để theo dõi **Tỷ lệ dùng Voucher** qua thời gian. 
-- Hoặc dùng để đối chiếu tỷ lệ Churn qua các tháng, qua đó đánh giá xem sau khi dùng Sentrix để gửi ZNS, tỷ lệ khách quay lại có tăng lên (đường đồ thị đi lên) hay không.
+- Hoặc dùng để đối chiếu tỷ lệ Churn qua các tháng, qua đó đánh giá xem sau khi dùng Sentrix để xử lý phản hồi/cấp voucher, tỷ lệ khách quay lại có tăng lên (đường đồ thị đi lên) hay không.
 
 ## 3. Lưu ý chung về UI
 - **Màu sắc:** Thay vì màu tím/cam nhạt của template, hãy đổi màu chart sang dải màu đặc trưng của Sentrix (xanh dương/xanh ngọc) hoặc màu theo ngữ nghĩa (Xanh = Tốt, Đỏ = Xấu).
-- **Font chữ:** To rõ, các nút CTA như "Gửi ZNS Voucher" cần có màu sắc tương phản mạnh để thu hút sự chú ý.
+- **Font chữ:** To rõ, các nút CTA như "Xử lý phản hồi" cần có màu sắc tương phản mạnh để thu hút sự chú ý.

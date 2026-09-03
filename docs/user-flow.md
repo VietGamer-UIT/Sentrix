@@ -1,6 +1,6 @@
 # Phân tích luồng trải nghiệm khách hàng (User Flow)
 
-Đây là tài liệu mô tả chi tiết toàn bộ luồng thao tác của khách hàng cuối (Customer Journey) khi sử dụng Sentrix để phản hồi dịch vụ tại các quán F&B/Spa, bao gồm phân tích trạng thái cảm xúc và các điểm rủi ro có thể khiến khách hàng thoát trang. Mục tiêu là tối giản thao tác tối đa để giảm ma sát.
+Đây là tài liệu mô tả chi tiết toàn bộ luồng thao tác của khách hàng cuối (Customer Journey) khi sử dụng Sentrix để phản hồi dịch vụ tại các quán ăn, quán cà phê (Ưu tiên Pilot tại Làng Đại học). Lĩnh vực Spa / Nha khoa / Phòng khám thuộc định hướng mở rộng tương lai. Mục tiêu là tối giản thao tác tối đa để giảm ma sát.
 
 ## Các bước trong luồng trải nghiệm
 
@@ -38,10 +38,10 @@
 - **Hành động:** Ngay sau lời cảm ơn, một mini-game "Vòng quay may mắn" xuất hiện, mời khách hàng nhập số điện thoại để quay thưởng.
 - **Trạng thái cảm xúc:** Hào hứng, mong đợi phần thưởng (động lực chính để để lại SĐT).
 - **Rủi ro (Drop-off risk):** Khách ngại lộ thông tin cá nhân hoặc quy trình quay thưởng rườm rà.
-- **Giải pháp tối ưu UX:** Giải thích rõ SĐT chỉ dùng để gửi voucher qua Zalo. Chỉ 1 ô nhập SĐT và 1 nút "Quay ngay".
+- **Giải pháp tối ưu UX:** Giải thích rõ SĐT chỉ dùng để định danh nhận phần thưởng. Chỉ 1 ô nhập SĐT và 1 nút "Quay ngay".
 
 ### Bước 6: Kết quả & Nhận Voucher
-- **Hành động:** Vòng quay dừng lại ở phần thưởng. Màn hình thông báo voucher đã được gửi qua Zalo (ZNS) kèm hướng dẫn sử dụng.
+- **Hành động:** Vòng quay dừng lại ở phần thưởng (nếu khách đủ điều kiện hợp lệ). Màn hình hiển thị mã voucher kèm hướng dẫn sử dụng.
 - **Trạng thái cảm xúc:** Vui vẻ, có khả năng quay lại quán lần sau để dùng voucher.
 - **Rủi ro (Drop-off risk):** Không biết cách nhận hay cách dùng voucher.
-- **Giải pháp tối ưu UX:** Hiển thị rõ ràng mã voucher trên màn hình (để có thể chụp ảnh màn hình) và nút "Mở Zalo kiểm tra ngay".
+- **Giải pháp tối ưu UX:** Hiển thị rõ ràng mã voucher trên màn hình (để khách có thể chụp ảnh màn hình lưu lại). Gửi tự động qua Zalo ZNS là định hướng tích hợp tương lai (phụ thuộc tích hợp thực tế).
