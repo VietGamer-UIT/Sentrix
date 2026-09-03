@@ -48,6 +48,11 @@ THAY ĐỔI (fix phân loại khía cạnh):
   - Thêm ASPECT_CATEGORY_MAP: map free-text aspect tiếng Việt → enum category
   - Thêm hàm normalize_aspects_for_db(): chuẩn hóa aspects list trước khi lưu DB
     + thêm field 'category' (enum), 'score' (numeric [-1, 1]), 'sentiment_en' (eng)
+
+CẬP NHẬT ABSA V2 (2026-08-26):
+  - _compute_text_sentiment_score() nhận float sentiment từ ABSA v2 (không còn string)
+  - normalize_aspects_for_db() hỗ trợ cả v1 (string) và v2 (float + mentioned)
+  - dynamic_weighted_fusion() pass-through key_phrase và sarcasm_detected từ v2
 """
 
 import logging
@@ -161,31 +166,39 @@ def _compute_text_sentiment_score(aspects: list[dict]) -> float:
     """
     Tính điểm cảm xúc INTERNAL từ list[dict] kết quả ABSA.
 
-    Quy đổi (thang INTERNAL [0, 1] — dùng nội bộ cho phép tính RFMS S):
-      Tích cực → +1.0
-      Trung lập →  0.5
-      Tiêu cực →  0.0
+    V1 (string): {"sentiment": "Tích cực/Tiêu cực/Trung lập"} → convert sang [0,1]
+    V2 (float):  {"sentiment": float [-1.0,+1.0], "mentioned": bool} → chỉ tính aspect được mentioned
 
-    Trả về trung bình cộng.
+    Quy đổi V1 sang INTERNAL [0, 1]:
+      Tích cực → +1.0,  Trung lập →  0.5,  Tiêu cực →  0.0
+
+    V2: sentiment_v2 ∈ [-1,+1] → internal = (sentiment_v2 + 1) / 2
+    Chỉ tính các aspect có mentioned=True (tránh kéo điểm sai).
+
     Nếu không có aspect nào → 0.5 (trung lập).
-
-    NOTE: Kết quả cuối cùng trả ra ngoài được convert sang [-1,+1]
-    bằng hàm _to_external_score() trước khi trả về API response.
     """
     if not aspects:
         return 0.5
 
-    score_map = {
-        "tích cực": 1.0,
-        "trung lập": 0.5,
-        "tiêu cực": 0.0,
-    }
+    # Detect V2 by checking if first item's sentiment is float
+    first = aspects[0] if aspects else {}
+    is_v2 = isinstance(first.get("sentiment"), (int, float)) and "mentioned" in first
 
     scores = []
-    for aspect in aspects:
-        sentiment_raw = str(aspect.get("sentiment", "")).lower().strip()
-        score = score_map.get(sentiment_raw, 0.5)
-        scores.append(score)
+    if is_v2:
+        # V2: chỉ tính aspect được đề cập; convert [-1,+1] → [0,1]
+        for aspect in aspects:
+            if aspect.get("mentioned", False):
+                raw = float(aspect.get("sentiment", 0.0))
+                internal = (max(-1.0, min(1.0, raw)) + 1.0) / 2.0
+                scores.append(internal)
+    else:
+        # V1: string sentiment
+        score_map = {"tích cực": 1.0, "trung lập": 0.5, "tiêu cực": 0.0}
+        for aspect in aspects:
+            sentiment_raw = str(aspect.get("sentiment", "")).lower().strip()
+            score = score_map.get(sentiment_raw, 0.5)
+            scores.append(score)
 
     return round(sum(scores) / len(scores), 4) if scores else 0.5
 
@@ -232,61 +245,68 @@ def normalize_aspects_for_db(aspects: list[dict]) -> list[dict]:
     """
     Chuẩn hóa danh sách aspects từ ABSA LLM → format chuẩn DB schema.
 
-    BUG-05 FIX (E2): Field `aspect` trong DB phải là ENUM (khớp schema.md),
-    không phải text tự do từ LLM.
-    Trước đây: aspect="Chất lượng món ăn" → Dashboard query `aspect=="mon_an"` MISS
-    Giờ:       aspect="mon_an" (enum) + aspect_text="Chất lượng món ăn" (display only)
+    Hỗ trợ cả V1 (string sentiment) và V2 (float sentiment + mentioned).
 
-    Input (từ LLM):
-        [
-            {"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon lắm"},
-            ...
-        ]
+    V1 Input:  [{"aspect": "Chất lượng món ăn", "sentiment": "Tích cực", "reason": "Ngon"}]
+    V2 Input:  [{"aspect": "mon_an", "sentiment": 0.8, "mentioned": True, "reason": "Ngon", "label_vi": "Món ăn"}]
 
     Output (chuẩn DB — khớp schema.md):
         [
             {
                 "aspect":       "mon_an",              # ENUM (dùng để query/filter)
-                "aspect_text":  "Chất lượng món ăn",  # Text gốc từ LLM (display only)
-                "sentiment":    "positive",            # English lowercase (khớp schema.md)
-                "score":        1.0,                   # numeric [-1.0, 1.0]
-                "reason":       "Ngon lắm",            # từ LLM
+                "label_vi":     "Món ăn",              # Label tiếng Việt đẹp
+                "sentiment":    "positive",            # English lowercase
+                "score":        0.8,                   # numeric [-1.0, 1.0]
+                "mentioned":    True,                  # V2: False → không tính vào biểu đồ TB
+                "reason":       "Ngon lắm",
                 "confidence":   None,
-            },
-            ...
+            }, ...
         ]
-
-    Args:
-        aspects: List dict từ ABSA LLM output.
-
-    Returns:
-        List dict đã normalize theo schema.md.
     """
+    # Detect V2 format: aspects đã là enum key (e.g. "mon_an") và sentiment là float
+    first = aspects[0] if aspects else {}
+    is_v2 = isinstance(first.get("sentiment"), (int, float)) and "mentioned" in first
+
     normalized = []
     for item in aspects:
-        aspect_text = str(item.get("aspect", "")).strip()
-        sentiment_raw = str(item.get("sentiment", "")).strip()
-        sentiment_key = sentiment_raw.lower()
+        if is_v2:
+            # V2: aspect key đã là enum, sentiment là float [-1.0, +1.0]
+            score = float(item.get("sentiment", 0.0))
+            score = max(-1.0, min(1.0, score))
+            if score > 0.2:
+                sentiment_en = "positive"
+            elif score < -0.2:
+                sentiment_en = "negative"
+            else:
+                sentiment_en = "neutral"
 
-        # E2 FIX: field `aspect` = ENUM theo schema.md, không phải text tự do.
-        # Dashboard query `where aspect == "nhan_vien"` sẽ đúng.
-        category_enum = _normalize_aspect_category(aspect_text)
+            normalized_item = {
+                "aspect":    str(item.get("aspect", "khac")),
+                "label_vi":  str(item.get("label_vi", item.get("aspect", ""))),
+                "sentiment": sentiment_en,
+                "score":     round(score, 3),
+                "mentioned": bool(item.get("mentioned", False)),
+                "reason":    str(item.get("reason", "")).strip()[:200],
+                "confidence": item.get("confidence"),
+            }
+        else:
+            # V1: aspect là text tự do, sentiment là string tiếng Việt
+            aspect_text   = str(item.get("aspect", "")).strip()
+            sentiment_raw = str(item.get("sentiment", "")).strip()
+            sentiment_key = sentiment_raw.lower()
 
-        normalized_item = {
-            # ENUM dùng để filter/query — khớp schema.md
-            "aspect":       category_enum,
-            # Text gốc từ LLM — chỉ để hiển thị trên UI, KHÔNG dùng để query
-            "aspect_text":  aspect_text,
-            # D2+schema.md: sentiment_en lowercase English
-            "sentiment":    SENTIMENT_VN_TO_EN.get(sentiment_key, "neutral"),
-            "score":        SENTIMENT_VN_TO_SCORE.get(sentiment_key, 0.0),
-            "reason":       str(item.get("reason", "")).strip(),
-            "confidence":   item.get("confidence"),  # None nếu LLM không trả về
-        }
-
-        # Nếu LLM có sarcasm_suspected, truyền qua
-        if item.get("sarcasm_suspected"):
-            normalized_item["sarcasm_suspected"] = True
+            category_enum = _normalize_aspect_category(aspect_text)
+            normalized_item = {
+                "aspect":    category_enum,
+                "label_vi":  aspect_text,
+                "sentiment": SENTIMENT_VN_TO_EN.get(sentiment_key, "neutral"),
+                "score":     SENTIMENT_VN_TO_SCORE.get(sentiment_key, 0.0),
+                "mentioned": True,  # V1 không có field mentioned → assume True
+                "reason":    str(item.get("reason", "")).strip()[:200],
+                "confidence": item.get("confidence"),
+            }
+            if item.get("sarcasm_suspected"):
+                normalized_item["sarcasm_suspected"] = True
 
         normalized.append(normalized_item)
 
@@ -325,6 +345,10 @@ def dynamic_weighted_fusion(
     """
     is_spam = absa_result.get("is_spam", False)
     aspects = absa_result.get("aspects", [])
+    # V2 fields — gracefully fallback cho V1
+    absa_overall_sentiment = absa_result.get("overall_sentiment")  # float V2 hoặc None V1
+    absa_key_phrase        = absa_result.get("key_phrase", "")
+    absa_sarcasm_detected  = absa_result.get("sarcasm_detected", False)
 
     # --- Trường hợp SPAM: trả về điểm rất thấp ---
     if is_spam:
@@ -339,6 +363,7 @@ def dynamic_weighted_fusion(
             "fusion_mode": "spam",
             "aspects": [],
             "is_spam": True,
+            "key_phrase": "",
             # internal_score dùng cho RFMS (S): 0.1 vẫn hợp lệ [0,1]
             "_internal_sentiment_score": 0.1,
         }
@@ -405,12 +430,14 @@ def dynamic_weighted_fusion(
         # sentiment_score trong DB/API = [-1, +1] theo schema.md
         "sentiment_score": external_score,
         "overall_sentiment": _sentiment_label(final_score),
-        "is_sarcasm_suspected": is_sarcasm_suspected,
+        "is_sarcasm_suspected": is_sarcasm_suspected or absa_sarcasm_detected,
         "text_sentiment_score": _to_external_score(text_score),
         "audio_stress_score": audio_stress,
         "fusion_mode": fusion_mode,
         "aspects": normalized_aspects,
         "is_spam": False,
+        # V2 pass-through fields
+        "key_phrase": absa_key_phrase,
         # _internal_sentiment_score: dùng nội bộ cho RFMS (S ∈ [0,1])
         # KHÔNG lưu vào Firestore — chỉ để feedback.py đọc trước khi gọi RFMS
         "_internal_sentiment_score": final_score,
@@ -420,7 +447,8 @@ def dynamic_weighted_fusion(
         f"[Fusion] Kết quả: sentiment_score(ext)={external_score:.4f}, "
         f"internal={final_score:.4f}, "
         f"overall={result['overall_sentiment']}, "
-        f"sarcasm={is_sarcasm_suspected}, "
-        f"mode={fusion_mode}"
+        f"sarcasm={result['is_sarcasm_suspected']}, "
+        f"mode={fusion_mode}, "
+        f"key_phrase='{absa_key_phrase[:30]}'"
     )
     return result

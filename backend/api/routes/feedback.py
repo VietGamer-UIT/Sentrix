@@ -805,7 +805,13 @@ async def submit_feedback(
             "audio_features":     audio_features_to_save,
             "aspects":            aspects_to_save,
             "sentiment_score":    sentiment_score,
+            # V2: overall_sentiment float [-1,+1] từ ABSA LLM (không phải string)
+            # Khác với sentiment_score (fusion text+audio). Dùng cho dashboard biểu đồ aspect.
+            "overall_sentiment_float": (absa_result or {}).get("overall_sentiment"),
+            # key_phrase: preview ~15 từ cho dashboard, không dùng transcript đầy đủ
+            "key_phrase":         (fusion_result or {}).get("key_phrase") or (absa_result or {}).get("key_phrase", ""),
             "is_sarcasm":         is_sarcasm_suspected,
+            "sarcasm_from_audio": is_sarcasm_suspected and not (absa_result or {}).get("sarcasm_detected", False),
             "fusion_mode":        (fusion_result or {}).get("fusion_mode"),
             "is_spam":            (absa_result or {}).get("is_spam", False),
             "p_churn":            p_churn,
@@ -895,12 +901,42 @@ async def submit_feedback(
             ),
         )
 
-    # -----------------------------------------------------------------------
-    # Bước 9 (Giai đoạn 9): Zalo ZNS webhook nếu P_churn vượt ngưỡng
-    # -----------------------------------------------------------------------
+    # --------------------------------------------------------------------------
+    # Bước 9 (Giai đoạn 9): Zalo ZNS webhook khi P_churn vượt ngưỡng
+    # ĐIỀU KIỆN TRIGGER V2 (cải tiến so với v1 — if-else đơn giản):
+    #   p_churn > churn_threshold (mặc định 0.85)
+    #   AND sentiment_score (thực đo từ feedback này) < ZNS_NEG_SENTIMENT_THRESHOLD
+    # Lý do thêm điều kiện sentiment:
+    #   - Khách có p_churn cao nhưng feedback này tích cực (hài lòng) → KBKZNS
+    #     (ngưỡi ta đang quay lại, không nên gửi voucher 'cảm ơn vì đã rời bỏ')
+    #   - Trigger đúng thời điểm: khi khách vừa rời + sentiment vừa có dấu hiệu tiêu cực
+    # ZNS_NEG_SENTIMENT_THRESHOLD: điểm sentinel lưu trong config hoặc mặc định -0.2
+    # --------------------------------------------------------------------------
+    ZNS_NEG_SENTIMENT_THRESHOLD = float(os.getenv("ZNS_NEG_SENTIMENT_THRESHOLD", "-0.2"))
+
+    # Kiểm tra điều kiện ZNS trigger v2: p_churn cao và sentiment lần này có dấu hiệu xấu
+    _sentiment_for_zns = sentiment_score if sentiment_score is not None else 0.0
+    _zns_trigger = (
+        should_alert
+        and customer_phone
+        and _sentiment_for_zns < ZNS_NEG_SENTIMENT_THRESHOLD
+    )
+
+    if _zns_trigger:
+        logger.warning(
+            f"[Feedback] ZNS TRIGGER v2: P_churn={p_churn:.4f} + "
+            f"sentiment={_sentiment_for_zns:.3f} < {ZNS_NEG_SENTIMENT_THRESHOLD} "
+            f"→ Trigger Zalo ZNS!"
+        )
+    elif should_alert and customer_phone and not _zns_trigger:
+        logger.info(
+            f"[Feedback] P_churn cao ({p_churn:.4f}) nhưng sentiment={_sentiment_for_zns:.3f} ≥ {ZNS_NEG_SENTIMENT_THRESHOLD} "
+            f"→ Bỏ qua ZNS (khách vừa phản hồi tích cực, không phù hợp gửi voucher giữ chân)"
+        )
+
     zns_result: Optional[dict] = None
 
-    if should_alert and customer_phone:
+    if _zns_trigger:
         logger.warning(
             f"[Feedback] P_churn={p_churn:.4f} VUOT NGUONG — Trigger Zalo ZNS!"
         )
