@@ -1,4 +1,4 @@
-﻿"""
+"""
 intent_service.py — Intent Classification for Sentrix
 =======================================================
 Milestone 3: Phân loại ý định feedback từ văn bản ngắn
@@ -158,12 +158,12 @@ def classify_intent(text: str, timeout_sec: int = 10) -> IntentResult:
         logger.debug(f"[Intent] LLM raw output: {raw!r}")
 
         # Parse JSON
-        # Strip markdown nếu LLM bọc kết quả
+        # Strip markdown nếu LLM bọc kết quả (vd: ```json ... ```)
+        raw = raw.strip()
         if raw.startswith("`"):
-            raw = raw.split("`")[1]
+            raw = raw.strip("`").strip()
             if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.strip()
+                raw = raw[4:].strip()
 
         parsed = json.loads(raw)
 
