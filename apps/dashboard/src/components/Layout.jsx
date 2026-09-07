@@ -15,7 +15,7 @@ const navItems = [
 const navItemsOps = [
   { to: '/fraud',          label: 'Chống gian lận' },
   { to: '/voucher-config', label: 'Cấu hình voucher' },
-  { to: '/operating-cost', label: 'Chi phí vận hành' },
+  { to: '/operating-cost', label: 'Chi phí' },
 ]
 
 function Layout() {
@@ -71,7 +71,7 @@ function Layout() {
             <img
               src="/sentrix-logo.png"
               alt="Sentrix"
-              style={{ width: 160, height: 'auto', objectFit: 'contain', display: 'block' }}
+              style={{ width: 130, height: 'auto', objectFit: 'contain', display: 'block' }}
             />
           </div>
 
@@ -92,62 +92,56 @@ function Layout() {
           {/* Phân cách dưới logo + tên */}
           <div style={{ margin: '0 var(--spacing-lg) 4px', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
 
-          {/* Nav chính — nhóm chức năng cốt lõi */}
-          <nav className="sidebar-nav" style={{ flexShrink: 0 }}>
-            {navItems.map(({ to, label, end, isAlerts }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={end}
-                className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <span>{label}</span>
-                {isAlerts && pendingCount > 0 && (
-                  <span style={{
-                    background: '#EF4444',
-                    color: '#fff',
-                    borderRadius: 20,
-                    padding: '0 7px',
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    lineHeight: '18px',
-                    minWidth: 18,
-                    textAlign: 'center',
-                  }}>
-                    {pendingCount}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </nav>
+          {/* Scrollable Nav Area */}
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+            {/* Nav chính — nhóm chức năng cốt lõi */}
+            <nav className="sidebar-nav" style={{ flexShrink: 0 }}>
+              {navItems.map(({ to, label, end, isAlerts }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                >
+                  <span>{label}</span>
+                  {isAlerts && pendingCount > 0 && (
+                    <span style={{
+                      background: '#EF4444',
+                      color: '#fff',
+                      borderRadius: 20,
+                      padding: '0 7px',
+                      fontSize: '0.65rem',
+                      fontWeight: 800,
+                      lineHeight: '18px',
+                      minWidth: 18,
+                      textAlign: 'center',
+                    }}>
+                      {pendingCount}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
 
-          {/* Phân cách trước nhóm vận hành */}
-          <div style={{ margin: '8px var(--spacing-lg) 0', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
+            {/* Phân cách */}
+            <div style={{ margin: '8px var(--spacing-lg) 8px', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
 
-          {/* Nhóm Vận hành — nhãn mục */}
-          <div style={{
-            padding: '10px var(--spacing-lg) 4px',
-            fontSize: '0.65rem', fontWeight: 700,
-            color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em',
-            flexShrink: 0,
-          }}>
-            Vận hành
+            <nav className="sidebar-nav" style={{ paddingTop: 0, flexShrink: 0 }}>
+              {navItemsOps.map(({ to, label }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Spacer — đẩy footer xuống đáy */}
+            <div style={{ flex: 1 }} />
           </div>
-          <nav className="sidebar-nav" style={{ paddingTop: 0, flexShrink: 0 }}>
-            {navItemsOps.map(({ to, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-              >
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-
-          {/* Spacer — đẩy footer xuống đáy */}
-          <div style={{ flex: 1 }} />
 
           {/* Footer sidebar */}
           <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--spacing-md) var(--spacing-lg)', flexShrink: 0 }}>

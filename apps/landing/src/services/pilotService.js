@@ -1,59 +1,38 @@
 /**
- * pilotService.js — Pilot form submission abstraction
- *
- * Currently stores submissions to localStorage (demo mode).
- * To connect a real backend, replace submitPilotLead() body:
- *
- *   Option A: Firebase Firestore
- *     import { db } from '../firebase'
- *     await addDoc(collection(db, 'pilot_leads'), data)
- *
- *   Option B: API endpoint
- *     await fetch('/api/pilot-leads', { method: 'POST', body: JSON.stringify(data) })
- *
- *   Option C: Google Sheets via Apps Script
- *     await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) })
+ * pilotService.js — Pilot form submission using FormSubmit API
  */
 
-const STORAGE_KEY = 'sentrix_pilot_leads'
-
-/**
- * Submit a pilot lead.
- * @param {Object} formData - form fields
- * @returns {Promise<{ success: boolean, id: string }>}
- */
 export async function submitPilotLead(formData) {
-  // Simulate network latency for demo realism
-  await new Promise(resolve => setTimeout(resolve, 900))
+  // We send to the specific email the user provided. 
+  // Uses formsubmit.co's AJAX API for headless submission.
+  const response = await fetch("https://formsubmit.co/ajax/skyvdygaming@gmail.com", {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      _subject: "[SENTRIX] Đăng ký dùng thử mới",
+      _captcha: "false", // Đang tắt CAPTCHA để UX mượt
+      "Tên cửa hàng": formData.storeName,
+      "Người liên hệ": formData.contactName,
+      "Thông tin liên hệ": formData.contactInfo,
+      "Loại hình": formData.storeType,
+      "Quy mô": formData.storeSize,
+      "Mục tiêu": formData.goal,
+      "Thời gian đăng ký": new Date().toLocaleString('vi-VN')
+    })
+  });
 
-  const lead = {
-    id: `lead_${Date.now()}`,
-    submittedAt: new Date().toISOString(),
-    ...formData
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  // Store to localStorage (demo only)
-  try {
-    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-    existing.push(lead)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing))
-  } catch (e) {
-    // Storage unavailable — still succeed for UX
-  }
-
-  // TODO: Replace above with real backend call before production launch
-  // console.log('[Sentrix Pilot Lead]', lead)
-
-  return { success: true, id: lead.id }
-}
-
-/**
- * Retrieve all stored leads (dev/debug only).
- */
-export function getStoredLeads() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-  } catch {
-    return []
+  const data = await response.json();
+  if (data.success === 'true' || data.success === true || data.success === 'success') {
+    return { success: true };
+  } else {
+    console.error("[Sentrix Pilot] FormSubmit error:", data);
+    throw new Error('Provider returned error.');
   }
 }

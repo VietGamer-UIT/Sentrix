@@ -205,10 +205,10 @@ function PilotForm() {
           </svg>
         </div>
         <h3 style={{ fontWeight: 800, fontSize: 'var(--t-2xl)', color: 'var(--grey-900)', marginBottom: 'var(--s-3)' }}>
-          Đã nhận được đăng ký.
+          Đăng ký thành công.
         </h3>
         <p style={{ fontSize: 'var(--t-base)', color: 'var(--grey-500)', lineHeight: 1.7 }}>
-          Đội ngũ Sentrix sẽ liên hệ với bạn sớm nhất có thể để sắp xếp Pilot.
+          Sentrix đã nhận thông tin của bạn. Đội ngũ sẽ liên hệ với bạn sớm nhất có thể.
         </p>
         <button
           onClick={() => { setStatus('idle'); setForm(BLANK) }}
@@ -315,7 +315,7 @@ function PilotForm() {
 
       {status === 'error' && (
         <p style={{ fontSize: 'var(--t-sm)', color: 'var(--red)', textAlign: 'center' }}>
-          Có lỗi xảy ra. Vui lòng thử lại.
+          Không thể gửi đăng ký lúc này. Vui lòng thử lại.
         </p>
       )}
 

@@ -103,7 +103,7 @@ function LandingPage() {
             <img
               src="/sentrix-logo.png"
               alt="Sentrix"
-              style={{ width: 140, height: 'auto', objectFit: 'contain', flexShrink: 0 }}
+              style={{ width: 100, height: 'auto', objectFit: 'contain', flexShrink: 0 }}
             />
           </div>
 

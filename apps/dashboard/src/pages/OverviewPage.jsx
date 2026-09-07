@@ -12,20 +12,11 @@ import CountUp from 'react-countup'
  * OverviewPage — Tổng quan realtime
  */
 
-const ASPECT_LABELS = {
-  nhan_vien: 'Nhân viên', mon_an: 'Món ăn', khong_gian: 'Không gian',
-  gia_ca: 'Giá cả', toc_do_phuc_vu: 'Tốc độ PV', ve_sinh: 'Vệ sinh', khac: 'Khác'
-}
+import { ASPECT_LABELS, getAspectCategory, getAspectSentimentEn, getAspectScore, scoreToColor } from '../components/AspectCellExpanded.jsx'
 
 const ASPECT_ICONS = {
   nhan_vien: '👩‍🍳', mon_an: '🍲', khong_gian: '🏪',
-  gia_ca: '💰', toc_do_phuc_vu: '⚡', ve_sinh: '✨', khac: '📌'
-}
-
-function scoreToColor(score) {
-  if (score >= 0.3) return 'var(--color-positive)'
-  if (score <= -0.3) return 'var(--color-negative)'
-  return 'var(--color-neutral-s)'
+  gia_ca: '💰', toc_do_phuc_vu: '⚡', toc_do: '⚡', ve_sinh: '✨', khac: '📌'
 }
 function sentimentLabel(score) {
   if (score >= 0.3) return { label: 'Tích cực', cls: 'positive' }
@@ -139,9 +130,9 @@ export default function OverviewPage() {
     const map = {}
     doneFeedbacks.forEach(f => {
       (f.aspects || []).forEach(a => {
-        const cat  = a.category || a.aspect || 'khac'
-        const sent = a.sentiment_en || (a.sentiment === 'Tích cực' ? 'positive' : a.sentiment === 'Tiêu cực' ? 'negative' : a.sentiment) || 'neutral'
-        const sc   = typeof a.score === 'number' ? a.score : (sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0)
+        const cat  = getAspectCategory(a)
+        const sent = getAspectSentimentEn(a)
+        const sc   = getAspectScore(a)
         if (!map[cat]) map[cat] = { pos: 0, neg: 0, neu: 0, count: 0, total: 0 }
         map[cat].count++
         map[cat].total += sc
@@ -408,13 +399,20 @@ export default function OverviewPage() {
                     {(fb.aspects?.length > 0) && (
                       <div>
                         {(fb.aspects || []).map((a, i) => {
-                          const cat  = a.category || a.aspect || 'khac'
-                          const sent = a.sentiment_en || (a.sentiment === 'Tích cực' ? 'positive' : a.sentiment === 'Tiêu cực' ? 'negative' : a.sentiment) || 'neutral'
-                          const sc   = typeof a.score === 'number' ? a.score : (sent === 'positive' ? 1 : sent === 'negative' ? -1 : 0)
+                          const cat  = getAspectCategory(a)
+                          const sent = getAspectSentimentEn(a)
+                          const sc   = getAspectScore(a)
                           return (
                             <span key={i} className="aspect-chip">
                               {ASPECT_LABELS[cat] || cat}
-                              {' '}<span style={{ color: scoreToColor(sc) }}>{sent === 'positive' ? '▲' : sent === 'negative' ? '▼' : '–'}</span>
+                              <span style={{ 
+                                color: scoreToColor(sc), 
+                                marginLeft: 4,
+                                fontWeight: sent === 'neutral' ? 400 : 800,
+                                fontSize: sent === 'neutral' ? 'inherit' : '0.8rem'
+                              }}>
+                                {sent === 'positive' ? '+' : sent === 'negative' ? '-' : '–'}
+                              </span>
                             </span>
                           )
                         })}
