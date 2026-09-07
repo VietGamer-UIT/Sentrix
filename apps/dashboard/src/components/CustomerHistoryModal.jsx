@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { timeAgo } from '../mocks/useFirestore.js'
+import { AspectCellExpanded, scoreToColor } from '../components/AspectCellExpanded.jsx'
 
 /**
  * CustomerHistoryModal — Hiển thị lịch sử đánh giá của một khách hàng
@@ -12,9 +13,7 @@ export default function CustomerHistoryModal({ customer, feedbacks, onClose }) {
       .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0))
   }, [feedbacks, customer])
 
-  function scoreToColor(s) {
-    return s >= 0.3 ? 'var(--color-positive)' : s <= -0.3 ? 'var(--color-negative)' : 'var(--color-neutral-s)'
-  }
+
 
   // Đóng modal khi click ra ngoài
   const handleOverlayClick = (e) => {
@@ -104,9 +103,15 @@ export default function CustomerHistoryModal({ customer, feedbacks, onClose }) {
                         ) : null}
                       </div>
 
-                      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+                      <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
                         {fb.transcript ? `"${fb.transcript}"` : '(Không có văn bản)'}
                       </p>
+
+                      {fb.aspects && fb.aspects.length > 0 && (
+                        <div style={{ marginTop: 8 }}>
+                          <AspectCellExpanded aspects={fb.aspects} />
+                        </div>
+                      )}
 
                       {fb.is_sarcasm && (
                         <span className="sarcasm-flag" style={{ marginTop: 8, display: 'inline-flex' }}>⚠️ Mỉa mai</span>

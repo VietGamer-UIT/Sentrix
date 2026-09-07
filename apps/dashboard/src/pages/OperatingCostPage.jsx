@@ -18,8 +18,8 @@ import { useFeedbacks, useCustomers, IS_MOCK } from '../mocks/useFirestore.js'
  *   Mục đích: minh hoạ bảng OpEx trong thuyết minh dự án AISC'26.
  *
  * ĐƠN GIÁ MẶC ĐỊNH (override qua VITE_COST_* trong .env):
- *   Whisper:  $0.003/lượt (= $0.006/phút × 0.5 phút trung bình)
- *   Gemini:   $0.0001/lượt (Flash-Lite rất rẻ, ~100K input token = $0.01)
+ *   Whisper:  $0.003/lượt (Groq Whisper)
+ *   Gemini:   $0.0001/lượt (Flash-Lite rất rẻ)
  *   ZNS:      1,000 VNĐ/tin
  *   Render:   $0/tháng (free tier) + optional $7/tháng nếu cần uptime
  *   Vercel:   $0/tháng (Hobby tier)
@@ -84,12 +84,12 @@ export default function OperatingCostPage() {
           id: 'whisper',
           label:     'Whisper STT (giọng nói → văn bản)',
           icon:      '🎙️',
-          provider:  'OpenAI',
+          provider:  'Groq',
           count:     counts.audio,
           unit:      'lượt audio',
           unitPrice: `${fmtUSD(COST.whisper_per_call)}/lượt`,
           vnd:       whisperVND,
-          note:      '~15 giây/lượt, $0.006/phút',
+          note:      'Whisper Large V3 Turbo',
         },
         {
           id: 'gemini',
@@ -136,27 +136,28 @@ export default function OperatingCostPage() {
           fontSize: 'var(--font-size-lg)', fontWeight: 800,
           color: 'var(--color-text-primary)', margin: 0
         }}>
-          Chi phí vận hành
+          Chi phí
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 4 }}>
-          Ước tính chi phí API thực tế từ dữ liệu phản hồi
+          Ước lượng dựa trên cấu hình hệ thống
           {IS_MOCK && <span style={{ color: 'var(--color-warning)', marginLeft: 8 }}>— Dữ liệu mẫu</span>}
         </p>
       </div>
 
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
-        background: 'rgba(6,136,166,0.06)',
-        border: '1px solid rgba(6,136,166,0.2)',
+        background: 'rgba(255, 164, 18, 0.08)',
+        border: '1px solid rgba(255, 164, 18, 0.2)',
         borderRadius: 'var(--radius-md)',
         padding: 'var(--spacing-md) var(--spacing-lg)',
         marginBottom: 'var(--spacing-xl)',
         fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)',
         lineHeight: 1.6,
       }}>
+        <div style={{ color: 'var(--color-warning)', fontSize: '1.2rem', marginTop: 2 }}>⚠️</div>
         <div>
-          <strong>Ước tính nội bộ — không phải hóa đơn thật từ nhà cung cấp.</strong><br />
-          Số lượt đếm từ dữ liệu Firestore. Tỷ giá: 1 USD = {COST.usd_vnd_rate.toLocaleString('vi-VN')} ₫.
+          <strong style={{ color: 'var(--color-warning)' }}>Chưa đủ dữ liệu thanh toán chính xác, đang ước lượng dựa trên cấu hình hệ thống.</strong><br />
+          Số lượt đếm từ dữ liệu. Tỷ giá: 1 USD = {COST.usd_vnd_rate.toLocaleString('vi-VN')} ₫.
         </div>
       </div>
 
