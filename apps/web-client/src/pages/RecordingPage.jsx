@@ -100,6 +100,8 @@ function RecordingPage() {
   const [textContent, setTextContent] = useState('')
   const [showText, setShowText] = useState(mode === 'text')
   const [recordStartTime, setRecordStartTime] = useState(null)
+  // isSubmitting: prevents double-submit while API call is in-flight
+  const [isSubmitting, setIsSubmitting] = useState(false)
   // Giai đoạn 7: Contact (SĐT hoặc email) tùy chọn để backend tính RFMS
   const [customerContact, setCustomerContact] = useState('')
   const [showContactInput, setShowContactInput] = useState(false)
@@ -225,6 +227,7 @@ function RecordingPage() {
     sessionStorage.setItem('sentrix_feedback_id', clientFeedbackId)
 
     // Gửi API ngầm (Fire-and-forget)
+    setIsSubmitting(true)
     submitFeedback({
       tenantId,
       location: decodeURIComponent(location),
@@ -249,6 +252,8 @@ function RecordingPage() {
       // Lỗi mạng hoặc server
       console.error('[Sentrix] Lỗi gửi feedback ngầm:', err)
       alert('Cảnh báo: Không thể gửi phản hồi do lỗi kết nối. Vui lòng thử lại sau.')
+    }).finally(() => {
+      setIsSubmitting(false)
     })
 
     // Navigate NGAY LẬP TỨC (phiên bản trung gian) — UX mượt

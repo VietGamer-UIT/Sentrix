@@ -24,7 +24,12 @@ services:
     envVars:
       # ── Secrets: ĐIỀN TRỰC TIẾP trên Render Dashboard, KHÔNG ghi vào đây ──
 
-      # OpenAI Whisper STT
+      # Groq Whisper STT (primary) — key dạng gsk_...
+      # Tài liệu: https://console.groq.com/keys
+      - key: GROQ_API_KEY
+        sync: false
+
+      # OpenAI Whisper STT (fallback nếu không có GROQ_API_KEY)
       - key: OPENAI_API_KEY
         sync: false
 
