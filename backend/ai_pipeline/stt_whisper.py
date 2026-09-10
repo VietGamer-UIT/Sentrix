@@ -37,6 +37,7 @@ XỬ LÝ LỖI:
 
 import os
 import logging
+import threading
 from pathlib import Path
 
 from openai import (
@@ -73,6 +74,18 @@ _GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 # Model Groq Whisper sử dụng (nhanh hơn whisper-1, hỗ trợ tiếng Việt)
 _GROQ_MODEL = "whisper-large-v3-turbo"
 
+# ---------------------------------------------------------------------------
+# Singleton Groq client
+# ---------------------------------------------------------------------------
+# openai SDK ≥1.0 dùng httpx.Client làm transport layer.
+# httpx.Client là thread-safe cho concurrent requests (mỗi request có session riêng).
+# Tái sử dụng 1 client duy nhất giúp:
+#   - Tái sử dụng connection pool (giảm TCP handshake overhead)
+#   - Tránh allocation overhead mỗi request
+# Singleton được khởi tạo lazy (lần đầu gọi API) dưới lock để thread-safe.
+_GROQ_CLIENT: "OpenAI | None" = None
+_GROQ_CLIENT_LOCK = threading.Lock()
+
 
 # ---------------------------------------------------------------------------
 # Custom exceptions — để caller (endpoint) bắt và trả lỗi có cấu trúc
@@ -106,6 +119,39 @@ class WhisperAPIError(WhisperError):
 # ---------------------------------------------------------------------------
 # Hàm chính
 # ---------------------------------------------------------------------------
+
+
+def _get_groq_client() -> "OpenAI":
+    """
+    Trả về Groq OpenAI-compatible client (singleton, lazy-init, thread-safe).
+
+    Raises:
+        WhisperAuthError: Nếu thiếu API key.
+    """
+    global _GROQ_CLIENT
+    if _GROQ_CLIENT is not None:
+        return _GROQ_CLIENT
+    with _GROQ_CLIENT_LOCK:
+        if _GROQ_CLIENT is not None:  # double-checked locking
+            return _GROQ_CLIENT
+        api_key = (
+            os.getenv("GROQ_API_KEY")
+            or os.getenv("WHISPER_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
+        )
+        if not api_key:
+            raise WhisperAuthError(
+                "Chưa thiết lập API key cho Groq Whisper. "
+                "Hãy đặt biến môi trường GROQ_API_KEY (dạng gsk_...) trong file .env."
+            )
+        _GROQ_CLIENT = OpenAI(
+            api_key=api_key,
+            base_url=_GROQ_BASE_URL,
+            timeout=WHISPER_TIMEOUT_SECONDS,
+        )
+        logger.info("[STT] Groq client singleton khởi tạo thành công.")
+        return _GROQ_CLIENT
+
 
 def transcribe_audio(audio_file_path: str, language: str = "vi") -> str:
     """
@@ -158,28 +204,11 @@ def transcribe_audio(audio_file_path: str, language: str = "vi") -> str:
     if file_size == 0:
         raise WhisperFormatError("File audio rỗng (0 bytes).")
 
-    # --- Bước 2: Lấy API key ---
-    # Ưu tiên GROQ_API_KEY; fallback WHISPER_API_KEY → OPENAI_API_KEY (tương thích ngược)
-    api_key = (
-        os.getenv("GROQ_API_KEY")
-        or os.getenv("WHISPER_API_KEY")
-        or os.getenv("OPENAI_API_KEY")
-    )
-    if not api_key:
-        raise WhisperAuthError(
-            "Chưa thiết lập API key cho Groq Whisper. "
-            "Hãy đặt biến môi trường GROQ_API_KEY (dạng gsk_...) trong file .env."
-        )
+    # --- Bước 2: Lấy Groq client (singleton — không tạo mới mỗi request) ---
+    groq_client = _get_groq_client()
 
     # --- Bước 3: Gọi Groq Whisper API qua OpenAI-compatible SDK ---
     try:
-        # Dùng OpenAI SDK trỏ sang Groq endpoint — không cần cài thêm groq package
-        groq_client = OpenAI(
-            api_key=api_key,
-            base_url=_GROQ_BASE_URL,
-            timeout=WHISPER_TIMEOUT_SECONDS,
-        )
-
         logger.info(
             f"[STT] Gửi file đến Groq Whisper: {audio_path.name} "
             f"({file_size / 1024:.1f}KB, ext={extension}, lang={language}, model={_GROQ_MODEL})"
