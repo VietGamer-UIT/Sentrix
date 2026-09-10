@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { submitFeedback } from '../api/feedback.js'
+import { sendOtp, verifyOtp } from '../api/otp.js'
 
 const MAX_DURATION_SEC = 15
 
@@ -99,9 +100,10 @@ function RecordingPage() {
   const [textContent, setTextContent] = useState('')
   const [showText, setShowText] = useState(mode === 'text')
   const [recordStartTime, setRecordStartTime] = useState(null)
-  // Giai đoạn 7: SĐT tùy chọn để backend tính RFMS
-  const [customerPhone, setCustomerPhone] = useState('')
-  const [showPhoneInput, setShowPhoneInput] = useState(false)
+  // Giai đoạn 7: Contact (SĐT hoặc email) tùy chọn để backend tính RFMS
+  const [customerContact, setCustomerContact] = useState('')
+  const [showContactInput, setShowContactInput] = useState(false)
+  const [contactVerified, setContactVerified] = useState(false)
 
   // === Refs ===
   const mediaRecorderRef = useRef(null)
@@ -213,12 +215,12 @@ function RecordingPage() {
     // Khi ghi âm: truyền thêm textContent nếu có (user nhập thêm)
     // để backend dùng làm fallback nếu Whisper fail
     const textToSend = textContent.trim() || null
-    const phoneToSend = customerPhone.trim() || null
+    const contactToSend = customerContact.trim() || null
 
-    // Lưu SĐT và ID sớm vào sessionStorage để các trang sau có thể dùng ngay
+    // Lưu contact và ID sớm vào sessionStorage để các trang sau có thể dùng ngay
     const clientFeedbackId = crypto.randomUUID()
-    if (phoneToSend) {
-      sessionStorage.setItem('sentrix_customer_phone', phoneToSend)
+    if (contactToSend) {
+      sessionStorage.setItem('sentrix_customer_phone', contactToSend)
     }
     sessionStorage.setItem('sentrix_feedback_id', clientFeedbackId)
 
@@ -228,9 +230,10 @@ function RecordingPage() {
       location: decodeURIComponent(location),
       audioBlob: audioBlob || null,
       textContent: textToSend,
-      customerPhone: phoneToSend,
+      customerPhone: contactToSend,
       totalSpending: 0,
       feedbackId: clientFeedbackId,
+      voucherEligible: contactVerified && !!contactToSend,
     }).then(result => {
       // Thành công ngầm: lưu kết quả cho SpinPage
       try {
@@ -355,12 +358,15 @@ function RecordingPage() {
             {/* Sau khi có audio blob */}
             {audioBlob && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                {/* Input SĐT tùy chọn */}
-                <PhoneInputSection
-                  customerPhone={customerPhone}
-                  setCustomerPhone={setCustomerPhone}
-                  showPhoneInput={showPhoneInput}
-                  setShowPhoneInput={setShowPhoneInput}
+                {/* Input Contact (SĐT/Email) + OTP */}
+                <ContactInputSection
+                  tenantId={tenantId}
+                  customerContact={customerContact}
+                  setCustomerContact={setCustomerContact}
+                  showContactInput={showContactInput}
+                  setShowContactInput={setShowContactInput}
+                  contactVerified={contactVerified}
+                  setContactVerified={setContactVerified}
                 />
                 <button id="btn-submit-audio" className="btn btn--primary" onClick={handleSubmit}>
                   🚀 Gửi phản hồi
@@ -413,12 +419,15 @@ function RecordingPage() {
               </p>
             )}
 
-            {/* Input SĐT tùy chọn — Giai đoạn 7: để backend tính RFMS personalized */}
-            <PhoneInputSection
-              customerPhone={customerPhone}
-              setCustomerPhone={setCustomerPhone}
-              showPhoneInput={showPhoneInput}
-              setShowPhoneInput={setShowPhoneInput}
+            {/* Input Contact (SĐT/Email) + OTP — Giai đoạn 7 */}
+            <ContactInputSection
+              tenantId={tenantId}
+              customerContact={customerContact}
+              setCustomerContact={setCustomerContact}
+              showContactInput={showContactInput}
+              setShowContactInput={setShowContactInput}
+              contactVerified={contactVerified}
+              setContactVerified={setContactVerified}
             />
 
             <button
@@ -450,21 +459,87 @@ function RecordingPage() {
 export default RecordingPage
 
 /**
- * PhoneInputSection — Input SĐT tùy chọn (Giai đoạn 7)
+ * ContactInputSection — Nhập SĐT hoặc Email + xác thực OTP
  *
- * Mục đích: để backend hash SĐT và tính RFMS cá nhân hóa.
- * Hiển thị dạng collapsible — không bắt buộc, không gây friction.
- * Backend sẽ hash SĐT (SHA-256 + salt) trước khi lưu Firestore.
+ * Flow:
+ *   1. Chưa mở → hiện link "Để lại SĐT/Mail để nhận voucher"
+ *   2. Mở → nhập SĐT hoặc email → bấm "Gửi mã"
+ *   3. Nhận OTP → nhập 6 số → bấm "Xác nhận"
+ *   4. Verified ✅ → hiện badge xanh, contact được lưu
  */
-function PhoneInputSection({ customerPhone, setCustomerPhone, showPhoneInput, setShowPhoneInput }) {
-  const validatePhone = (val) => /^(0|\+84)[0-9]{8,10}$/.test(val.replace(/\s/g, ''))
+function ContactInputSection({
+  tenantId,
+  customerContact,
+  setCustomerContact,
+  showContactInput,
+  setShowContactInput,
+  contactVerified,
+  setContactVerified,
+}) {
+  const [otpStep, setOtpStep]       = useState('idle')   // idle | sending | otp_sent | verifying | done | error
+  const [otpCode, setOtpCode]       = useState('')
+  const [otpError, setOtpError]     = useState('')
+  const [otpMessage, setOtpMessage] = useState('')
+  const [countdown, setCountdown]   = useState(0)
 
-  return (
-    <div style={{ marginBottom: 'var(--spacing-sm)' }}>
-      {!showPhoneInput ? (
+  // Đếm ngược resend (60s)
+  useEffect(() => {
+    if (countdown <= 0) return
+    const t = setTimeout(() => setCountdown(c => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [countdown])
+
+  const isEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
+  const isPhone = (val) => /^(0|\+84)[0-9]{8,10}$/.test(val.replace(/\s/g, ''))
+  const isValidContact = isEmail(customerContact) || isPhone(customerContact)
+  const contactType = isEmail(customerContact) ? 'email' : 'phone'
+
+  const handleSendOtp = async () => {
+    if (!isValidContact) return
+    setOtpStep('sending')
+    setOtpError('')
+    try {
+      const res = await sendOtp(customerContact.trim(), tenantId)
+      setOtpMessage(res.message || 'Mã OTP đã được gửi!')
+      setOtpStep('otp_sent')
+      setCountdown(60)
+    } catch (err) {
+      setOtpError(err.message || 'Không thể gửi OTP. Thử lại sau.')
+      setOtpStep('idle')
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    if (otpCode.length !== 6) return
+    setOtpStep('verifying')
+    setOtpError('')
+    try {
+      await verifyOtp(customerContact.trim(), otpCode, tenantId)
+      setOtpStep('done')
+      setContactVerified(true)
+    } catch (err) {
+      setOtpError(err.message || 'Mã OTP không đúng hoặc đã hết hạn.')
+      setOtpStep('otp_sent')
+    }
+  }
+
+  const handleReset = () => {
+    setShowContactInput(false)
+    setCustomerContact('')
+    setOtpStep('idle')
+    setOtpCode('')
+    setOtpError('')
+    setOtpMessage('')
+    setContactVerified(false)
+  }
+
+  // ─── Chưa mở ───
+  if (!showContactInput) {
+    return (
+      <div style={{ marginBottom: 'var(--spacing-sm)' }}>
         <button
           type="button"
-          onClick={() => setShowPhoneInput(true)}
+          onClick={() => setShowContactInput(true)}
           style={{
             background: 'none', border: 'none',
             color: 'var(--color-text-muted)',
@@ -473,59 +548,220 @@ function PhoneInputSection({ customerPhone, setCustomerPhone, showPhoneInput, se
             padding: '4px 0', fontFamily: 'var(--font-family)',
           }}
         >
-          📱 Nhận ưu đãi cá nhân? Thêm số điện thoại (tùy chọn)
+          🎁 Để lại SĐT hoặc Email để nhận voucher (tùy chọn)
         </button>
-      ) : (
-        <div style={{
-          padding: 'var(--spacing-md)',
-          background: 'rgba(0,194,255,0.04)',
-          border: '1px solid rgba(0,194,255,0.12)',
-          borderRadius: 'var(--radius-md)',
-        }}>
-          <label style={{
-            display: 'block', fontSize: 'var(--font-size-xs)',
-            color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 600
-          }}>
-            📱 Số điện thoại (tùy chọn)
-          </label>
-          <input
-            type="tel"
-            inputMode="numeric"
-            placeholder="0901 234 567"
-            value={customerPhone}
-            onChange={e => setCustomerPhone(e.target.value)}
-            maxLength={15}
-            style={{
-              width: '100%', padding: '10px 12px',
-              background: 'rgba(255,255,255,0.06)',
-              border: `1px solid ${customerPhone && !validatePhone(customerPhone) ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--color-text-primary)',
-              fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family)',
-              boxSizing: 'border-box',
-            }}
-          />
-          {customerPhone && !validatePhone(customerPhone) && (
-            <p style={{ fontSize: '0.68rem', color: 'var(--color-danger)', marginTop: 4 }}>
-              SĐT không hợp lệ (ví dụ đúng: 0901234567)
-            </p>
-          )}
-          <p style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)', marginTop: 6, lineHeight: 1.5 }}>
-            🔒 SĐT được mã hóa (hash) trước khi lưu. Không chia sẻ với bên thứ ba.
-          </p>
+      </div>
+    )
+  }
+
+  // ─── Đã xác thực thành công ───
+  if (otpStep === 'done' || contactVerified) {
+    return (
+      <div style={{
+        padding: 'var(--spacing-md)',
+        background: 'rgba(0,182,155,0.06)',
+        border: '1px solid rgba(0,182,155,0.2)',
+        borderRadius: 'var(--radius-md)',
+        marginBottom: 'var(--spacing-sm)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 20 }}>✅</span>
+          <div>
+            <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 700, color: 'var(--color-success)' }}>
+              Đã xác thực thành công!
+            </div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
+              {customerContact} · Voucher sẽ được gửi sau khi phản hồi được xử lý
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Form nhập contact + OTP ───
+  return (
+    <div style={{
+      padding: 'var(--spacing-md)',
+      background: 'rgba(0,194,255,0.04)',
+      border: '1px solid rgba(0,194,255,0.12)',
+      borderRadius: 'var(--radius-md)',
+      marginBottom: 'var(--spacing-sm)',
+    }}>
+      {/* Label */}
+      <label style={{
+        display: 'block', fontSize: 'var(--font-size-xs)',
+        color: 'var(--color-text-secondary)', marginBottom: 6, fontWeight: 600
+      }}>
+        🎁 SĐT hoặc Email để nhận voucher (tùy chọn)
+      </label>
+
+      {/* Input contact */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+        <input
+          type="text"
+          inputMode="email"
+          placeholder="0901 234 567 hoặc ten@gmail.com"
+          value={customerContact}
+          onChange={e => {
+            setCustomerContact(e.target.value)
+            setOtpStep('idle')
+            setOtpError('')
+          }}
+          disabled={otpStep === 'otp_sent' || otpStep === 'sending' || otpStep === 'verifying'}
+          maxLength={60}
+          style={{
+            flex: 1, padding: '9px 11px',
+            background: 'rgba(255,255,255,0.06)',
+            border: `1px solid ${
+              customerContact && !isValidContact
+                ? 'rgba(239,68,68,0.5)'
+                : 'rgba(255,255,255,0.1)'
+            }`,
+            borderRadius: 'var(--radius-sm)',
+            color: 'var(--color-text-primary)',
+            fontSize: 'var(--font-size-sm)', fontFamily: 'var(--font-family)',
+            boxSizing: 'border-box',
+          }}
+        />
+        {/* Nút Gửi mã */}
+        {otpStep === 'idle' && (
           <button
             type="button"
-            onClick={() => { setShowPhoneInput(false); setCustomerPhone('') }}
+            onClick={handleSendOtp}
+            disabled={!isValidContact}
             style={{
-              background: 'none', border: 'none',
-              color: 'var(--color-text-muted)', fontSize: '0.68rem',
-              cursor: 'pointer', padding: '2px 0', fontFamily: 'var(--font-family)',
+              padding: '9px 12px',
+              background: isValidContact ? 'var(--color-primary)' : 'rgba(255,255,255,0.08)',
+              color: isValidContact ? '#fff' : 'var(--color-text-muted)',
+              border: 'none', borderRadius: 'var(--radius-sm)',
+              fontSize: 'var(--font-size-xs)', fontWeight: 700,
+              cursor: isValidContact ? 'pointer' : 'default',
+              fontFamily: 'var(--font-family)', whiteSpace: 'nowrap',
             }}
           >
-            ✕ Bỏ qua
+            Gửi mã
           </button>
+        )}
+        {otpStep === 'sending' && (
+          <span style={{ padding: '9px 8px', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+            Đang gửi...
+          </span>
+        )}
+      </div>
+
+      {/* Validation hint */}
+      {customerContact && !isValidContact && (
+        <p style={{ fontSize: '0.65rem', color: 'var(--color-danger)', marginBottom: 6 }}>
+          Nhập SĐT (0901234567) hoặc email hợp lệ (ten@gmail.com)
+        </p>
+      )}
+
+      {/* Thông báo sau khi gửi */}
+      {otpMessage && otpStep === 'otp_sent' && (
+        <p style={{ fontSize: '0.65rem', color: 'var(--color-success)', marginBottom: 8 }}>
+          ✉️ {otpMessage}
+        </p>
+      )}
+
+      {/* Nhập OTP */}
+      {(otpStep === 'otp_sent' || otpStep === 'verifying') && (
+        <div>
+          <label style={{
+            display: 'block', fontSize: '0.65rem',
+            color: 'var(--color-text-secondary)', marginBottom: 4, fontWeight: 600
+          }}>
+            Nhập mã 6 số vừa nhận được:
+          </label>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="______"
+              maxLength={6}
+              value={otpCode}
+              onChange={e => {
+                const val = e.target.value.replace(/\D/g, '')
+                setOtpCode(val)
+                setOtpError('')
+              }}
+              style={{
+                flex: 1, padding: '9px 11px',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--color-text-primary)',
+                fontSize: 'var(--font-size-md)', fontFamily: 'monospace',
+                letterSpacing: 6, textAlign: 'center',
+                boxSizing: 'border-box',
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleVerifyOtp}
+              disabled={otpCode.length !== 6 || otpStep === 'verifying'}
+              style={{
+                padding: '9px 12px',
+                background: otpCode.length === 6 ? 'var(--color-success)' : 'rgba(255,255,255,0.08)',
+                color: otpCode.length === 6 ? '#fff' : 'var(--color-text-muted)',
+                border: 'none', borderRadius: 'var(--radius-sm)',
+                fontSize: 'var(--font-size-xs)', fontWeight: 700,
+                cursor: otpCode.length === 6 ? 'pointer' : 'default',
+                fontFamily: 'var(--font-family)', whiteSpace: 'nowrap',
+              }}
+            >
+              {otpStep === 'verifying' ? 'Đang xác thực...' : 'Xác nhận'}
+            </button>
+          </div>
+
+          {/* Resend */}
+          <div style={{ marginTop: 6, fontSize: '0.65rem', color: 'var(--color-text-muted)' }}>
+            {countdown > 0 ? (
+              <span>Gửi lại mã sau {countdown}s</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setOtpCode(''); handleSendOtp() }}
+                style={{
+                  background: 'none', border: 'none', padding: 0,
+                  color: 'var(--color-primary)', fontSize: '0.65rem',
+                  cursor: 'pointer', textDecoration: 'underline',
+                  fontFamily: 'var(--font-family)',
+                }}
+              >
+                Gửi lại mã
+              </button>
+            )}
+          </div>
         </div>
       )}
+
+      {/* Lỗi */}
+      {otpError && (
+        <p style={{ fontSize: '0.65rem', color: 'var(--color-danger)', marginTop: 6 }}>
+          ⚠️ {otpError}
+        </p>
+      )}
+
+      {/* Footer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+        <p style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+          🔒 Thông tin được mã hóa, không chia sẻ với bên thứ ba.
+        </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          style={{
+            background: 'none', border: 'none',
+            color: 'var(--color-text-muted)', fontSize: '0.65rem',
+            cursor: 'pointer', padding: '0 0 0 8px',
+            fontFamily: 'var(--font-family)', flexShrink: 0,
+          }}
+        >
+          ✕ Bỏ qua
+        </button>
+      </div>
     </div>
   )
 }

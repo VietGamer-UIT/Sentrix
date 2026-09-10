@@ -1,29 +1,28 @@
 """
 OTP Routes — POST /api/v1/otp/send + POST /api/v1/otp/verify
 =============================================================
-Author: Nguyễn Thanh Tuyền (AI & Data Architect)
-Module 1 — Lớp 1: OTP Endpoints
+Author: Nguyen Thanh Tuyen (AI & Data Architect)
+Module 1 — Lop 1: OTP Endpoints
 
-LUỒNG SỬ DỤNG (từ web-client):
-  1. User nhập SĐT, nhấn "Gửi mã OTP"
-     → POST /api/v1/otp/send { phone_number, tenant_id }
-     → Backend tạo session, gửi OTP qua provider.
+LUONG SU DUNG (tu web-client):
+  1. User nhap SDT hoac Email, nhan "Gui ma OTP"
+     -> POST /api/v1/otp/send { contact, tenant_id }
+     -> Backend tao session, gui OTP qua provider phu hop
+       (Email -> Gmail SMTP mien phi | SDT -> Zalo/Mock).
 
-  2. User nhập mã OTP nhận được
-     → POST /api/v1/otp/verify { phone_number, otp_code, tenant_id }
-     → Backend xác thực, trả otp_verified=true.
+  2. User nhap ma OTP nhan duoc
+     -> POST /api/v1/otp/verify { contact, otp_code, tenant_id }
+     -> Backend xac thuc, tra otp_verified=true.
 
-  3. Frontend lưu trạng thái verified, gửi kèm phone_number khi submit feedback.
-     Backend trong /feedback sẽ kiểm tra session đã verified chưa.
+  3. Frontend luu trang thai verified, gui kem contact khi submit feedback.
+     Backend trong /feedback se kiem tra session da verified chua.
 
-LƯU Ý BẢO MẬT:
-  - Rate limit bản thân endpoint /otp/send: tối đa 3 lần gửi OTP/SĐT/giờ
-    để tránh spam SMS (TODO khi cần, hiện để open vì dùng mock).
-  - SĐT gốc KHÔNG được log ra, chỉ log 4 chữ số cuối.
+LUU Y BAO MAT:
+  - Contact goc KHONG duoc log ra, chi log phan an danh.
 """
 
-import hashlib
 import logging
+import re
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Request, status
@@ -34,6 +33,8 @@ from backend.services.otp_service import (
     get_otp_provider,
     verify_otp_session,
     _normalize_phone,
+    _is_email,
+    EmailOtpProvider,
 )
 from backend.services.rate_limit_service import check_rate_limit
 
@@ -46,31 +47,40 @@ router = APIRouter()
 # Request/Response models
 # ---------------------------------------------------------------------------
 class OtpSendRequest(BaseModel):
-    phone_number: str
+    contact: str          # SDT hoac email
     tenant_id: str
+    # Backward compat: neu FE cu gui phone_number thi van nhan duoc
+    phone_number: Optional[str] = None
 
-    @field_validator("phone_number")
+    @field_validator("contact")
     @classmethod
-    def validate_phone(cls, v: str) -> str:
-        v = v.strip().replace(" ", "").replace("-", "")
-        if len(v) < 9 or len(v) > 15:
-            raise ValueError("Số điện thoại không hợp lệ (9–15 chữ số).")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("Số điện thoại phải chứa chữ số.")
+    def validate_contact(cls, v: str) -> str:
+        v = v.strip()
+        # Kiem tra email
+        if re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', v):
+            return v.lower()
+        # Kiem tra SDT VN
+        phone = v.replace(" ", "").replace("-", "")
+        if len(phone) < 9 or len(phone) > 15:
+            raise ValueError("SDT hoac email khong hop le.")
+        if not any(c.isdigit() for c in phone):
+            raise ValueError("SDT phai chua chu so.")
         return v
 
 
 class OtpVerifyRequest(BaseModel):
-    phone_number: str
+    contact: str          # SDT hoac email (phai khop voi luc send)
     otp_code: str
     tenant_id: str
+    # Backward compat
+    phone_number: Optional[str] = None
 
     @field_validator("otp_code")
     @classmethod
     def validate_otp(cls, v: str) -> str:
         v = v.strip()
         if not v.isdigit() or len(v) != 6:
-            raise ValueError("Mã OTP phải gồm đúng 6 chữ số.")
+            raise ValueError("Ma OTP phai gom dung 6 chu so.")
         return v
 
 
@@ -78,6 +88,7 @@ class OtpSendResponse(BaseModel):
     success: bool
     message: str
     expires_in_seconds: int
+    contact_type: str     # "email" hoac "phone"
 
 
 class OtpVerifyResponse(BaseModel):
@@ -93,47 +104,62 @@ class OtpVerifyResponse(BaseModel):
     "/otp/send",
     response_model=OtpSendResponse,
     status_code=status.HTTP_200_OK,
-    summary="Gửi mã OTP xác thực số điện thoại",
+    summary="Gui ma OTP xac thuc SDT hoac Email",
     description=(
-        "Tạo mã OTP và gửi đến SĐT của khách hàng. "
-        "OTP có hiệu lực 5 phút. Chỉ cần khi khách muốn nhận voucher (không bắt buộc cho phản hồi ẩn danh)."
+        "Tao ma OTP va gui den SDT (qua Zalo/SMS) hoac Email (qua Gmail SMTP). "
+        "OTP co hieu luc 5 phut. Chi can khi khach muon nhan voucher."
     ),
 )
 async def send_otp(request: Request, body: OtpSendRequest):
     """
-    Gửi OTP đến SĐT. Kiểm tra rate limit trước.
+    Gui OTP den SDT hoac Email. Kiem tra rate limit truoc.
     """
-    phone = _normalize_phone(body.phone_number)
-    phone_last4 = phone[-4:]  # Chỉ log 4 chữ số cuối để bảo vệ quyền riêng tư
+    # Backward compat: neu FE gui phone_number thay vi contact
+    contact = (body.contact or body.phone_number or "").strip()
 
-    logger.info(f"[OTP/send] SĐT=****{phone_last4} | tenant={body.tenant_id}")
+    is_email_contact = _is_email(contact)
+    contact_type = "email" if is_email_contact else "phone"
 
-    # Tạo OTP session và lấy code
+    # An danh hoa cho log
+    if is_email_contact:
+        parts = contact.split("@")
+        contact_masked = f"{parts[0][:2]}***@{parts[1]}"
+    else:
+        contact_masked = f"****{contact[-4:]}"
+
+    logger.info(f"[OTP/send] contact={contact_masked} | type={contact_type} | tenant={body.tenant_id}")
+
+    # Tao OTP session va lay code
     try:
-        otp_code = create_otp_session(body.phone_number)
+        otp_code = create_otp_session(contact)
     except Exception as e:
-        logger.error(f"[OTP/send] Lỗi tạo session: {e}")
+        logger.error(f"[OTP/send] Loi tao session: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Không thể tạo mã OTP lúc này. Vui lòng thử lại sau.",
+            detail="Khong the tao ma OTP luc nay. Vui long thu lai sau.",
         )
 
-    # Gửi OTP qua provider (mock hoặc Zalo)
-    provider = get_otp_provider()
-    result = provider.send_otp(phone, otp_code)
+    # Chon provider: email -> EmailOtpProvider, phone -> provider mac dinh (Mock/Zalo)
+    if is_email_contact:
+        provider = EmailOtpProvider()
+    else:
+        provider = get_otp_provider()
+
+    result = provider.send_otp(contact, otp_code)
 
     if not result.success:
-        logger.warning(f"[OTP/send] Provider lỗi: {result.error}")
+        logger.warning(f"[OTP/send] Provider loi: {result.error}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Không thể gửi OTP: {result.error}",
+            detail=f"Khong the gui OTP: {result.error}",
         )
 
-    logger.info(f"[OTP/send] Đã gửi qua {provider.provider_name()}: ****{phone_last4}")
+    logger.info(f"[OTP/send] Da gui qua {provider.provider_name()}: {contact_masked}")
     return OtpSendResponse(
         success=True,
-        message="Mã OTP đã được gửi. Vui lòng kiểm tra điện thoại.",
-        expires_in_seconds=300,  # 5 phút
+        message=result.message,
+        expires_in_seconds=300,  # 5 phut
+        contact_type=contact_type,
     )
 
 
@@ -141,34 +167,42 @@ async def send_otp(request: Request, body: OtpSendRequest):
     "/otp/verify",
     response_model=OtpVerifyResponse,
     status_code=status.HTTP_200_OK,
-    summary="Xác thực mã OTP",
+    summary="Xac thuc ma OTP (SDT hoac Email)",
     description=(
-        "Kiểm tra mã OTP do khách hàng nhập. "
-        "Nếu thành công, session sẽ được đánh dấu verified — SĐT có thể dùng để nhận voucher."
+        "Kiem tra ma OTP do khach hang nhap. "
+        "Neu thanh cong, session se duoc danh dau verified."
     ),
 )
 async def verify_otp(body: OtpVerifyRequest):
     """
-    Xác thực OTP. Sau khi thành công, frontend lưu trạng thái và gửi kèm SĐT vào /feedback.
+    Xac thuc OTP. Sau khi thanh cong, frontend luu trang thai va gui kem contact vao /feedback.
     """
-    phone_last4 = body.phone_number.strip()[-4:]
-    logger.info(f"[OTP/verify] SĐT=****{phone_last4} | tenant={body.tenant_id}")
+    # Backward compat
+    contact = (body.contact or body.phone_number or "").strip()
 
-    result = verify_otp_session(body.phone_number, body.otp_code)
+    is_email_contact = _is_email(contact)
+    if is_email_contact:
+        parts = contact.split("@")
+        contact_masked = f"{parts[0][:2]}***@{parts[1]}"
+    else:
+        contact_masked = f"****{contact[-4:]}"
+
+    logger.info(f"[OTP/verify] contact={contact_masked} | tenant={body.tenant_id}")
+
+    result = verify_otp_session(contact, body.otp_code)
 
     if not result.success:
         logger.warning(
-            f"[OTP/verify] Thất bại: ****{phone_last4} — {result.message}"
+            f"[OTP/verify] That bai: {contact_masked} - {result.message}"
         )
-        # Trả 400 để frontend hiển thị thông báo lỗi cụ thể
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=result.message,
         )
 
-    logger.info(f"[OTP/verify] Thành công: ****{phone_last4}")
+    logger.info(f"[OTP/verify] Thanh cong: {contact_masked}")
     return OtpVerifyResponse(
         success=True,
-        message=result.message,
+        message="Xac thuc thanh cong! Ban co the nhan voucher.",
         otp_verified=True,
     )
