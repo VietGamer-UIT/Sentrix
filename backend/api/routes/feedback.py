@@ -378,26 +378,25 @@ async def submit_feedback(
     effective_voucher_eligible: bool = voucher_eligible and bool(customer_phone)
 
     if effective_voucher_eligible:
-        # 1a. Kiểm tra OTP đã verified chưa
-        otp_check = verify_otp_session(customer_phone, "__check_only__")
-        # verify_otp_session với code giả → sẽ fail, nhưng nếu session đã verified thì pass
-        # Cách đúng: đọc session từ Firestore để check verified flag
+        # 1a. Kiem tra OTP da verified chua
+        # Su dung _hash_contact_for_otp de ho tro ca SDT lan email
         try:
             from backend.db.firestore_client import get_firestore_client as _get_fs
-            from backend.services.otp_service import _hash_phone_for_otp as _hpo
+            from backend.services.otp_service import _hash_contact_for_otp as _hco
             _db = _get_fs()
-            _session_key = _hpo(customer_phone)
+            _session_key = _hco(customer_phone)
             _otp_snap = _db.collection("otp_sessions").document(_session_key).get()
             _otp_verified = _otp_snap.exists and (_otp_snap.to_dict() or {}).get("verified", False)
         except Exception:
-            _otp_verified = True  # Firestore lỗi → cho qua (không chặn do lỗi hạ tầng)
+            _otp_verified = True  # Firestore loi -> cho qua (khong chan do loi ha tang)
 
         if not _otp_verified:
             _cleanup_temp_audio(temp_audio_path)
-            logger.warning(f"[Feedback] Chặn Lớp 1: OTP chưa verified | phone=****{customer_phone[-4:]}")
+            _contact_hint = customer_phone[-4:] if len(customer_phone) > 4 else "***"
+            logger.warning(f"[Feedback] Chan Lop 1: OTP chua verified | contact=****{_contact_hint}")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Vui lòng xác thực số điện thoại qua OTP trước khi nhận voucher.",
+                detail="Vui long xac thuc so dien thoai hoac email qua OTP truoc khi nhan voucher.",
             )
 
         # 1b. Kiểm tra rate limit (1 lượt hợp lệ / 24h / SĐT)

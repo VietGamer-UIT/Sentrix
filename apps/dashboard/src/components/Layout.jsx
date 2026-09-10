@@ -27,9 +27,18 @@ function Layout() {
   const [collapsed, setCollapsed] = useState(false)
   // mobileOpen: dùng cho mobile overlay
   const [mobileOpen, setMobileOpen] = useState(false)
+  // isMobile: track breakpoint để tính marginLeft đúng
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768)
 
   // Tự đóng mobile sidebar khi chuyển trang
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
+
+  // Lắng nghe resize để update isMobile
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const tenantName = tenant?.business_name ?? null
   const { pendingCount } = useLiveAlerts()
@@ -39,8 +48,8 @@ function Layout() {
     n.end ? location.pathname === '/' : location.pathname.startsWith('/' + n.to.slice(1))
   )
 
-  // Desktop: sidebar width thu gọn
-  const sidebarWidth = collapsed ? 0 : 240
+  // Desktop: sidebar width thu gọn. Mobile: luôn = 0 (sidebar là overlay, không chiếm không gian)
+  const sidebarWidth = isMobile ? 0 : (collapsed ? 0 : 240)
 
   return (
     <div className="app-shell">
@@ -56,12 +65,15 @@ function Layout() {
       {/* === Sidebar === */}
       <aside
         className={`sidebar${mobileOpen ? ' sidebar--mobile-open' : ''}`}
-        style={{
+        style={isMobile ? {
+          // Mobile: luôn width=240, dùng transform để ẩn/hiện (overlay)
+          transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1)',
+        } : {
           // Desktop: thu gọn theo state
           width: sidebarWidth,
           minWidth: sidebarWidth,
           overflow: 'hidden',
-          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), min-width 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1)',
+          transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), min-width 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
         <div style={{ width: 240, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -124,8 +136,7 @@ function Layout() {
               ))}
             </nav>
 
-            {/* Phân cách */}
-            <div style={{ margin: '8px var(--spacing-lg) 8px', height: 1, background: 'var(--color-border)', flexShrink: 0 }} />
+            {/* Không có divider giữa 2 nav group */}
 
             <nav className="sidebar-nav" style={{ paddingTop: 0, flexShrink: 0 }}>
               {navItemsOps.map(({ to, label }) => (
@@ -206,8 +217,8 @@ function Layout() {
             <button
               id="btn-toggle-sidebar"
               onClick={() => {
-                // Trên mobile (< 768px): dùng overlay; trên desktop: collapse
-                if (window.innerWidth < 768) {
+                // Trên mobile: dùng overlay; trên desktop: collapse
+                if (isMobile) {
                   setMobileOpen(v => !v)
                 } else {
                   setCollapsed(c => !c)
