@@ -105,6 +105,17 @@ class TestAPIKeyValidation:
 class TestAPIErrorHandling:
     """Mock OpenAI client để test xử lý lỗi mà không gọi API thật."""
 
+    def setup_method(self):
+        """Reset _GROQ_CLIENT singleton trước mỗi test để mock được áp dụng đúng.
+
+        Vấn đề: _get_groq_client() dùng module-level singleton. Nếu test trước đó
+        đã set singleton (với mock cũ), test kế tiếp sẽ nhận lại client cũ và
+        side_effect mới sẽ không được áp dụng.
+        Fix: Reset về None → _get_groq_client() sẽ gọi OpenAI() mới (đã được mock).
+        """
+        import backend.ai_pipeline.stt_whisper as stt_mod
+        stt_mod._GROQ_CLIENT = None
+
     def _setup_env(self):
         """Trả về dict môi trường có GROQ_API_KEY giả."""
         return {"GROQ_API_KEY": "gsk_fake-key-for-testing"}
