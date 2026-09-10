@@ -87,6 +87,35 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # ---------------------------------------------------------------------------
+# Shared bounded ThreadPoolExecutor (module-level singleton)
+# ---------------------------------------------------------------------------
+# ĐÃ XÓA: per-request ThreadPoolExecutor(max_workers=N) trong mỗi voice request.
+# VẤN ĐỀ: mỗi request tạo 4 executor riêng + shutdown(wait=False) → thread count
+#   tăng không bị giới hạn khi N requests concurrent, tích lũy OOM dần.
+#
+# THAY THẾ: 1 executor module-level dùng chung cho toàn bộ process.
+#
+# max_workers=6 — tính toán:
+#   PHASE 1 (parallel/request): Whisper (I/O) + Librosa (CPU) = 2 threads
+#   PHASE 2-4 (sequential):     Semantic + Intent + ABSA = 1 thread mỗi lần
+#   2 concurrent voice requests ở peak PHASE 1: 4 threads
+#   Buffer cho overlap sequential phases: +2 threads
+#   → max_workers=6 giới hạn thread count cứng.
+#
+# Saturation: 4+ concurrent voice requests → task mới XẾP HÀNG (queue)
+# thay vì tạo thread mới. Thread count KHÔNG bao giờ vượt 6.
+#
+# Lưu ý: timeout asyncio.wait_for() vẫn cancel coroutine khi hết giờ,
+# nhưng blocking thread đang chạy trong executor tiếp tục đến khi I/O hoàn thành
+# rồi giải phóng vào pool. Thread count vẫn bounded ≤ 6.
+_SHARED_EXECUTOR: concurrent.futures.ThreadPoolExecutor = (
+    concurrent.futures.ThreadPoolExecutor(
+        max_workers=int(os.getenv("SENTRIX_EXECUTOR_MAX_WORKERS", "6")),
+        thread_name_prefix="sentrix-worker",
+    )
+)
+
+# ---------------------------------------------------------------------------
 # Cấu hình
 # ---------------------------------------------------------------------------
 ALLOWED_AUDIO_MIME_TYPES = {
@@ -419,11 +448,11 @@ async def submit_feedback(
     if has_audio and temp_audio_path:
         # ── ANTI-FRAUD LỚP 2: Audio Quality Gate ──────────────────────────────
         # Chạy TRƯỚC Whisper để tiết kiệm chi phí API khi audio rác.
-        # Đọc lại bytes từ file tạm (đã lưu ở bước 2).
+        # Dùng trực tiếp audio_content bytes đã đọc ở bước 2 —
+        # KHÔNG đọc lại file tạm để tránh buffer thứ 2 trong RAM.
         if validity_status == "valid" and fraud_layer_rejected_at is None:
             try:
-                _audio_bytes_for_qc = Path(temp_audio_path).read_bytes()
-                _quality_result = analyze_audio_quality(_audio_bytes_for_qc)
+                _quality_result = analyze_audio_quality(audio_content)
                 _audio_duration_sec = _quality_result.duration_sec
                 _snr_score = _quality_result.snr_db
 
@@ -481,8 +510,11 @@ async def submit_feedback(
             _audio_duration_sec = None
             _snr_score = None
 
+        # Giải phóng audio_content sau khi đã ghi vào file tạm và chạy QC xong.
+        # Whisper và Librosa đọc từ temp file — không cần giữ bytes trong RAM.
+        del audio_content
+
         loop = asyncio.get_event_loop()
-        _executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
         # --- Wrapper chạy Whisper trong thread ---
         def _run_whisper() -> Optional[str]:
@@ -512,9 +544,9 @@ async def submit_feedback(
                 return None
 
         try:
-            # Gửi cả 2 tác vụ vào ThreadPoolExecutor, chạy song song
-            whisper_future = loop.run_in_executor(_executor, _run_whisper)
-            librosa_future = loop.run_in_executor(_executor, _run_librosa)
+            # Gửi cả 2 tác vụ vào shared executor, chạy song song
+            whisper_future = loop.run_in_executor(_SHARED_EXECUTOR, _run_whisper)
+            librosa_future = loop.run_in_executor(_SHARED_EXECUTOR, _run_librosa)
             whisper_result, librosa_result = await asyncio.gather(
                 whisper_future, librosa_future, return_exceptions=True
             )
@@ -544,7 +576,7 @@ async def submit_feedback(
                 audio_features = librosa_result
 
         finally:
-            _executor.shutdown(wait=False)
+            pass  # Không shutdown executor — dùng chung module-level _SHARED_EXECUTOR
 
     # Dọn temp audio sau khi Whisper + Librosa đã đọc xong
     _cleanup_temp_audio(temp_audio_path)
@@ -582,22 +614,18 @@ async def submit_feedback(
                     pass
 
             logger.info("[Feedback] [LỚP 3] Semantic validity check ...")
-            _sem_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-            _sem_loop = asyncio.get_event_loop()
             try:
                 _sem_result = await asyncio.wait_for(
-                    _sem_loop.run_in_executor(
-                        _sem_executor,
+                    asyncio.get_event_loop().run_in_executor(
+                        _SHARED_EXECUTOR,
                         check_semantic_validity,
                         text_for_absa,
                         _last_transcript,
                     ),
-                    timeout=20,  # Timeout dài hơn 1 chút so với SEMANTIC_CHECK_TIMEOUT_SECONDS
+                    timeout=20,
                 )
             except asyncio.TimeoutError:
                 _sem_result = None  # Fallback: tiếp tục xử lý
-            finally:
-                _sem_executor.shutdown(wait=False)
 
             if _sem_result is not None and not _sem_result.is_valid:
                 validity_status = "invalid_semantic"
@@ -620,17 +648,14 @@ async def submit_feedback(
     _intent_result: dict = {"intent": "FEEDBACK", "confidence": 0.5, "reason": "not_run"}
     if text_for_absa and validity_status not in ("invalid_semantic",):
         try:
-            _intent_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-            _intent_loop     = asyncio.get_event_loop()
             _intent_result = await asyncio.wait_for(
-                _intent_loop.run_in_executor(
-                    _intent_executor,
+                asyncio.get_event_loop().run_in_executor(
+                    _SHARED_EXECUTOR,
                     classify_intent,
                     text_for_absa,
                 ),
                 timeout=12,
             )
-            _intent_executor.shutdown(wait=False)
             logger.info(
                 f"[Feedback] [Intent] {_intent_result['intent']} "
                 f"(confidence={_intent_result.get('confidence', 0):.2f})"
@@ -650,11 +675,11 @@ async def submit_feedback(
                 f"[Feedback] [6] ABSA qua Gemini (timeout={GEMINI_ABSA_TIMEOUT_SECONDS}s) ..."
             )
             # Chạy ABSA trong ThreadPoolExecutor với timeout để tránh block > 10s
-            _absa_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-            _absa_loop = asyncio.get_event_loop()
             try:
                 absa_result = await asyncio.wait_for(
-                    _absa_loop.run_in_executor(_absa_executor, analyze_absa, text_for_absa),
+                    asyncio.get_event_loop().run_in_executor(
+                        _SHARED_EXECUTOR, analyze_absa, text_for_absa
+                    ),
                     timeout=GEMINI_ABSA_TIMEOUT_SECONDS,
                 )
             except asyncio.TimeoutError:
@@ -663,8 +688,6 @@ async def submit_feedback(
                     "— su dung sentiment mac dinh (fallback)."
                 )
                 absa_result = None
-            finally:
-                _absa_executor.shutdown(wait=False)
 
             if absa_result is not None:
                 if absa_result.get("is_spam"):

@@ -208,7 +208,35 @@ def _extract_mfcc(y: np.ndarray, sr: int, n_mfcc: int = 13) -> dict[str, Any]:
     }
 
 
-def _extract_f0(y: np.ndarray, sr: int) -> dict[str, float]:
+def _run_pyin(y: np.ndarray, sr: int) -> tuple["np.ndarray", "np.ndarray"]:
+    """
+    Chạy PYIN một lần và trả về (f0_array, voiced_flag_array) thô.
+
+    Hàm này được tách ra để kết quả có thể được TÁI SỬ DỤNG bởi cả
+    _extract_f0() và _extract_jitter_from_f0() — tránh gọi PYIN hai lần
+    cho cùng một audio (PYIN là thuật toán tốn kém nhất trong pipeline).
+
+    Returns:
+        (f0, voiced_flag): numpy arrays thô từ librosa.pyin()
+        Trả về (zeros, zeros) nếu PYIN thất bại.
+    """
+    import librosa
+    try:
+        f0, voiced_flag, _ = librosa.pyin(
+            y,
+            fmin=librosa.note_to_hz('C2'),   # ~65 Hz
+            fmax=librosa.note_to_hz('C7'),   # ~2093 Hz
+            sr=sr,
+        )
+        return f0, voiced_flag
+    except Exception as e:
+        logger.warning(f"[Librosa] PYIN thất bại: {e} — trả về arrays rỗng")
+        # Trả về arrays rỗng để caller xử lý gracefully
+        empty = np.zeros(1)
+        return empty, np.zeros(1, dtype=bool)
+
+
+def _extract_f0(y: np.ndarray, sr: int) -> tuple[dict[str, float], "np.ndarray", "np.ndarray"]:
     """
     Trích xuất F0 (cao độ cơ bản / pitch) bằng thuật toán PYIN.
 
@@ -216,24 +244,20 @@ def _extract_f0(y: np.ndarray, sr: int) -> dict[str, float]:
     với giọng nói tự nhiên và ít bị ảnh hưởng bởi nhiễu nền.
 
     Returns:
-        dict với:
-        - f0_mean: float — F0 trung bình (Hz), chỉ tính frame có giọng nói (voiced)
-        - f0_std: float — độ lệch chuẩn F0 (Hz), thể hiện sự biến động pitch
+        tuple(dict, f0_array, voiced_flag_array) —
+        dict chứa stats đã tính, cộng với 2 raw arrays để tái sử dụng
+        trong _extract_jitter_from_f0() (tránh gọi PYIN lần 2).
+
+        dict có:
+        - f0_mean: float — F0 trung bình (Hz), chỉ tính frame có giọng nói
+        - f0_std: float — độ lệch chuẩn F0 (Hz)
         - f0_min: float — F0 thấp nhất (Hz)
         - f0_max: float — F0 cao nhất (Hz)
         - voiced_fraction: float — tỷ lệ frame có giọng nói (0.0-1.0)
     """
-    import librosa
+    f0, voiced_flag = _run_pyin(y, sr)
 
     try:
-        # fmin/fmax: giới hạn tìm kiếm pitch để tăng tốc và giảm lỗi octave
-        # Giọng người: 65 Hz (giọng nam thấp) đến 1047 Hz (giọng nữ cao nhất)
-        f0, voiced_flag, voiced_probs = librosa.pyin(
-            y,
-            fmin=librosa.note_to_hz('C2'),   # ~65 Hz
-            fmax=librosa.note_to_hz('C7'),   # ~2093 Hz
-            sr=sr,
-        )
         # f0 chứa NaN cho các frame unvoiced — lọc ra để tính stats
         voiced_f0 = f0[voiced_flag] if voiced_flag is not None else f0[~np.isnan(f0)]
         voiced_f0 = voiced_f0[~np.isnan(voiced_f0)]  # safety filter
@@ -243,36 +267,47 @@ def _extract_f0(y: np.ndarray, sr: int) -> dict[str, float]:
         if len(voiced_f0) == 0:
             # Không phát hiện được giọng nói có pitch (có thể là tiếng ồn/im lặng)
             logger.warning("[Librosa] Không phát hiện được F0 có ý nghĩa — audio có thể toàn im lặng hoặc nhiễu.")
-            return {
+            stats = {
                 "f0_mean": 0.0,
                 "f0_std": 0.0,
                 "f0_min": 0.0,
                 "f0_max": 0.0,
                 "voiced_fraction": voiced_fraction,
             }
+            return stats, f0, voiced_flag
 
-        return {
+        stats = {
             "f0_mean": round(float(np.mean(voiced_f0)), 2),
             "f0_std": round(float(np.std(voiced_f0)), 2),
             "f0_min": round(float(np.min(voiced_f0)), 2),
             "f0_max": round(float(np.max(voiced_f0)), 2),
             "voiced_fraction": round(voiced_fraction, 4),
         }
+        return stats, f0, voiced_flag
 
     except Exception as e:
-        logger.warning(f"[Librosa] Lỗi khi tính F0 (PYIN): {e} — trả về zeros")
-        return {
+        logger.warning(f"[Librosa] Lỗi khi tính F0 stats: {e} — trả về zeros")
+        stats = {
             "f0_mean": 0.0,
             "f0_std": 0.0,
             "f0_min": 0.0,
             "f0_max": 0.0,
             "voiced_fraction": 0.0,
         }
+        return stats, f0, voiced_flag
 
 
-def _extract_jitter_shimmer(y: np.ndarray, sr: int) -> dict[str, float]:
+def _extract_jitter_from_f0(
+    y: np.ndarray,
+    sr: int,
+    f0: "np.ndarray",
+    voiced_flag: "np.ndarray",
+) -> dict[str, float]:
     """
-    Ước tính Jitter và Shimmer từ tín hiệu âm thanh.
+    Ước tính Jitter và Shimmer từ kết quả PYIN đã có sẵn.
+
+    Nhận (f0, voiced_flag) pre-computed từ _extract_f0() để TRÁNH gọi PYIN
+    lần hai cho cùng một audio. Behavior và output giữ nguyên hoàn toàn.
 
     Jitter và Shimmer thông thường được tính bằng phần mềm chuyên biệt (Praat).
     Ở đây dùng phương pháp xấp xỉ thông qua phân tích các chu kỳ pitch từ PYIN,
@@ -290,14 +325,8 @@ def _extract_jitter_shimmer(y: np.ndarray, sr: int) -> dict[str, float]:
     """
     import librosa
 
-    # --- Jitter: xấp xỉ qua nghịch đảo F0 ---
+    # --- Jitter: xấp xỉ qua nghịch đảo F0 (dùng arrays pre-computed từ _run_pyin) ---
     try:
-        f0, voiced_flag, _ = librosa.pyin(
-            y,
-            fmin=librosa.note_to_hz('C2'),
-            fmax=librosa.note_to_hz('C7'),
-            sr=sr,
-        )
         voiced_f0 = f0[voiced_flag] if voiced_flag is not None else f0[~np.isnan(f0)]
         voiced_f0 = voiced_f0[~np.isnan(voiced_f0)]
 
@@ -467,9 +496,12 @@ def extract_audio_features(audio_file_path: str) -> dict[str, Any]:
     )
 
     # --- Bước 2: Trích xuất từng nhóm đặc trưng ---
+    # QUAN TRỌNG: _extract_f0 chạy PYIN một lần và trả về (stats, f0_arr, voiced_flag_arr).
+    # Kết quả (f0_arr, voiced_flag_arr) được TRUYỀN vào _extract_jitter_from_f0
+    # để tránh gọi PYIN hai lần — PYIN là bước tốn kém nhất trong pipeline.
     mfcc_features = _extract_mfcc(y, sr, n_mfcc=13)
-    f0_features = _extract_f0(y, sr)
-    jitter_shimmer = _extract_jitter_shimmer(y, sr)
+    f0_features, _f0_arr, _voiced_flag_arr = _extract_f0(y, sr)
+    jitter_shimmer = _extract_jitter_from_f0(y, sr, _f0_arr, _voiced_flag_arr)
     zcr_energy = _extract_zcr_and_energy(y, sr)
 
     # --- Bước 3: Gộp tất cả đặc trưng ---
