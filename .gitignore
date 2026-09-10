@@ -47,6 +47,7 @@ backend/ai_pipeline/cleaned_absa_data.json
 !assets/logo/*.png
 !apps/dashboard/public/*.png
 !apps/web-client/public/*.png
+!apps/landing/public/*.png
 
 # Datasets
 backend/ABSA_Dataset/
