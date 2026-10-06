@@ -42,6 +42,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
 
   // SpeechRecognition realtime transcript
   const [liveTranscript, setLiveTranscript]   = useState('')
+  const [isLiveTranscriptFinal, setIsLiveTranscriptFinal] = useState(false)
   const [speechSupported, setSpeechSupported] = useState(false)
 
   // ── Module 2: Anonymous Toggle + OTP ─────────────────────────────────────
@@ -96,27 +97,99 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     return () => clearInterval(timerRef.current)
   }, [isRecording]) // eslint-disable-line
 
-  const startSpeechRecognition = () => {
-    console.log(`[VOICE DEBUG] speechSupported=${speechSupported}`)
+  const startSpeechRecognition = (audioTrack) => {
+    if (import.meta.env.DEV) {
+      console.log('[VOICE DEBUG] speech.start(audioTrack)')
+      console.log(`[VOICE DEBUG] speechSupported=${speechSupported}`)
+    }
+    
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SR) return
+    if (import.meta.env.DEV) {
+      console.log(`[VOICE DEBUG] speech-api=${window.SpeechRecognition ? 'SpeechRecognition' : 'webkitSpeechRecognition'}`)
+    }
+    
     const rec = new SR()
     rec.lang = 'vi-VN'
     rec.continuous = true
     rec.interimResults = true
-    rec.onstart = () => { console.log('[VOICE DEBUG] speech.started') }
-    rec.onend = () => { console.log('[VOICE DEBUG] speech.onend') }
+    
+    // Add detailed lifecycle events
+    if (import.meta.env.DEV) {
+      rec.onstart = () => { console.log('[VOICE DEBUG] speech.started-from-track') }
+      rec.onaudiostart = () => console.log('[VOICE DEBUG] speech.audiostart')
+      rec.onsoundstart = () => console.log('[VOICE DEBUG] speech.soundstart')
+      rec.onspeechstart = () => console.log('[VOICE DEBUG] speech.speechstart')
+      rec.onsoundend = () => console.log('[VOICE DEBUG] speech.soundend')
+      rec.onspeechend = () => console.log('[VOICE DEBUG] speech.speechend')
+      rec.onnomatch = () => console.log('[VOICE DEBUG] speech.nomatch')
+      rec.onend = () => { console.log('[VOICE DEBUG] speech.onend') }
+    }
+    
     rec.onresult = (e) => {
-      console.log('[VOICE DEBUG] speech.onresult')
+      if (import.meta.env.DEV) {
+        console.log(`[VOICE DEBUG] speech.onresult (results.length=${e.results.length}, resultIndex=${e.resultIndex})`)
+      }
       let transcript = ''
+      let isFinal = false
       for (let i = 0; i < e.results.length; i++) {
         transcript += e.results[i][0].transcript
+        if (i === e.results.length - 1) {
+          isFinal = e.results[i].isFinal
+          if (import.meta.env.DEV) {
+            console.log(`[VOICE DEBUG] result[${i}] transcript="${e.results[i][0].transcript}" confidence=${e.results[i][0].confidence} isFinal=${e.results[i].isFinal}`)
+          }
+        }
       }
       setLiveTranscript(transcript)
+      setIsLiveTranscriptFinal(isFinal)
     }
-    rec.onerror = (err) => { console.error(`[VOICE DEBUG] speech.onerror=${err.error}`) }
-    console.log('[VOICE DEBUG] speech.start called')
-    try { rec.start() } catch (err) { console.error('[VOICE DEBUG] SpeechRecognition start error:', err) }
+    
+    rec.onerror = (err) => { 
+      if (import.meta.env.DEV) {
+        console.error(`[VOICE DEBUG] speech.onerror error=${err.error} message=${err.message || ''}`) 
+      }
+    }
+    
+    if (!audioTrack || audioTrack.kind !== 'audio' || audioTrack.readyState !== 'live') {
+      if (import.meta.env.DEV) {
+        console.log('[VOICE DEBUG] realtime-preview.disabled reason=invalid-track')
+      }
+      return
+    }
+
+    if (import.meta.env.DEV) {
+      console.log('[VOICE DEBUG] track state', {
+        kind: audioTrack.kind,
+        readyState: audioTrack.readyState,
+        enabled: audioTrack.enabled,
+        muted: audioTrack.muted,
+        contentHint: audioTrack.contentHint
+      })
+    }
+
+    try { 
+      try {
+        audioTrack.contentHint = 'speech-recognition'
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.warn('[VOICE DEBUG] Could not set contentHint:', e)
+        }
+      }
+
+      if (import.meta.env.DEV) {
+        console.log('[VOICE DEBUG] speech.start(original-track)')
+        console.log(`[VOICE DEBUG] speech.original-track.contentHint=${audioTrack.contentHint}`)
+      }
+
+      rec.start(audioTrack) 
+    } catch (err) { 
+      if (import.meta.env.DEV) {
+        console.error(`[VOICE DEBUG] speech.start.error name=${err.name} message=${err.message}`) 
+        console.log('[VOICE DEBUG] realtime-preview.disabled reason=start_exception')
+      }
+      setLiveTranscript('Realtime preview unavailable.')
+    }
     recognitionRef.current = rec
   }
 
@@ -128,19 +201,33 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   }
 
   const handleStartRecording = useCallback(async () => {
+    if (import.meta.env.DEV) {
+      console.log('[VOICE DEBUG] getUserMedia.start')
+    }
+    setError(null) // Clear any previous errors
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      if (import.meta.env.DEV) {
+        console.log('[VOICE DEBUG] getUserMedia.success')
+      }
       streamRef.current = stream
       
       // Log devices for Phase 9
       try {
         const devices = await navigator.mediaDevices.enumerateDevices()
         const audioInputs = devices.filter(d => d.kind === 'audioinput')
-        console.log('[Voice E2E] Available microphones:', audioInputs.map(d => d.label || 'Unknown mic'))
+        if (import.meta.env.DEV) {
+          console.log('[Voice E2E] Available microphones:', audioInputs.map(d => d.label || 'Unknown mic'))
+        }
         const activeTrack = stream.getAudioTracks()[0]
-        console.log('[Voice E2E] Selected microphone track:', activeTrack ? activeTrack.label : 'None')
+        if (import.meta.env.DEV) {
+          console.log('[Voice E2E] Selected microphone track:', activeTrack ? activeTrack.label : 'None')
+        }
       } catch (e) {
-        console.warn('[Voice E2E] Cannot enumerate devices:', e)
+        if (import.meta.env.DEV) {
+          console.warn('[Voice E2E] Cannot enumerate devices:', e)
+        }
       }
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
@@ -152,40 +239,62 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       chunksRef.current = []
       
       const startTime = Date.now()
-      console.log(`[Voice E2E] recording started at ${startTime}`)
+      if (import.meta.env.DEV) {
+        console.log(`[Voice E2E] recording started at ${startTime}`)
+      }
 
       recorder.ondataavailable = (e) => { 
+        if (import.meta.env.DEV) {
+          console.log(`[VOICE DEBUG] recorder.dataavailable size=${e.data.size}`)
+        }
         if (e.data.size > 0) chunksRef.current.push(e.data) 
       }
       recorder.onstop = () => {
         const stopTime = Date.now()
         const durationMs = stopTime - startTime
-        console.log(`[Voice E2E] recording stopped at ${stopTime}`)
-        console.log(`[Voice E2E] duration_ms = ${durationMs}`)
-        console.log(`[Voice E2E] chunks = ${chunksRef.current.length}`)
+        
+        if (import.meta.env.DEV) {
+          console.log('[VOICE DEBUG] recorder.stop')
+          console.log(`[Voice E2E] recording stopped at ${stopTime}`)
+          console.log(`[Voice E2E] duration_ms = ${durationMs}`)
+          console.log(`[Voice E2E] chunks = ${chunksRef.current.length}`)
+        }
         
         const blob = new Blob(chunksRef.current, { type: mimeType })
-        console.log(`[Voice E2E] blob_size = ${blob.size}`)
-        console.log(`[Voice E2E] blob_type = ${blob.type}`)
+        if (import.meta.env.DEV) {
+          console.log(`[Voice E2E] blob_size = ${blob.size}`)
+          console.log(`[Voice E2E] blob_type = ${blob.type}`)
+        }
         
         setAudioBlob(blob)
         stream.getTracks().forEach(t => t.stop())
         setAudioDurationSec(Math.max(1, Math.round(durationMs / 1000)))
+        if (import.meta.env.DEV) {
+          console.log(`[VOICE DEBUG] final state: blob_size=${blob.size}, duration=${durationMs}ms`)
+        }
       }
 
+      if (import.meta.env.DEV) {
+        console.log('[VOICE DEBUG] mediaRecorder.start')
+      }
       recorder.start(200)
-      console.log(`[VOICE DEBUG] recorder.state=${recorder.state}`)
+      if (import.meta.env.DEV) {
+        console.log(`[VOICE DEBUG] recorder.state=${recorder.state}`)
+      }
       setIsRecording(true)
       setTimeLeft(MAX_DURATION_SEC)
       
-      // Fix Voice E2E conflict: wait for MediaRecorder to fully seize the mic,
-      // then start SpeechRecognition to prevent it from muting the recording stream.
-      // TẠM THỜI TẮT WEB SPEECH ĐỂ TEST MIC CONFLICT
-      // if (speechSupported) {
-      //   recognitionTimerRef.current = setTimeout(() => startSpeechRecognition(), 1500)
-      // }
+      const activeTrack = stream.getAudioTracks()[0]
+      if (speechSupported && activeTrack) {
+        recognitionTimerRef.current = setTimeout(() => {
+          startSpeechRecognition(activeTrack)
+        }, 1500)
+      }
 
     } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error(`[VOICE DEBUG] handleStartRecording.error name=${err.name} message=${err.message}`)
+      }
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setError('Cần quyền truy cập microphone. Bấm vào biểu tượng khóa trên thanh địa chỉ để cho phép.')
       } else if (err.name === 'NotFoundError') {
@@ -197,6 +306,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   }, [timeLeft, speechSupported]) // eslint-disable-line
 
   const handleStopRecording = useCallback(() => {
+    if (import.meta.env.DEV) {
+      console.log('[VOICE DEBUG] handleStopRecording')
+    }
     clearInterval(timerRef.current)
     clearTimeout(recognitionTimerRef.current)
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -212,6 +324,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     setTimeLeft(MAX_DURATION_SEC)
     setError(null)
     setLiveTranscript('')
+    setIsLiveTranscriptFinal(false)
   }
 
   // ── Module 2: OTP handlers ────────────────────────────────────────────────
@@ -328,11 +441,13 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     // Bỏ chế độ bypass API vì nó làm hỏng M6 Voice E2E.
     // Dù có mock hay không, audio vẫn PHẢI được gửi về backend để STT.
 
-    console.log('[Voice E2E] submit started')
-    console.log('[Voice E2E] blob size:', audioBlob ? audioBlob.size : 0)
-    console.log('[Voice E2E] blob type:', audioBlob ? audioBlob.type : 'none')
-    console.log('[Voice E2E] API URL:', API_BASE_URL)
-    console.log('[Voice E2E] request sent')
+    if (import.meta.env.DEV) {
+      console.log('[Voice E2E] submit started')
+      console.log('[Voice E2E] blob size:', audioBlob ? audioBlob.size : 0)
+      console.log('[Voice E2E] blob type:', audioBlob ? audioBlob.type : 'none')
+      console.log('[Voice E2E] API URL:', API_BASE_URL)
+      console.log('[Voice E2E] request sent')
+    }
 
     try {
       const result = await submitFeedback({
@@ -344,7 +459,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         totalSpending: 0,
         voucherEligible: effectiveVoucherEligible,
       })
-      console.log('[Voice E2E] response status: 202 (Accepted)')
+      if (import.meta.env.DEV) {
+        console.log('[Voice E2E] response status: 202 (Accepted)')
+      }
       // Lưu kết quả + feedback_id vào sessionStorage trước khi navigate
       try {
         sessionStorage.setItem('sentrix_api_result', JSON.stringify(result))
@@ -356,7 +473,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         }
       } catch { /* ignore storage errors */ }
     } catch (err) {
-      console.log('[Voice E2E] response status:', err.statusCode || 'Unknown Error')
+      if (import.meta.env.DEV) {
+        console.log('[Voice E2E] response status:', err.statusCode || 'Unknown Error')
+      }
       // Lỗi API không block navigate — vẫn cho user đi tiếp (UX frictionless)
       console.error('[Sentrix] Feedback submit failed:', err)
       setError(err.message || 'Không thể gửi phản hồi. Vui lòng thử lại.')
@@ -555,7 +674,10 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
                 padding: '8px 12px',
                 background: 'rgba(0,122,255,0.05)',
                 borderRadius: 12,
-                fontSize: 13, color: '#6B7280', fontStyle: 'italic',
+                fontSize: 13, 
+                color: liveTranscript && isLiveTranscriptFinal ? '#374151' : '#6B7280', 
+                fontStyle: liveTranscript && isLiveTranscriptFinal ? 'normal' : 'italic',
+                fontWeight: liveTranscript && isLiveTranscriptFinal ? 500 : 400,
                 textAlign: 'left', lineHeight: 1.5,
                 transition: 'all 0.2s',
               }}>
