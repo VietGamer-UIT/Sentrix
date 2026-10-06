@@ -667,8 +667,17 @@ async def submit_feedback(
         except Exception as _ie:
             logger.warning(f"[Feedback] Intent classification lỗi (bỏ qua): {_ie}")
 
-    # Bỏ qua ABSA nếu đã bị reject ở Lớp 3 — tiết kiệm 1 lần gọi Gemini
-    if text_for_absa and validity_status not in ("invalid_semantic",):
+    # Bỏ qua ABSA nếu đã bị reject ở Lớp 3 hoặc là SUPPORT_REQUEST
+    # SUPPORT_REQUEST: không cần phân tích sentiment/aspect — chỉ tạo alert
+    # Tránh gán negative sentiment cho câu như "Tôi cần một ly trà đá."
+    _is_support_request = _intent_result.get("intent") == "SUPPORT_REQUEST"
+    if _is_support_request:
+        logger.info("[Feedback] Intent=SUPPORT_REQUEST → bỏ qua ABSA, sentiment=null, aspects=[]")
+        sentiment_score = None
+        overall_sentiment = "not_applicable"
+        _internal_sentiment_for_rfms = 0.5  # neutral safe default cho RFMS
+
+    if text_for_absa and validity_status not in ("invalid_semantic",) and not _is_support_request:
         try:
             logger.info(
                 f"[Feedback] [6] ABSA qua Gemini (timeout={GEMINI_ABSA_TIMEOUT_SECONDS}s) ..."

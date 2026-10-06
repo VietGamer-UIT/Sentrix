@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area
 } from 'recharts'
-import { useFeedbacks, useCustomers, timeAgo, tsToDate } from '../mocks/useFirestore.js'
+import { useFeedbacks, useCustomers, timeAgo, tsToDate, isBusinessFeedback } from '../mocks/useFirestore.js'
 import { isToday, isYesterday, subDays, format, isSameDay } from 'date-fns'
 import CountUp from 'react-countup'
 
@@ -64,8 +64,9 @@ export default function OverviewPage() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
+  // doneFeedbacks = chỉ business feedback hợp lệ (dùng predicate chung với các tab khác)
   const doneFeedbacks = useMemo(() =>
-    feedbacks.filter(f => f.processing_status === 'done' && !f.is_suspicious), [feedbacks])
+    feedbacks.filter(isBusinessFeedback), [feedbacks])
 
   const todayFeedbacks = useMemo(() =>
     doneFeedbacks.filter(f => isToday(tsToDate(f.timestamp))), [doneFeedbacks])
@@ -171,6 +172,7 @@ export default function OverviewPage() {
 
   const recentFeedbacks = useMemo(() =>
     [...feedbacks]
+      .filter(f => f.intent !== 'SUPPORT_REQUEST')
       .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0))
       .slice(0, 5), [feedbacks])
 
