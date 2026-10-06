@@ -304,8 +304,8 @@ async def submit_feedback(
     ),
     customer_phone: str | None = Form(
         default=None,
-        description="So dien thoai khach hang (tuy chon). Dung de tinh RFMS. Se duoc hash truoc khi luu.",
-        max_length=20,
+        description="So dien thoai khach hang hoac email (tuy chon). Dung de tinh RFMS. Se duoc hash truoc khi luu.",
+        max_length=100,
     ),
     voucher_eligible: bool = Form(
         default=False,
@@ -334,6 +334,10 @@ async def submit_feedback(
     has_text = text_content is not None and text_content.strip()
 
     request_id = str(uuid.uuid4())
+    
+    logger.info(f"[LOCAL E2E] feedback request received")
+    logger.info(f"[LOCAL E2E] tenant_id={tenant_id}")
+    logger.info(f"[LOCAL E2E] has_audio={has_audio}, has_text={has_text}")
 
     if not has_audio and not has_text:
         logger.warning(f"[Feedback] Tu choi do thieu noi dung (request_id={request_id}): khong co audio cung khong co text_content")
@@ -1025,6 +1029,7 @@ async def submit_feedback(
     _zns_trigger = (
         should_alert
         and customer_phone
+        and ("@" not in customer_phone)
         and _sentiment_for_zns < ZNS_NEG_SENTIMENT_THRESHOLD
     )
 

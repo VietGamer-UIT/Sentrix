@@ -19,28 +19,28 @@ export const SPIN_PRIZES = [
     label: 'Giảm 10%',
     color: '#00C2FF',
     probability: 0.35,
-    voucherTemplate: (phone) => `SENTRIX-10-${phone.slice(-4).toUpperCase()}`
+    voucherTemplate: () => `SENTRIX-10-MOCK`
   },
   {
     id: 'giam_20',
     label: 'Giảm 20%',
     color: '#7C3AED',
     probability: 0.20,
-    voucherTemplate: (phone) => `SENTRIX-20-${phone.slice(-4).toUpperCase()}`
+    voucherTemplate: () => `SENTRIX-20-MOCK`
   },
   {
     id: 'tang_banh',
     label: 'Tặng bánh',
     color: '#F59E0B',
     probability: 0.15,
-    voucherTemplate: (phone) => `SENTRIX-BANH-${phone.slice(-4).toUpperCase()}`
+    voucherTemplate: () => `SENTRIX-BANH-MOCK`
   },
   {
     id: 'giam_5',
     label: 'Giảm 5%',
     color: '#10B981',
     probability: 0.20,
-    voucherTemplate: (phone) => `SENTRIX-5-${phone.slice(-4).toUpperCase()}`
+    voucherTemplate: () => `SENTRIX-5-MOCK`
   },
   {
     id: 'uong_mien_phi',
@@ -48,7 +48,7 @@ export const SPIN_PRIZES = [
     prizeLabel: 'Voucher uống miễn phí lần sau',
     color: '#EF4444',
     probability: 0.05,
-    voucherTemplate: (phone) => `SENTRIX-FREE-${phone.slice(-4).toUpperCase()}`
+    voucherTemplate: () => `SENTRIX-FREE-MOCK`
   },
   {
     id: 'chuc_may_man',

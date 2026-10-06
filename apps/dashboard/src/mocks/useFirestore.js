@@ -56,13 +56,20 @@ export function useFeedbacks(tenantId = TENANT_ID) {
     const ref = collection(db, `tenants/${tenantId}/feedbacks`)
     const q   = query(ref, orderBy('timestamp', 'desc'), limit(300))
 
+    console.log('[DASHBOARD RT] listener attached')
     const unsub = onSnapshot(
       q,
       snapshot => {
+        console.log(`[DASHBOARD RT] snapshot size=${snapshot.size}`)
+        console.log(`[DASHBOARD RT] snapshotChanges=${snapshot.docChanges().length}`)
+        snapshot.docChanges().forEach(change => {
+           console.log(`[DASHBOARD RT] incoming feedback_id=${change.doc.id} type=${change.type}`)
+        })
         const docs = snapshot.docs.map(d => ({
           feedback_id: d.id,
           ...d.data(),
         }))
+        console.log(`[DASHBOARD RT] state update count=${docs.length}`)
         setFeedbacks(docs)
         setLoading(false)
       },

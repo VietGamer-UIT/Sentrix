@@ -52,10 +52,11 @@ def _hash_phone(phone_number: str) -> str:
     """
     # Chuẩn hoá SĐT về dạng +84...
     phone = phone_number.strip().replace(" ", "").replace("-", "")
-    if phone.startswith("0"):
-        phone = "+84" + phone[1:]
-    elif not phone.startswith("+"):
-        phone = "+84" + phone
+    if "@" not in phone:
+        if phone.startswith("0"):
+            phone = "+84" + phone[1:]
+        elif not phone.startswith("+"):
+            phone = "+84" + phone
 
     digest = hashlib.sha256(phone.encode("utf-8")).hexdigest()
     return f"cust_{digest[:16]}"
@@ -63,13 +64,25 @@ def _hash_phone(phone_number: str) -> str:
 
 def _mask_phone(phone_number: str) -> str:
     """
-    Tạo SĐT hiển thị dạng masked: "0901234567" → "090****567"
-    Bảo vệ quyền riêng tư khách hàng trên Dashboard.
+    Tạo hiển thị dạng masked (áp dụng cho cả phone và email):
+    - Phone: "0901234567" → "090****567"
+    - Email: "abcde@gmail.com" → "a***e@gmail.com"
+    Giữ backward compatibility bằng cách dùng chung hàm này và field 'phone_masked'.
     """
-    phone = phone_number.strip().replace(" ", "")
-    if len(phone) < 7:
+    contact = phone_number.strip().replace(" ", "")
+    if "@" in contact:
+        parts = contact.split("@")
+        name = parts[0]
+        domain = parts[1] if len(parts) > 1 else ""
+        if len(name) <= 2:
+            masked_name = name + "***"
+        else:
+            masked_name = name[0] + "***" + name[-1]
+        return f"{masked_name}@{domain}"
+
+    if len(contact) < 7:
         return "***"
-    return phone[:3] + "****" + phone[-3:]
+    return contact[:3] + "****" + contact[-3:]
 
 
 def _sentiment_to_risk_level(p_churn: float) -> str:
@@ -224,6 +237,7 @@ def get_or_create_customer(
     new_customer = {
         "customer_id":          customer_id,
         "phone_masked":         phone_masked,
+        "contact_type":         "email" if "@" in phone_number else "phone",
         "first_seen_at":        now,
         "last_feedback_at":     now,
         "feedback_count":       0,          # sẽ tăng sau khi save_feedback

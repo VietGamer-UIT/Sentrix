@@ -271,16 +271,21 @@ class ZaloZnsOtpProvider(OtpProvider):
 # ---------------------------------------------------------------------------
 # Factory
 # ---------------------------------------------------------------------------
-def get_otp_provider() -> OtpProvider:
+def get_otp_provider(contact: str = "") -> OtpProvider:
     """
-    Trả về OTP provider phù hợp dựa trên biến môi trường OTP_PROVIDER.
-    Default: MockOtpProvider (an toàn cho dev/demo).
+    Trả về OTP provider phù hợp dựa trên contact và biến môi trường.
+    Nếu là email -> EmailOtpProvider.
+    Nếu là SĐT -> Đọc OTP_PROVIDER từ .env (mặc định mock).
     """
+    if contact and _is_email(contact):
+        return EmailOtpProvider()
+        
     provider_name = os.getenv("OTP_PROVIDER", "mock").lower().strip()
     if provider_name == "zalo":
         return ZaloZnsOtpProvider()
-    if provider_name == "email":
+    if provider_name == "email": # Fallback if env says email but contact is phone (though unexpected)
         return EmailOtpProvider()
+        
     return MockOtpProvider()
 
 
@@ -366,11 +371,17 @@ def create_otp_session(contact: str) -> str:
 
     session_key = _hash_contact_for_otp(contact)
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    
+    # [FIX] Tự động verified=True cho Phone Demo để frontend không bị lỗi 403 
+    # khi frontend bỏ qua bước verify.
+    is_mock = os.getenv("OTP_PROVIDER", "mock") == "mock"
+    accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").lower() == "true"
+    is_phone_demo = not _is_email(contact) and is_mock and accept_all
 
     session_data = {
         "otp_code_hash": _hash_otp_code(otp_code),
         "expires_at": expires_at,
-        "verified": False,
+        "verified": is_phone_demo,
         "attempts": 0,
         "created_at": datetime.now(timezone.utc),
     }
