@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useFeedbacks, useCustomers, IS_MOCK } from '../mocks/useFirestore.js'
+import { useFeedbacks, useCustomers, IS_MOCK, isBusinessFeedback } from '../mocks/useFirestore.js'
 
 /**
  * OperatingCostPage — Tài Chính & Chi Phí Vận Hành
@@ -58,9 +58,17 @@ export default function OperatingCostPage() {
   const { feedbacks, loading: fbLoading } = useFeedbacks()
 
   // Đếm số lượt gọi API từ feedbacks Firestore
+  // Dùng isBusinessFeedback predicate để nhất quán với các tab khác
   const counts = useMemo(() => {
-    const audio    = feedbacks.filter(f => f.input_type === 'audio' && f.processing_status === 'done').length
-    const processed = feedbacks.filter(f => f.processing_status === 'done').length
+    // STT (Whisper): chỉ audio FEEDBACK hợp lệ (SUPPORT_REQUEST bỏ qua Whisper theo pipeline)
+    const audio    = feedbacks.filter(f =>
+      f.input_type === 'audio' &&
+      f.processing_status === 'done' &&
+      f.intent !== 'SUPPORT_REQUEST' &&
+      !f.is_suspicious
+    ).length
+    // AI analysis: chỉ business feedback đã qua ABSA
+    const processed = feedbacks.filter(isBusinessFeedback).length
     const zns      = feedbacks.filter(f => f.zns_sent_at != null).length
     return { audio, processed, zns }
   }, [feedbacks])
@@ -168,12 +176,12 @@ export default function OperatingCostPage() {
           <div className="kpi-value" style={{ color: costColor(costs.totalVND) }}>
             {loading ? '—' : fmtVND(costs.totalVND)}
           </div>
-          <div className="kpi-sub">tích lũy từ {feedbacks.length} phản hồi</div>
+          <div className="kpi-sub">tích lũy từ {counts.processed} phản hồi phân tích</div>
         </div>
         <div className="kpi-card glass-card">
           <div className="kpi-label">Chi phí mỗi lượt phản hồi</div>
           <div className="kpi-value" style={{ color: 'var(--color-text-primary)' }}>
-            {loading || feedbacks.length === 0 ? '—' : fmtVND(costs.totalVND / feedbacks.length)}
+            {loading || counts.processed === 0 ? '—' : fmtVND(costs.totalVND / counts.processed)}
           </div>
           <div className="kpi-sub">trung bình mỗi lượt</div>
         </div>

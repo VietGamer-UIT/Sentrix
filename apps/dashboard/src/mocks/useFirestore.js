@@ -172,3 +172,34 @@ export function timeAgo(ts) {
 
 // Export để pages biết đang dùng mock hay thật
 export const IS_MOCK = USE_MOCK
+
+// ─────────────────────────────────────────────────────────────
+// Helper: isBusinessFeedback — predicate dùng chung cho mọi tab
+//
+// Một feedback "business hợp lệ" phải thỏa mãn:
+//   - processing_status === 'done'          (đã xử lý xong)
+//   - !is_suspicious                        (không phải bất thường)
+//   - intent !== 'SUPPORT_REQUEST'          (không phải yêu cầu hỗ trợ)
+//   - validity_status === 'valid' (hoặc không có field — legacy)
+//
+// Dùng cùng predicate này ở mọi tab để đảm bảo count nhất quán.
+// ─────────────────────────────────────────────────────────────
+export function isBusinessFeedback(f) {
+  if (f.processing_status !== 'done') return false
+  if (f.is_suspicious) return false
+  if (f.intent === 'SUPPORT_REQUEST') return false
+  // Nếu có validity_status (Module 1 anti-fraud), chỉ lấy 'valid'
+  // Nếu không có field (legacy records), vẫn accept
+  if (f.validity_status && f.validity_status !== 'valid') return false
+  return true
+}
+
+// ─────────────────────────────────────────────────────────────
+// Hook: useBusinessFeedbacks — wrapper tiện dụng trả về
+//   feedbacks đã lọc + raw feedbacks + loading + error
+// ─────────────────────────────────────────────────────────────
+export function useBusinessFeedbacks(tenantId = TENANT_ID) {
+  const { feedbacks, loading, error } = useFeedbacks(tenantId)
+  const businessFeedbacks = feedbacks.filter(isBusinessFeedback)
+  return { feedbacks, businessFeedbacks, loading, error }
+}

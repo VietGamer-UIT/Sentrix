@@ -47,9 +47,15 @@ export function scoreToColor(s) {
 export function AspectCellExpanded({ aspects }) {
   if (!aspects || aspects.length === 0) return null
 
+  // Chỉ hiển thị các khía cạnh thực sự được nhắc đến.
+  // Legacy data không có trường mentioned thì vẫn hiển thị.
+  const mentionedAspects = aspects.filter(a => a.mentioned !== false)
+
+  if (mentionedAspects.length === 0) return null
+
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-      {aspects.map((a, i) => {
+      {mentionedAspects.map((a, i) => {
         const cat  = getAspectCategory(a)
         const sent = getAspectSentimentEn(a)
         const sc   = getAspectScore(a)

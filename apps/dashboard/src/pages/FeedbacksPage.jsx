@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useFeedbacks, timeAgo } from '../mocks/useFirestore.js'
+import { useFeedbacks, timeAgo, isBusinessFeedback } from '../mocks/useFirestore.js'
 
 import { AspectCellExpanded } from '../components/AspectCellExpanded.jsx'
 
@@ -29,8 +29,11 @@ export default function FeedbacksPage() {
   const LOCATIONS = useMemo(() =>
     [...new Set(feedbacks.map(f => f.location).filter(Boolean))], [feedbacks])
 
+  // businessFeedbacks: loại trừ SUPPORT_REQUEST, invalid, spam — nhất quán với Overview
+  const businessFeedbacks = useMemo(() => feedbacks.filter(isBusinessFeedback), [feedbacks])
+
   const filtered = useMemo(() => {
-    return [...feedbacks]
+    return [...businessFeedbacks]
       .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0))
       .filter(f => {
         const score = f.sentiment_score ?? 0
@@ -42,7 +45,7 @@ export default function FeedbacksPage() {
         if (search && !f.transcript?.toLowerCase().includes(search.toLowerCase())) return false
         return true
       })
-  }, [feedbacks, filterSentiment, filterLocation, filterType, search])
+  }, [businessFeedbacks, filterSentiment, filterLocation, filterType, search])
 
   const selectStyle = {
     background: 'var(--color-bg-card)', border: '1px solid var(--color-border)',
@@ -93,11 +96,11 @@ export default function FeedbacksPage() {
           <option value="text">Văn bản</option>
         </select>
         <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
-          {filtered.length} / {feedbacks.length} kết quả
+          {filtered.length} / {businessFeedbacks.length} phản hồi
         </span>
       </div>
 
-      {feedbacks.length === 0 ? (
+      {businessFeedbacks.length === 0 ? (
         <div className="card">
           <div className="empty-state">
             <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 72, opacity: 0.35, marginBottom: 'var(--spacing-md)' }} />
