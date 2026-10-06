@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -60,6 +60,13 @@ function TrendIndicator({ pct, up, invertColors = false }) {
 export default function OverviewPage() {
   const { feedbacks, loading: fbLoading, error: fbError } = useFeedbacks()
   const { customers, loading: cuLoading }                  = useCustomers()
+
+  // Force re-render every 30s for timeAgo / UI refresh
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 30000)
+    return () => clearInterval(timer)
+  }, [])
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)

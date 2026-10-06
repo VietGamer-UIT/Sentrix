@@ -61,10 +61,11 @@ def _hash_phone_for_rate_limit(phone: str) -> str:
     SHA-256 one-way — không thể khôi phục SĐT gốc từ hash.
     """
     phone = phone.strip().replace(" ", "").replace("-", "")
-    if phone.startswith("0"):
-        phone = "+84" + phone[1:]
-    elif not phone.startswith("+"):
-        phone = "+84" + phone
+    if "@" not in phone:
+        if phone.startswith("0"):
+            phone = "+84" + phone[1:]
+        elif not phone.startswith("+"):
+            phone = "+84" + phone
     return "rl_" + hashlib.sha256(phone.encode("utf-8")).hexdigest()[:24]
 
 

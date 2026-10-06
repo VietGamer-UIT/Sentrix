@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useFeedbacks, timeAgo, isBusinessFeedback } from '../mocks/useFirestore.js'
 
 import { AspectCellExpanded } from '../components/AspectCellExpanded.jsx'
@@ -25,6 +25,13 @@ export default function FeedbacksPage() {
   const [filterLocation, setFilterLocation]   = useState('all')
   const [filterType, setFilterType]           = useState('all')
   const [search, setSearch]                   = useState('')
+
+  // Force re-render every 30s for timeAgo
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 30000)
+    return () => clearInterval(timer)
+  }, [])
 
   const LOCATIONS = useMemo(() =>
     [...new Set(feedbacks.map(f => f.location).filter(Boolean))], [feedbacks])

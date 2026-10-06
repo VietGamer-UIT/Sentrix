@@ -180,7 +180,7 @@ export default function CustomersPage() {
           <div className="empty-state">
             <img src="/sentrix-logo.png" alt="Sentrix" style={{ width: 72, opacity: 0.35, marginBottom: 'var(--spacing-md)' }} />
             <p>Chưa có khách hàng nào.<br/>
-              <small style={{ color: 'var(--color-text-muted)' }}>Khi khách gửi phản hồi có kèm SĐT, hồ sơ sẽ xuất hiện ở đây.</small>
+              <small style={{ color: 'var(--color-text-muted)' }}>Khi khách gửi phản hồi có kèm SĐT / Email, hồ sơ sẽ xuất hiện ở đây.</small>
             </p>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function CustomersPage() {
             <table>
               <thead>
                 <tr>
-                  <th>Số điện thoại</th>
+                  <th>Liên hệ</th>
                   <th>Rủi ro</th>
                   <th>Nguy cơ rời bỏ</th>
                   <th>Lòng trung thành</th>

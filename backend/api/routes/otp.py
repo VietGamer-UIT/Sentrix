@@ -140,10 +140,7 @@ async def send_otp(request: Request, body: OtpSendRequest):
         )
 
     # Chon provider: email -> EmailOtpProvider, phone -> provider mac dinh (Mock/Zalo)
-    if is_email_contact:
-        provider = EmailOtpProvider()
-    else:
-        provider = get_otp_provider()
+    provider = get_otp_provider(contact)
 
     result = provider.send_otp(contact, otp_code)
 

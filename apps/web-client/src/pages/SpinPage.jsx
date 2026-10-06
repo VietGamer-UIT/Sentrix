@@ -33,17 +33,20 @@ function SpinPage() {
     return true  // Default: cho phép spin nếu không có info
   })()
 
-  // C1 FIX: Lấy SĐT từ sessionStorage (đã nhập và OTP ở RecordingOverlay)
-  // Chỉ hiện input nhập nếu sessionStorage trống (khách bỏ qua OTP ở Overlay)
-  const storedPhone = sessionStorage.getItem('sentrix_customer_phone') || ''
-  const [phone, setPhone]             = useState(storedPhone)
-  const [phoneError, setPhoneError]   = useState(null)
+  // C1 FIX: Lấy Contact từ sessionStorage (đã nhập và OTP ở RecordingOverlay)
+  const storedContact = sessionStorage.getItem('sentrix_customer_contact') || sessionStorage.getItem('sentrix_customer_phone') || ''
+  const storedContactType = sessionStorage.getItem('sentrix_customer_contact_type') || (storedContact.includes('@') ? 'email' : 'phone')
+  
+  const [contact, setContact]         = useState(storedContact)
+  const [contactType, setContactType] = useState(storedContactType)
+  const [contactError, setContactError] = useState(null)
   const [isSpinning, setIsSpinning]   = useState(false)
   const [rotation, setRotation]       = useState(0)
   const [isSuspicious, setIsSuspicious] = useState(false)
   const [apiError, setApiError]       = useState(null)
-  // Hiện input SĐT chỉ khi sessionStorage không có SĐT và voucher eligible
-  const [showPhoneInput, setShowPhoneInput] = useState(!storedPhone && voucherEligible)
+  
+  // Hiện input nếu sessionStorage trống
+  const [showContactInput, setShowContactInput] = useState(!storedContact && voucherEligible)
 
   const segmentAngle = 360 / SPIN_PRIZES.length
 
@@ -67,25 +70,35 @@ function SpinPage() {
     }
   }, [voucherEligible, navigate, tenantId, location]) // eslint-disable-line
 
-  const validatePhone = (p) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(p.trim())
+  const validateContact = (c) => {
+    if (contactType === 'phone') {
+      return /^(0[3|5|7|8|9])[0-9]{8}$/.test(c.trim())
+    }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.trim())
+  }
 
-  const handlePhoneChange = (e) => {
-    const val = e.target.value.replace(/\D/g, '')
-    setPhone(val)
-    setPhoneError(null)
+  const handleContactChange = (e) => {
+    let val = e.target.value
+    if (contactType === 'phone') {
+      val = val.replace(/\D/g, '')
+    }
+    setContact(val)
+    setContactError(null)
   }
 
   const handleSpin = async () => {
-    if (!validatePhone(phone)) {
-      setPhoneError('Số điện thoại không hợp lệ (ví dụ: 0912345678)')
+    if (!validateContact(contact)) {
+      setContactError(contactType === 'phone' ? 'Số điện thoại không hợp lệ' : 'Email không hợp lệ')
       return
     }
     setIsSpinning(true)
-    setPhoneError(null)
+    setContactError(null)
     setApiError(null)
 
-    // Lưu SĐT vào sessionStorage để đồng bộ (phòng trường hợp nhập lần đầu tại đây)
-    sessionStorage.setItem('sentrix_customer_phone', phone)
+    // Lưu lại vào sessionStorage
+    if (contactType === 'phone') sessionStorage.setItem('sentrix_customer_phone', contact)
+    sessionStorage.setItem('sentrix_customer_contact', contact)
+    sessionStorage.setItem('sentrix_customer_contact_type', contactType)
 
     // Lấy feedback_id từ sessionStorage (được lưu bởi RecordingOverlay)
     let feedbackId = null
@@ -105,7 +118,7 @@ function SpinPage() {
     let voucherCode = ''
 
     try {
-      const spinResult = await submitSpinAPI(tenantId, phone, feedbackId)
+      const spinResult = await submitSpinAPI(tenantId, contact, feedbackId)
       // Backend đã lưu phone + voucher vào Firestore — client chỉ nhận kết quả
       prizeId     = spinResult.prize        || 'chuc_may_man'
       prizeLabel  = spinResult.prize_label  || 'Chúc may mắn'
@@ -245,9 +258,9 @@ function SpinPage() {
             Vòng quay may mắn
           </h1>
           <p style={{ marginTop: 6, color: 'var(--color-text-secondary)' }}>
-            {storedPhone
-              ? `Quay thưởng cho SĐT ${storedPhone.slice(0, 3)}****${storedPhone.slice(-3)}`
-              : 'Nhập SĐT để quay thưởng ngay!'}
+            {storedContact
+              ? `Quay thưởng cho ${contactType === 'email' ? storedContact : storedContact.slice(0, 3) + '****' + storedContact.slice(-3)}`
+              : 'Nhập thông tin liên hệ để quay thưởng ngay!'}
           </p>
         </div>
 
@@ -276,23 +289,30 @@ function SpinPage() {
           </div>
         </div>
 
-        {/* Form nhập SĐT — chỉ hiện nếu chưa có SĐT từ RecordingPage */}
-        {!isSpinning && showPhoneInput && (
+        {/* Form nhập Liên hệ — chỉ hiện nếu chưa có từ RecordingPage */}
+        {!isSpinning && showContactInput && (
           <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
-            <div className="input-group">
-              <label className="input-label" htmlFor="phone-input">
-                Số điện thoại nhận quà
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 12 }}>
+              <label>
+                <input type="radio" name="contactType" value="phone" checked={contactType === 'phone'} onChange={() => { setContactType('phone'); setContactError(null) }} />
+                <span> Số điện thoại</span>
               </label>
+              <label style={{ marginLeft: 16 }}>
+                <input type="radio" name="contactType" value="email" checked={contactType === 'email'} onChange={() => { setContactType('email'); setContactError(null) }} />
+                <span> Email</span>
+              </label>
+            </div>
+            <div className="input-group">
               <input
-                id="phone-input"
+                id="contact-input"
                 className="input"
-                type="tel"
-                inputMode="numeric"
-                placeholder="0912 345 678"
-                value={phone}
-                onChange={handlePhoneChange}
-                maxLength={10}
-                autoComplete="tel"
+                type={contactType === 'email' ? 'email' : 'tel'}
+                inputMode={contactType === 'email' ? 'email' : 'numeric'}
+                placeholder={contactType === 'email' ? 'Nhập email (vd: abc@gmail.com)' : 'Nhập SĐT (vd: 0912345678)'}
+                value={contact}
+                onChange={handleContactChange}
+                maxLength={contactType === 'email' ? 100 : 10}
+                autoComplete={contactType === 'email' ? 'email' : 'tel'}
               />
             </div>
 
@@ -300,13 +320,13 @@ function SpinPage() {
               fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)',
               margin: '8px 0 var(--spacing-md)', lineHeight: 1.6
             }}>
-              SĐT chỉ dùng để gửi voucher qua Zalo<br/>
+              Thông tin chỉ dùng để gửi voucher<br/>
               Không chia sẻ cho bên thứ ba
             </p>
 
-            {phoneError && (
+            {contactError && (
               <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--spacing-sm)' }}>
-                {phoneError}
+                {contactError}
               </p>
             )}
 
@@ -320,15 +340,15 @@ function SpinPage() {
               id="btn-spin"
               className="btn btn--primary"
               onClick={handleSpin}
-              disabled={phone.length < 10}
+              disabled={contact.length < 5}
             >
               Quay ngay!
             </button>
           </div>
         )}
 
-        {/* Có SĐT sẵn — hiện nút quay ngay không cần nhập lại */}
-        {!isSpinning && !showPhoneInput && (
+        {/* Có SĐT/Email sẵn — hiện nút quay ngay không cần nhập lại */}
+        {!isSpinning && !showContactInput && (
           <div className="card fade-up fade-up--delay-2" style={{ width: '100%' }}>
             {apiError && (
               <p style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--spacing-sm)' }}>
@@ -352,9 +372,9 @@ function SpinPage() {
                 padding: '8px 0', fontFamily: 'var(--font-family)',
                 marginTop: 8,
               }}
-              onClick={() => setShowPhoneInput(true)}
+              onClick={() => setShowContactInput(true)}
             >
-              Dùng số điện thoại khác
+              Dùng liên hệ khác
             </button>
           </div>
         )}
