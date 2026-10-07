@@ -17,7 +17,7 @@ import { IS_MOCK } from '../mocks/useFirestore.js'
  *   4. Nhấn "Đã xử lý" → RESOLVED (ẩn khỏi danh sách mặc định)
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://sentrix-9dgc.onrender.com'
 const TENANT_ID = import.meta.env.VITE_DEMO_TENANT_ID || 'pho-ba-lan_1722500000000'
 
 // ─────────────────────────────────────────────────────────────────────────────
