@@ -134,37 +134,61 @@ class MockOtpProvider(OtpProvider):
 
 
 # ---------------------------------------------------------------------------
-# Email OTP Provider — Gửi OTP qua Gmail SMTP (miễn phí)
+# Email OTP Provider — Gửi OTP qua Gmail SMTP hoặc HTTP API (tránh block port 25/465/587)
 # ---------------------------------------------------------------------------
 class EmailOtpProvider(OtpProvider):
     """
-    OTP provider qua Gmail SMTP — MIỄN PHÍ, không cần API trả tiền.
+    OTP provider qua Gmail SMTP hoặc HTTP API.
 
     CẤU HÌNH (trong .env):
+      EMAIL_TRANSPORT = "smtp" (mặc định) hoặc "http_api"
+
+      # Cho SMTP:
       SMTP_HOST     = smtp.gmail.com
       SMTP_PORT     = 587
       SMTP_USER     = your-gmail@gmail.com
-      SMTP_PASSWORD = xxxx xxxx xxxx xxxx   # Gmail App Password (không phải mật khẩu thường)
+      SMTP_PASSWORD = xxxx xxxx xxxx xxxx
       SMTP_FROM_NAME = Sentrix OTP
 
-    Tạo Gmail App Password:
-      https://myaccount.google.com/apppasswords
-      (cần bật 2-Step Verification trước)
+      # Cho HTTP API (Render free tier safe):
+      EMAIL_API_URL = https://api.resend.com/emails (hoặc provider khác)
+      EMAIL_API_KEY = ...
+      EMAIL_FROM    = onboarding@resend.dev
     """
 
     def __init__(self):
+        self.transport = os.getenv("EMAIL_TRANSPORT", "smtp").lower()
+        
+        # Cấu hình SMTP
         self.host      = os.getenv("SMTP_HOST", "smtp.gmail.com")
         self.port      = int(os.getenv("SMTP_PORT", "587"))
         self.user      = os.getenv("SMTP_USER", "")
         self.password  = os.getenv("SMTP_PASSWORD", "")
+        
+        # Cấu hình HTTP API
+        self.api_url   = os.getenv("EMAIL_API_URL", "")
+        self.api_key   = os.getenv("EMAIL_API_KEY", "")
+        self.api_from  = os.getenv("EMAIL_FROM", "")
+        
         self.from_name = os.getenv("SMTP_FROM_NAME", "Sentrix")
+        
+        logger.info(f"[EmailOTP] INITIALIZED. Transport={self.transport}, API_URL={self.api_url}, FROM={self.api_from}, HAS_API_KEY={bool(self.api_key)}")
 
     def send_otp(self, contact: str, otp_code: str) -> OtpSendResult:
-        if not self.user or not self.password:
+        logger.info(f"[EmailOTP] send_otp called. Effective transport={self.transport}")
+        if self.transport == "smtp" and (not self.user or not self.password):
             logger.error("[EmailOTP] SMTP_USER hoặc SMTP_PASSWORD chưa được cấu hình.")
             return OtpSendResult(
                 success=False,
                 error="Email OTP chưa được cấu hình. Kiểm tra SMTP_USER và SMTP_PASSWORD trong .env.",
+                message="Không thể gửi OTP qua email.",
+            )
+            
+        if self.transport == "http_api" and (not self.api_url or not self.api_key or not self.api_from):
+            logger.error("[EmailOTP] HTTP API chưa được cấu hình đủ EMAIL_API_URL, EMAIL_API_KEY, EMAIL_FROM.")
+            return OtpSendResult(
+                success=False,
+                error="Email OTP chưa được cấu hình cho HTTP API.",
                 message="Không thể gửi OTP qua email.",
             )
 
@@ -191,37 +215,78 @@ class EmailOtpProvider(OtpProvider):
   </p>
 </body></html>"""
 
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"]    = f"{self.from_name} <{self.user}>"
-        msg["To"]      = contact
-        msg.attach(MIMEText(html_body, "html", "utf-8"))
+        if self.transport == "http_api":
+            try:
+                import httpx
+                headers = {
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "from": f"{self.from_name} <{self.api_from}>",
+                    "to": [contact],
+                    "subject": subject,
+                    "html": html_body
+                }
+                with httpx.Client(timeout=15.0) as client:
+                    resp = client.post(self.api_url, headers=headers, json=payload)
+                    if resp.status_code >= 400:
+                        is_dev = os.getenv("ENVIRONMENT", "production") != "production"
+                        if is_dev:
+                            logger.error(f"[EmailOTP] HTTP API trả về lỗi: {resp.status_code} - {resp.text}")
+                        else:
+                            logger.error(f"[EmailOTP] HTTP API trả về lỗi: {resp.status_code}")
+                        
+                        return OtpSendResult(
+                            success=False,
+                            error=f"Email API error: {resp.status_code}",
+                            message="Gửi email thất bại. Vui lòng thử lại sau.",
+                        )
+                logger.info(f"[EmailOTP] Đã gửi OTP qua HTTP API tới: {contact[:3]}***{contact.split('@')[-1]}")
+                return OtpSendResult(
+                    success=True,
+                    message=f"Mã OTP đã được gửi tới {contact}. Kiểm tra hộp thư (và spam).",
+                )
+            except Exception as e:
+                logger.error(f"[EmailOTP] Lỗi gửi email HTTP API: {str(e)}")
+                return OtpSendResult(
+                    success=False,
+                    error=str(e),
+                    message="Gửi email thất bại. Vui lòng thử lại sau.",
+                )
+        else:
+            # SMTP Transport
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"]    = f"{self.from_name} <{self.user}>"
+            msg["To"]      = contact
+            msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        try:
-            with smtplib.SMTP(self.host, self.port, timeout=15) as server:
-                server.ehlo()
-                server.starttls()
-                server.login(self.user, self.password)
-                server.sendmail(self.user, [contact], msg.as_string())
-            logger.info(f"[EmailOTP] Đã gửi OTP tới: {contact[:3]}***{contact.split('@')[-1]}")
-            return OtpSendResult(
-                success=True,
-                message=f"Mã OTP đã được gửi tới {contact}. Kiểm tra hộp thư (và spam).",
-            )
-        except smtplib.SMTPAuthenticationError:
-            logger.error("[EmailOTP] Xác thực SMTP thất bại. Kiểm tra SMTP_USER/PASSWORD.")
-            return OtpSendResult(
-                success=False,
-                error="Xác thực email thất bại. Kiểm tra cấu hình SMTP.",
-                message="Không thể gửi OTP qua email.",
-            )
-        except Exception as e:
-            logger.error(f"[EmailOTP] Lỗi gửi email: {e}")
-            return OtpSendResult(
-                success=False,
-                error=str(e),
-                message="Gửi email thất bại. Vui lòng thử lại sau.",
-            )
+            try:
+                with smtplib.SMTP(self.host, self.port, timeout=15) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.login(self.user, self.password)
+                    server.sendmail(self.user, [contact], msg.as_string())
+                logger.info(f"[EmailOTP] Đã gửi OTP qua SMTP tới: {contact[:3]}***{contact.split('@')[-1]}")
+                return OtpSendResult(
+                    success=True,
+                    message=f"Mã OTP đã được gửi tới {contact}. Kiểm tra hộp thư (và spam).",
+                )
+            except smtplib.SMTPAuthenticationError:
+                logger.error("[EmailOTP] Xác thực SMTP thất bại. Kiểm tra SMTP_USER/PASSWORD.")
+                return OtpSendResult(
+                    success=False,
+                    error="Xác thực email thất bại. Kiểm tra cấu hình SMTP.",
+                    message="Không thể gửi OTP qua email.",
+                )
+            except Exception as e:
+                logger.error(f"[EmailOTP] Lỗi gửi email: {e}")
+                return OtpSendResult(
+                    success=False,
+                    error=str(e),
+                    message="Gửi email thất bại. Vui lòng thử lại sau.",
+                )
 
     def provider_name(self) -> str:
         return "EmailOtpProvider"
