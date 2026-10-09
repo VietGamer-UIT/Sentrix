@@ -35,7 +35,7 @@ LƯU TRỮ SESSION OTP:
 import hashlib
 import logging
 import os
-import random
+import secrets
 import re
 import smtplib
 import string
@@ -333,6 +333,23 @@ class ZaloZnsOtpProvider(OtpProvider):
         return "ZaloZnsOtpProvider"
 
 
+class DisabledPhoneOtpProvider(OtpProvider):
+    """
+    Provider mặc định trên production khi SĐT được gửi lên nhưng Zalo/SMS chưa tích hợp.
+    Luôn trả về lỗi, chặn số điện thoại đi vào Email API.
+    """
+    def send_otp(self, contact: str, otp_code: str) -> OtpSendResult:
+        logger.warning("[OTP] Từ chối gửi OTP qua SĐT vì chưa cấu hình SMS/Zalo.")
+        return OtpSendResult(
+            success=False,
+            error="Xác thực OTP qua số điện thoại hiện chưa khả dụng. Vui lòng sử dụng địa chỉ email để nhận mã.",
+            message="Không thể gửi OTP."
+        )
+
+    def provider_name(self) -> str:
+        return "DisabledPhoneOtpProvider"
+
+
 # ---------------------------------------------------------------------------
 # Factory
 # ---------------------------------------------------------------------------
@@ -340,7 +357,7 @@ def get_otp_provider(contact: str = "") -> OtpProvider:
     """
     Trả về OTP provider phù hợp dựa trên contact và biến môi trường.
     Nếu là email -> EmailOtpProvider.
-    Nếu là SĐT -> Đọc OTP_PROVIDER từ .env (mặc định mock).
+    Nếu là SĐT -> Kiểm tra môi trường và cấu hình (chặn mock trên production).
     """
     if contact and _is_email(contact):
         return EmailOtpProvider()
@@ -348,10 +365,16 @@ def get_otp_provider(contact: str = "") -> OtpProvider:
     provider_name = os.getenv("OTP_PROVIDER", "mock").lower().strip()
     if provider_name == "zalo":
         return ZaloZnsOtpProvider()
-    if provider_name == "email": # Fallback if env says email but contact is phone (though unexpected)
-        return EmailOtpProvider()
+
+    # Số điện thoại, nhưng không phải Zalo.
+    # Chỉ cho phép Mock trên môi trường dev/test.
+    env = os.getenv("ENVIRONMENT", "").strip().lower()
+    is_dev = env in {"development", "dev", "test"}
+
+    if is_dev and provider_name == "mock":
+        return MockOtpProvider()
         
-    return MockOtpProvider()
+    return DisabledPhoneOtpProvider()
 
 
 # ---------------------------------------------------------------------------
@@ -403,8 +426,8 @@ def _hash_phone_for_otp(phone: str) -> str:
 
 
 def _generate_otp_code() -> str:
-    """Tạo mã OTP ngẫu nhiên 6 chữ số."""
-    return "".join(random.choices(string.digits, k=OTP_CODE_LENGTH))
+    """Tạo mã OTP ngẫu nhiên 6 chữ số (sử dụng secrets cho bảo mật)."""
+    return "".join(secrets.choice(string.digits) for _ in range(OTP_CODE_LENGTH))
 
 
 def _hash_otp_code(code: str) -> str:
@@ -430,18 +453,24 @@ def create_otp_session(contact: str) -> str:
     Returns:
         otp_code: Mã OTP plaintext (chỉ dùng để gửi cho user, KHÔNG lưu lại).
     """
+    env = os.getenv("ENVIRONMENT", "").strip().lower()
+    is_dev = env in {"development", "dev", "test"}
+    is_mock = os.getenv("OTP_PROVIDER", "mock").strip().lower() == "mock"
+
     # Cho phép override code tĩnh trong môi trường mock (tiện demo)
-    mock_code = os.getenv("OTP_MOCK_CODE", "")
-    otp_code = mock_code if mock_code else _generate_otp_code()
+    mock_code = os.getenv("OTP_MOCK_CODE", "").strip()
+    if is_dev and is_mock and mock_code:
+        otp_code = mock_code
+    else:
+        otp_code = _generate_otp_code()
 
     session_key = _hash_contact_for_otp(contact)
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
     
     # [FIX] Tự động verified=True cho Phone Demo để frontend không bị lỗi 403 
-    # khi frontend bỏ qua bước verify.
-    is_mock = os.getenv("OTP_PROVIDER", "mock") == "mock"
-    accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").lower() == "true"
-    is_phone_demo = not _is_email(contact) and is_mock and accept_all
+    # khi frontend bỏ qua bước verify. (KHÔNG CHO PHÉP TRÊN PRODUCTION)
+    accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").strip().lower() == "true"
+    is_phone_demo = is_dev and not _is_email(contact) and is_mock and accept_all
 
     session_data = {
         "otp_code_hash": _hash_otp_code(otp_code),
@@ -480,7 +509,12 @@ def verify_otp_session(contact: str, code_input: str) -> OtpVerifyResult:
         OtpVerifyResult với success=True nếu hợp lệ.
     """
     # Trong mock mode và OTP_MOCK_ACCEPT_ALL=true → chấp nhận mọi code (chỉ áp dụng cho SĐT khi dùng mock)
-    if not _is_email(contact) and os.getenv("OTP_PROVIDER", "mock") == "mock" and os.getenv("OTP_MOCK_ACCEPT_ALL", "").lower() == "true":
+    # KHÔNG CHO PHÉP bypass trên production
+    env = os.getenv("ENVIRONMENT", "").strip().lower()
+    is_dev = env in {"development", "dev", "test"}
+    is_mock = os.getenv("OTP_PROVIDER", "mock").strip().lower() == "mock"
+    accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").strip().lower() == "true"
+    if is_dev and not _is_email(contact) and is_mock and accept_all:
         logger.info("[OTP] MockOTP accept-all mode — bỏ qua xác thực code cho SĐT")
         return OtpVerifyResult(success=True, message="OTP hợp lệ (mock accept-all mode).")
 
