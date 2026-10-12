@@ -4,6 +4,8 @@ import RecordingOverlay from '../components/RecordingOverlay.jsx'
 import ConsentWindow from '../components/ConsentWindow.jsx'
 import { useConsent } from '../hooks/useConsent.js'
 import { useTenantInfo } from '../hooks/useTenantInfo.js'
+import { auth } from '../firebase.js'
+import { signOut } from 'firebase/auth'
 
 /**
  * LandingPage — Bước 2 trong user-flow.md
@@ -31,11 +33,17 @@ function LandingPage() {
   // Hook quản lý consent — Điều 6.2 NĐ 356/2025/NĐ-CP
   const { hasConsented } = useConsent(tenantId)
 
-  // Xóa kết quả API cũ khi vào trang mới (session mới bắt đầu)
+  // Xóa kết quả API cũ và phiên khách trước khi vào trang mới (session mới bắt đầu)
   useEffect(() => {
     sessionStorage.removeItem('sentrix_api_result')
     sessionStorage.removeItem('sentrix_feedback_id')
     sessionStorage.removeItem('sentrix_is_suspicious')
+    sessionStorage.removeItem('sentrix_customer_contact')
+    sessionStorage.removeItem('sentrix_customer_phone')
+    sessionStorage.removeItem('sentrix_customer_contact_type')
+    if (auth && auth.currentUser) {
+      signOut(auth).catch(() => {})
+    }
   }, [])
 
   /**

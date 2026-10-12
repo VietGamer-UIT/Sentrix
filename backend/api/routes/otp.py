@@ -32,11 +32,22 @@ from backend.services.otp_service import (
     create_otp_session,
     get_otp_provider,
     verify_otp_session,
+    check_otp_cooldown,
+    check_otp_hourly_rate_limit,
+    delete_otp_session_on_send_failure,
     _normalize_phone,
     _is_email,
     EmailOtpProvider,
+    OtpCooldownError,
+    OtpHourlyLimitError,
 )
 from backend.services.rate_limit_service import check_rate_limit
+from backend.services.email_validation_service import (
+    is_disposable_email,
+    FRIENDLY_DISPOSABLE_ERROR_MESSAGE,
+    normalize_email,
+    mask_email,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -120,20 +131,75 @@ async def send_otp(request: Request, body: OtpSendRequest):
     is_email_contact = _is_email(contact)
     contact_type = "email" if is_email_contact else "phone"
 
-    # An danh hoa cho log
+    # Chống disposable email (Lớp chống spam)
     if is_email_contact:
-        parts = contact.split("@")
-        contact_masked = f"{parts[0][:2]}***@{parts[1]}"
+        contact = normalize_email(contact)
+        if is_disposable_email(contact):
+            logger.warning(f"[OTP/send] Tu choi email disposable: {mask_email(contact)}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=FRIENDLY_DISPOSABLE_ERROR_MESSAGE,
+            )
+
+    # Ẩn danh hóa cho log (dùng trước khi log rate limit)
+    if is_email_contact:
+        contact_masked = mask_email(contact)
     else:
-        contact_masked = f"****{contact[-4:]}"
+        contact_masked = f"****{contact[-4:]}" if len(contact) >= 4 else "***"
+
+    # Cooldown giữa các lần gửi (tối thiểu 60s)
+    try:
+        cooldown_allowed, remaining_sec = check_otp_cooldown(contact)
+    except RuntimeError as e:
+        logger.error(f"[OTP/send] Loi kiem tra cooldown: {type(e).__name__}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Dịch vụ gửi mã OTP tạm thời không khả dụng. Vui lòng thử lại sau.",
+        )
+
+    if not cooldown_allowed:
+        logger.info(f"[OTP/send] Rate limit cooldown: con {remaining_sec}s | {contact_masked}")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Vui lòng đợi {remaining_sec} giây trước khi yêu cầu mã OTP mới.",
+        )
+
+    # Giới hạn 5 lần gửi OTP/giờ/contact (P1 rate limit — bền vững qua restart)
+    try:
+        hourly_allowed, sends_this_hour = check_otp_hourly_rate_limit(contact)
+    except RuntimeError as e:
+        logger.error(f"[OTP/send] Loi kiem tra hourly rate limit: {type(e).__name__}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Dịch vụ gửi mã OTP tạm thời không khả dụng. Vui lòng thử lại sau.",
+        )
+
+    if not hourly_allowed:
+        logger.warning(f"[OTP/send] Hourly rate limit: {contact_masked} đã gửi {sends_this_hour} lần trong giờ này")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Đã vượt giới hạn gửi OTP. Vui lòng thử lại sau 1 giờ.",
+        )
 
     logger.info(f"[OTP/send] contact={contact_masked} | type={contact_type} | tenant={body.tenant_id}")
 
     # Tao OTP session va lay code
     try:
         otp_code = create_otp_session(contact)
+    except OtpCooldownError as cd_err:
+        logger.info(f"[OTP/send] Rate limit cooldown (transaction): con {cd_err.remaining_seconds}s | {contact_masked}")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Vui lòng đợi {cd_err.remaining_seconds} giây trước khi yêu cầu mã OTP mới.",
+        )
+    except (OtpHourlyLimitError, ValueError):
+        logger.warning(f"[OTP/send] Hourly rate limit reached: {contact_masked}")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Đã vượt giới hạn gửi OTP. Vui lòng thử lại sau 1 giờ.",
+        )
     except Exception as e:
-        logger.error(f"[OTP/send] Loi tao session: {e}")
+        logger.error(f"[OTP/send] Loi tao session: {type(e).__name__}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Khong the tao ma OTP luc nay. Vui long thu lai sau.",
@@ -142,19 +208,37 @@ async def send_otp(request: Request, body: OtpSendRequest):
     # Chon provider: email -> EmailOtpProvider, phone -> provider mac dinh (Mock/Zalo)
     provider = get_otp_provider(contact)
 
-    result = provider.send_otp(contact, otp_code)
-
-    if not result.success:
-        logger.warning(f"[OTP/send] Provider loi: {result.error}")
+    try:
+        result = provider.send_otp(contact, otp_code)
+    except Exception as _send_exc:
+        # P1: Exception/Timeout khi gọi provider -> xử lý an toàn, không trả thành công giả
+        try:
+            delete_otp_session_on_send_failure(contact)
+        except Exception as _rb_err:
+            logger.error(f"[OTP/send] Rollback session thất bại sau exception: {type(_rb_err).__name__}")
+        logger.error(f"[OTP/send] Provider ném exception khi gửi OTP: {type(_send_exc).__name__}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Khong the gui OTP: {result.error}",
+            detail="Không thể gửi mã OTP lúc này. Vui lòng thử lại sau.",
+        )
+
+    if not result.success:
+        # P1 FIX: Provider thất bại → rollback session để không block lần gửi lại.
+        # send_count vẫn được giữ để hourly rate limit vẫn enforce.
+        try:
+            delete_otp_session_on_send_failure(contact)
+        except Exception as _rb_err:
+            logger.error(f"[OTP/send] Rollback session thất bại: {type(_rb_err).__name__}")
+        logger.warning("[OTP/send] Provider gửi OTP thất bại")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Không thể gửi mã OTP lúc này. Vui lòng thử lại sau.",
         )
 
     logger.info(f"[OTP/send] Da gui qua {provider.provider_name()}: {contact_masked}")
     return OtpSendResponse(
         success=True,
-        message=result.message,
+        message=str(result.message or "Mã OTP đã được gửi thành công."),
         expires_in_seconds=300,  # 5 phut
         contact_type=contact_type,
     )
@@ -179,10 +263,9 @@ async def verify_otp(body: OtpVerifyRequest):
 
     is_email_contact = _is_email(contact)
     if is_email_contact:
-        parts = contact.split("@")
-        contact_masked = f"{parts[0][:2]}***@{parts[1]}"
+        contact_masked = mask_email(contact)
     else:
-        contact_masked = f"****{contact[-4:]}"
+        contact_masked = f"****{contact[-4:]}" if len(contact) >= 4 else "***"
 
     logger.info(f"[OTP/verify] contact={contact_masked} | tenant={body.tenant_id}")
 
@@ -192,8 +275,13 @@ async def verify_otp(body: OtpVerifyRequest):
         logger.warning(
             f"[OTP/verify] That bai: {contact_masked} - {result.message}"
         )
+        status_code = (
+            status.HTTP_503_SERVICE_UNAVAILABLE
+            if "tạm thời không khả dụng" in (result.message or "")
+            else status.HTTP_400_BAD_REQUEST
+        )
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status_code,
             detail=result.message,
         )
 

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { submitFeedback } from '../api/feedback.js'
+import { auth, googleProvider } from '../firebase.js'
+import { signInWithPopup, signOut } from 'firebase/auth'
 
 const MAX_DURATION_SEC = 15
 
@@ -12,7 +14,7 @@ const MAX_DURATION_SEC = 15
  *
  * Module 2 (PDPA) — thêm:
  *   - Toggle "Phản hồi ẩn danh" (Điều 5 NĐ 356/2025: quyền từ chối)
- *   - Khi KHÔNG ẩn danh: ô nhập SĐT + mini OTP flow (Lớp 1 Module 1)
+ *   - Khi KHÔNG ẩn danh: Google Sign-In hoặc Email OTP
  *   - voucher_eligible = false khi ẩn danh (không gọi OTP, không phát voucher)
  *
  * Props:
@@ -23,9 +25,6 @@ const MAX_DURATION_SEC = 15
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-
-// Chế độ thử nghiệm: bỏ qua OTP (set VITE_SKIP_OTP=true trong .env)
-// Khi deploy production, xóa biến này hoặc để false
 
 function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }) {
   const navigate = useNavigate()
@@ -45,17 +44,18 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   const [isLiveTranscriptFinal, setIsLiveTranscriptFinal] = useState(false)
   const [speechSupported, setSpeechSupported] = useState(false)
 
-  // ── Module 2: Anonymous Toggle + OTP ─────────────────────────────────────
-  // Mặc định isAnonymous=false: không ẩn danh → hiển thị form nhập SĐT để nhận voucher.
-  // Khi user BẬT toggle → isAnonymous=true → ẩn form SĐT, voucher_eligible=false.
+  // ── Module 2: Anonymous Toggle + Auth / OTP ─────────────────────────────
+  // Mặc định isAnonymous=false: không ẩn danh → yêu cầu xác thực Google / Email để nhận voucher.
+  // Khi user BẬT toggle → isAnonymous=true → ẩn xác thực, voucher_eligible=false.
   const [isAnonymous, setIsAnonymous]         = useState(false)
-  const [contactType, setContactType]         = useState('phone') // 'phone' | 'email'
+  const [contactType, setContactType]         = useState('email') // 'google' | 'email' | 'phone'
   const [contact, setContact]                 = useState('')
   const [otpCode, setOtpCode]                 = useState('')
   const [otpSent, setOtpSent]                 = useState(false)
   const [otpVerified, setOtpVerified]         = useState(false)
   const [otpLoading, setOtpLoading]           = useState(false)
   const [otpError, setOtpError]               = useState(null)
+  const [googleLoading, setGoogleLoading]     = useState(false)
   
   // stage: 'auth' | 'feedback'
   const [stage, setStage]                     = useState('auth')
@@ -327,7 +327,82 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     setIsLiveTranscriptFinal(false)
   }
 
-  // ── Module 2: OTP handlers ────────────────────────────────────────────────
+  // ── Module 2: Auth & OTP handlers ────────────────────────────────────────
+
+  /** Reset identity / sign out for shared devices */
+  const handleResetAuth = async () => {
+    if (auth && auth.currentUser) {
+      try { await signOut(auth) } catch {}
+    }
+    try {
+      sessionStorage.removeItem('sentrix_customer_phone')
+      sessionStorage.removeItem('sentrix_customer_contact')
+      sessionStorage.removeItem('sentrix_customer_contact_type')
+    } catch {}
+    setContact('')
+    setOtpCode('')
+    setOtpSent(false)
+    setOtpVerified(false)
+    setOtpError(null)
+    setContactType('email')
+    setStage('auth')
+  }
+
+  /** Close overlay and clean up shared session if unsubmitted */
+  const handleOverlayClose = async () => {
+    if (auth && auth.currentUser) {
+      try { await signOut(auth) } catch {}
+    }
+    try {
+      sessionStorage.removeItem('sentrix_customer_phone')
+      sessionStorage.removeItem('sentrix_customer_contact')
+      sessionStorage.removeItem('sentrix_customer_contact_type')
+    } catch {}
+    onClose()
+  }
+
+  /** Google Sign-In handler qua popup */
+  const handleGoogleSignIn = async () => {
+    if (googleLoading) return
+    if (!auth || !googleProvider) {
+      setOtpError('Hệ thống xác thực Google tạm thời chưa được cấu hình. Vui lòng sử dụng Email OTP.')
+      return
+    }
+    setGoogleLoading(true)
+    setOtpError(null)
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+      if (!user || !user.email) {
+        throw new Error('Không nhận được email từ tài khoản Google.')
+      }
+      if (!user.emailVerified) {
+        throw new Error('Tài khoản Google này chưa được xác minh email.')
+      }
+      const verifiedEmail = user.email.trim()
+      setContact(verifiedEmail)
+      setContactType('google')
+      setOtpVerified(true)
+      setStage('feedback')
+      try {
+        sessionStorage.setItem('sentrix_customer_contact', verifiedEmail)
+        sessionStorage.setItem('sentrix_customer_contact_type', 'google')
+      } catch {}
+    } catch (err) {
+      console.error('[Sentrix] Google Sign-in error:', err)
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        setOtpError('Cửa sổ đăng nhập Google đã đóng. Vui lòng bấm lại để tiếp tục.')
+      } else if (err.code === 'auth/popup-blocked') {
+        setOtpError('Trình duyệt đã chặn cửa sổ popup. Vui lòng cấp quyền mở popup.')
+      } else if (err.code === 'auth/network-request-failed') {
+        setOtpError('Lỗi kết nối mạng khi xác thực Google. Vui lòng kiểm tra lại đường truyền.')
+      } else {
+        setOtpError(err.message || 'Đăng nhập Google thất bại. Vui lòng thử lại.')
+      }
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   /** Validate Contact */
   const isValidContact = (c, type) => {
@@ -337,8 +412,12 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
 
   /** Gửi OTP qua backend POST /api/v1/otp/send */
   const handleSendOtp = async () => {
+    if (contactType === 'phone') {
+      setOtpError('Phương thức xác thực qua số điện thoại tạm thời chưa khả dụng. Vui lòng tiếp tục với Google hoặc nhập Email.')
+      return
+    }
     if (!isValidContact(contact, contactType)) {
-      setOtpError(contactType === 'phone' ? 'Số điện thoại không hợp lệ. Vui lòng nhập đúng 10 số (VD: 0901234567).' : 'Email không hợp lệ. Vui lòng kiểm tra lại.')
+      setOtpError('Email không hợp lệ. Vui lòng kiểm tra lại.')
       return
     }
     setOtpLoading(true)
@@ -350,22 +429,13 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         body: JSON.stringify({ contact: contact.trim(), tenant_id: tenantId }),
       })
       if (res.ok) {
-        if (contactType === 'phone') {
-          // Demo mode cho SĐT: bỏ qua bước nhập mã, coi như xác nhận thành công
-          setOtpVerified(true)
-          setStage('feedback')
-          setOtpError(null)
-          try { 
-            sessionStorage.setItem('sentrix_customer_phone', contact.trim())
-            sessionStorage.setItem('sentrix_customer_contact', contact.trim())
-            sessionStorage.setItem('sentrix_customer_contact_type', contactType)
-          } catch {}
-        } else {
-          setOtpSent(true)
-        }
+        setOtpSent(true)
       } else {
         const body = await res.json().catch(() => ({}))
-        setOtpError(body.detail || 'Gửi mã OTP thất bại. Vui lòng thử lại.')
+        const errorMessage = Array.isArray(body.detail)
+          ? 'Dữ liệu không hợp lệ. Vui lòng thử lại.'
+          : (body.detail || 'Gửi mã OTP thất bại. Vui lòng thử lại.')
+        setOtpError(errorMessage)
       }
     } catch {
       setOtpError('Không kết nối được server. Vui lòng thử lại.')
@@ -394,11 +464,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         setOtpError(null)
         // Lưu contact vào sessionStorage để SpinPage dùng lại, không hỏi lần 2
         try { 
-          if (contactType === 'phone') {
-            sessionStorage.setItem('sentrix_customer_phone', contact.trim())
-          }
           sessionStorage.setItem('sentrix_customer_contact', contact.trim())
-          sessionStorage.setItem('sentrix_customer_contact_type', contactType)
+          sessionStorage.setItem('sentrix_customer_contact_type', 'email')
         } catch {}
       } else {
         const body = await res.json().catch(() => ({}))
@@ -412,7 +479,6 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
@@ -422,9 +488,9 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       return
     }
 
-    // Kiểm tra OTP nếu không ẩn danh, có nhập Contact, và chưa verify
-    if (!isAnonymous && contact.trim() && !otpVerified) {
-      setError(`Vui lòng xác thực ${contactType === 'phone' ? 'số điện thoại' : 'email'} qua OTP trước khi gửi.`)
+    // Kiểm tra nếu không ẩn danh thì phải hoàn tất xác thực (Google hoặc Email OTP)
+    if (!isAnonymous && !otpVerified) {
+      setError('Vui lòng xác thực Google/Email hoặc chọn Phản hồi ẩn danh trước khi gửi.')
       return
     }
 
@@ -435,11 +501,28 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
       ? (textContent.trim() || null)
       : null
 
-    // voucher_eligible: chỉ true khi KHÔNG ẩn danh + có Contact + OTP verified
-    const effectiveVoucherEligible = !isAnonymous && otpVerified && !!contact.trim()
+    let freshGoogleToken = null
+    if (!isAnonymous && contactType === 'google') {
+      try {
+        if (!auth || !auth.currentUser) {
+          setError('Phiên đăng nhập Google đã hết hạn. Vui lòng đăng nhập lại.')
+          setIsSubmitting(false)
+          return
+        }
+        // Lấy token tươi ngay tại thời điểm submit, không lưu vào storage
+        freshGoogleToken = await auth.currentUser.getIdToken(false)
+      } catch (tokenErr) {
+        console.error('[Sentrix] Lỗi lấy Firebase ID token:', tokenErr)
+        setError('Không thể lấy mã xác thực Google. Vui lòng đăng nhập lại.')
+        setIsSubmitting(false)
+        return
+      }
+    }
 
-    // Bỏ chế độ bypass API vì nó làm hỏng M6 Voice E2E.
-    // Dù có mock hay không, audio vẫn PHẢI được gửi về backend để STT.
+    // voucher_eligible: chỉ true khi KHÔNG ẩn danh + đã xác thực
+    const effectiveVoucherEligible = !isAnonymous && otpVerified && (
+      contactType === 'google' ? !!freshGoogleToken : !!contact.trim()
+    )
 
     if (import.meta.env.DEV) {
       console.log('[Voice E2E] submit started')
@@ -458,6 +541,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         customerPhone: effectiveVoucherEligible ? contact.trim() : null,
         totalSpending: 0,
         voucherEligible: effectiveVoucherEligible,
+        firebaseIdToken: freshGoogleToken,
       })
       if (import.meta.env.DEV) {
         console.log('[Voice E2E] response status: 202 (Accepted)')
@@ -495,7 +579,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
   return (
     /* Backdrop blur full-screen */
     <div
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+      onClick={(e) => { if (e.target === e.currentTarget) handleOverlayClose() }}
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
         background: 'rgba(0,0,0,0.15)',
@@ -524,7 +608,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
 
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleOverlayClose}
           style={{
             position: 'absolute', top: 16, right: 16,
             width: 32, height: 32, borderRadius: '50%',
@@ -550,7 +634,7 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
         </div>
 
         {/* ════════════════════════════════════════════════════════════════
-            MODULE 2: Anonymous Toggle + OTP flow (STAGE: AUTH)
+            MODULE 2: Anonymous Toggle + Auth / OTP flow (STAGE: AUTH)
             ════════════════════════════════════════════════════════════════ */}
         <div style={{
           padding: '14px 16px', marginBottom: stage === 'auth' ? 0 : 20,
@@ -566,8 +650,8 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
               </p>
               <p style={{ fontSize: 11, color: '#6B7280', margin: '2px 0 0', lineHeight: 1.5 }}>
                 {isAnonymous
-                  ? '🔒 Ẩn danh — không nhận voucher qua Zalo'
-                  : '🎁 Để lại SĐT / Email → nhận voucher qua Zalo'}
+                  ? '🔒 Ẩn danh — không nhận voucher qua Zalo/Email'
+                  : '🎁 Đăng nhập Google / Email → nhận voucher'}
               </p>
             </div>
             <div
@@ -575,6 +659,16 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
               onClick={() => {
                 const newVal = !isAnonymous;
                 setIsAnonymous(newVal);
+                if (newVal) {
+                  if (auth && auth.currentUser) {
+                    signOut(auth).catch(() => {});
+                  }
+                  try {
+                    sessionStorage.removeItem('sentrix_customer_contact');
+                    sessionStorage.removeItem('sentrix_customer_phone');
+                    sessionStorage.removeItem('sentrix_customer_contact_type');
+                  } catch {}
+                }
                 setContact(''); setOtpCode(''); setOtpSent(false); setOtpVerified(false); setOtpError(null);
                 setStage(newVal ? 'feedback' : 'auth');
               }}
@@ -593,60 +687,162 @@ function RecordingOverlay({ tenantId, location, initialMode = 'audio', onClose }
             </div>
           </label>
 
-          {/* OTP form — hiện ở stage auth nếu KHÔNG ẩn danh */}
+          {/* Auth form — hiện ở stage auth nếu KHÔNG ẩn danh */}
           {stage === 'auth' && !isAnonymous && (
             <div style={{ marginTop: 14, borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: 14 }}>
               {!otpVerified ? (
                 <>
+                  {/* Google Sign-In Button (Nhanh & Tien cho demo) */}
+                  <button
+                    id="btn-google-signin"
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    disabled={googleLoading}
+                    style={{
+                      width: '100%',
+                      padding: '11px 16px',
+                      borderRadius: 12,
+                      border: '1.5px solid #E5E7EB',
+                      background: '#FFFFFF',
+                      color: '#374151',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 10,
+                      cursor: googleLoading ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                      transition: 'all 0.15s ease',
+                      opacity: googleLoading ? 0.7 : 1,
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>{googleLoading ? 'Đang kết nối Google...' : 'Tiếp tục với Google'}</span>
+                  </button>
+
+                  {/* Divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', margin: '14px 0', gap: 10 }}>
+                    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+                    <span style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      hoặc nhập OTP
+                    </span>
+                    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+                  </div>
+
+                  {/* Radio tabs */}
                   <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
-                      <input type="radio" checked={contactType === 'phone'} onChange={() => { setContactType('phone'); setContact(''); setOtpCode(''); setOtpSent(false); setOtpError(null); }} /> Số điện thoại
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: '#111827' }}>
+                      <input type="radio" name="contactType" checked={contactType === 'email'} onChange={() => { setContactType('email'); setContact(''); setOtpCode(''); setOtpSent(false); setOtpError(null); }} /> Email
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
-                      <input type="radio" checked={contactType === 'email'} onChange={() => { setContactType('email'); setContact(''); setOtpCode(''); setOtpSent(false); setOtpError(null); }} /> Email
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: '#6B7280' }}>
+                      <input type="radio" name="contactType" checked={contactType === 'phone'} onChange={() => { setContactType('phone'); setContact(''); setOtpCode(''); setOtpSent(false); setOtpError(null); }} /> Số điện thoại
                     </label>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <input
-                      type={contactType === 'phone' ? 'tel' : 'email'}
-                      placeholder={contactType === 'phone' ? "0901 234 567" : "ten@gmail.com"}
-                      value={contact}
-                      onChange={e => { setContact(e.target.value); setOtpError(null); setOtpSent(false); }}
-                      disabled={otpSent}
-                      style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', outline: 'none', background: '#FAFAFA' }}
-                    />
-                    <button
-                      onClick={handleSendOtp}
-                      disabled={otpLoading || otpSent}
-                      style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: '#0688A6', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: (otpLoading || otpSent) ? 0.6 : 1 }}
-                    >
-                      {otpLoading && !otpSent ? '...' : otpSent ? 'Đã gửi' : 'Gửi mã'}
-                    </button>
-                  </div>
-                  {otpSent && (
-                    <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
-                      <input
-                        type="text" placeholder="Nhập mã OTP (6 số)"
-                        value={otpCode} onChange={e => { setOtpCode(e.target.value.replace(/\D/g, '')); setOtpError(null); }}
-                        maxLength={6}
-                        style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', outline: 'none', background: '#FAFAFA', textAlign: 'center', letterSpacing: '2px' }}
-                      />
-                      <button
-                        onClick={handleVerifyOtp}
-                        disabled={otpLoading || otpCode.length !== 6}
-                        style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: (otpLoading || otpCode.length !== 6) ? 0.6 : 1 }}
-                      >
-                        {otpLoading ? '...' : 'Xác nhận'}
-                      </button>
+
+                  {/* Luồng Phone OTP bị disabled an toàn khi chưa có SMS/ZNS */}
+                  {contactType === 'phone' ? (
+                    <div style={{
+                      padding: '10px 12px',
+                      background: '#FEF3C7',
+                      border: '1px solid #FCD34D',
+                      borderRadius: 10,
+                      fontSize: 12,
+                      color: '#92400E',
+                      lineHeight: 1.45,
+                      marginBottom: 8,
+                    }}>
+                      ⚠️ Phương thức xác thực qua số điện thoại tạm thời chưa khả dụng do đang nâng cấp hạ tầng SMS/ZNS. Vui lòng đăng nhập với <strong>Google</strong> hoặc <strong>Email</strong>.
                     </div>
+                  ) : (
+                    <>
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          type="email"
+                          placeholder="ten@gmail.com"
+                          value={contact}
+                          onChange={e => { setContact(e.target.value); setOtpError(null); setOtpSent(false); }}
+                          disabled={otpSent}
+                          style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', outline: 'none', background: '#FAFAFA' }}
+                        />
+                        <button
+                          onClick={handleSendOtp}
+                          disabled={otpLoading || otpSent}
+                          style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: '#0688A6', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: (otpLoading || otpSent) ? 0.6 : 1 }}
+                        >
+                          {otpLoading && !otpSent ? '...' : otpSent ? 'Đã gửi' : 'Gửi mã'}
+                        </button>
+                      </div>
+                      {otpSent && (
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+                          <input
+                            type="text" placeholder="Nhập mã OTP (6 số)"
+                            value={otpCode} onChange={e => { setOtpCode(e.target.value.replace(/\D/g, '')); setOtpError(null); }}
+                            maxLength={6}
+                            style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', outline: 'none', background: '#FAFAFA', textAlign: 'center', letterSpacing: '2px' }}
+                          />
+                          <button
+                            onClick={handleVerifyOtp}
+                            disabled={otpLoading || otpCode.length !== 6}
+                            style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: '#10B981', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: (otpLoading || otpCode.length !== 6) ? 0.6 : 1 }}
+                          >
+                            {otpLoading ? '...' : 'Xác nhận'}
+                          </button>
+                        </div>
+                      )}
+                      {otpSent && <p style={{ fontSize: 11, color: '#9CA3AF' }}>Mã đã được gửi · Có hiệu lực 5 phút</p>}
+                    </>
                   )}
-                  {otpSent && <p style={{ fontSize: 11, color: '#9CA3AF' }}>Mã đã được gửi · Có hiệu lực 5 phút</p>}
                 </>
               ) : null}
               {otpError && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 6 }}>{otpError}</p>}
             </div>
           )}
         </div>
+
+        {/* Badge hiển thị danh tính đã xác thực (khi ở stage feedback) */}
+        {stage === 'feedback' && !isAnonymous && otpVerified && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            background: '#ECFDF5',
+            border: '1px solid #A7F3D0',
+            borderRadius: 12,
+            marginBottom: 16,
+            fontSize: 12,
+            color: '#065F46',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span>✅</span>
+              <span>
+                {contactType === 'google' ? 'Google: ' : 'Email: '}
+                <strong>{contact}</strong>
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetAuth}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                color: '#047857',
+                textDecoration: 'underline',
+                fontSize: 12,
+                cursor: 'pointer',
+                padding: '2px 4px',
+              }}
+            >
+              Đổi
+            </button>
+          </div>
+        )}
 
         {/* === MODE: AUDIO === */}
         {stage === 'feedback' && mode === 'audio' && (

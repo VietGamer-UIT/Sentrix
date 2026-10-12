@@ -57,14 +57,13 @@ def test_create_session_no_mock_prod(monkeypatch):
     monkeypatch.setenv("ENVIRONMENT", "production")
     monkeypatch.setenv("OTP_PROVIDER", "mock")
     monkeypatch.setenv("OTP_MOCK_ACCEPT_ALL", "true")
-    # Force fallback to memory
-    monkeypatch.setattr("backend.db.firestore_client.get_firestore_client", lambda: (_ for _ in ()).throw(Exception("Force memory")))
-
-    _memory_sessions.clear()
+    from unittest.mock import MagicMock
+    mock_db = MagicMock()
+    monkeypatch.setattr("backend.db.firestore_client.get_firestore_client", lambda: mock_db)
 
     create_otp_session("0988888888")
-    key = _hash_contact_for_otp("0988888888")
-    assert _memory_sessions[key]["verified"] is False
+    saved = mock_db.transaction.return_value.set.call_args[0][1]
+    assert saved["verified"] is False
 
 @pytest.mark.parametrize("env", ["", "staging", "production", "invalid"])
 def test_verify_session_no_bypass_safe_envs(monkeypatch, env):
@@ -97,7 +96,9 @@ def test_create_session_safe_envs_ignore_mock_code(monkeypatch, env):
     monkeypatch.setenv("ENVIRONMENT", env)
     monkeypatch.setenv("OTP_PROVIDER", "mock")
     monkeypatch.setenv("OTP_MOCK_CODE", "999999")
-    monkeypatch.setattr("backend.db.firestore_client.get_firestore_client", lambda: (_ for _ in ()).throw(Exception("Force memory")))
+    from unittest.mock import MagicMock
+    mock_db = MagicMock()
+    monkeypatch.setattr("backend.db.firestore_client.get_firestore_client", lambda: mock_db)
     monkeypatch.setattr("backend.services.otp_service._generate_otp_code", lambda: "123456")
 
     from backend.services.otp_service import create_otp_session
@@ -111,7 +112,8 @@ def test_create_session_dev_envs_uses_mock_code(monkeypatch, env):
     monkeypatch.setenv("OTP_MOCK_CODE", "999999")
     monkeypatch.setattr("backend.db.firestore_client.get_firestore_client", lambda: (_ for _ in ()).throw(Exception("Force memory")))
 
-    from backend.services.otp_service import create_otp_session
+    from backend.services.otp_service import create_otp_session, _memory_sessions
+    _memory_sessions.clear()
     otp = create_otp_session("0900000000")
     assert otp == "999999"
 

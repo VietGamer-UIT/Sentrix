@@ -16,7 +16,7 @@ import { isToday } from 'date-fns'
  * Đọc config: useTenant() hook
  */
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://sentrix-backend.onrender.com'
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://sentrix-9dgc.onrender.com'
 const TENANT_ID   = import.meta.env.VITE_DEMO_TENANT_ID || 'pho-ba-lan_1722500000000'
 
 // Default config nếu Firestore chưa có
