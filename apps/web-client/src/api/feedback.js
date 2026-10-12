@@ -42,6 +42,7 @@ export async function submitFeedback({
   totalSpending = 0,
   feedbackId = null,
   voucherEligible = false,   // Module 2: false = ẩn danh, true = có SĐT + OTP verified
+  firebaseIdToken = null,    // Google Sign-In: Firebase Auth ID Token
 }) {
   const formData = new FormData()
 
@@ -51,6 +52,11 @@ export async function submitFeedback({
 
   if (feedbackId) {
     formData.append('feedback_id', feedbackId)
+  }
+
+  // === Google ID Token (nếu đăng nhập Google) ===
+  if (firebaseIdToken && firebaseIdToken.trim().length > 0) {
+    formData.append('firebase_id_token', firebaseIdToken.trim())
   }
 
   // === Fields tùy chọn — audio hoặc text (cần ít nhất 1) ===

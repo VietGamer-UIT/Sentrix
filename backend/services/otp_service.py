@@ -45,14 +45,26 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Optional
 
+from backend.services.email_validation_service import mask_email
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Hằng số cấu hình
 # ---------------------------------------------------------------------------
 OTP_CODE_LENGTH = 6
-OTP_EXPIRE_MINUTES = 5     # OTP hết hạn sau 5 phút
-OTP_MAX_ATTEMPTS = 3       # Tối đa 3 lần nhập sai trước khi hủy session
+OTP_EXPIRE_MINUTES = 5        # OTP hết hạn sau 5 phút
+OTP_MAX_ATTEMPTS = 3          # Tối đa 3 lần nhập sai trước khi hủy session
+OTP_RESEND_COOLDOWN_SECONDS = 60   # Khoảng cách tối thiểu giữa 2 lần gửi OTP (60s)
+OTP_VERIFIED_SESSION_TTL_MINUTES = 30  # Session đã verified hết hạn sau 30 phút
+OTP_HOURLY_SEND_LIMIT = 5     # Tối đa 5 lần gửi OTP/giờ/contact
+
+
+def is_dev_env() -> bool:
+    """Kiểm tra môi trường có thuộc development/dev/test không."""
+    env = os.getenv("ENVIRONMENT", "").strip().lower()
+    return env in {"development", "dev", "test"}
+
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -71,6 +83,28 @@ class OtpVerifyResult:
         self.success = success
         self.message = message
         self.attempts_remaining = attempts_remaining
+
+
+# ---------------------------------------------------------------------------
+# Rate limit & Cooldown Exceptions
+# ---------------------------------------------------------------------------
+class OtpRateLimitError(ValueError):
+    """Base exception cho rate limit OTP."""
+    pass
+
+
+class OtpCooldownError(OtpRateLimitError):
+    """Bị chặn do cooldown giữa hai lần gửi OTP (tối thiểu 60s)."""
+    def __init__(self, remaining_seconds: int):
+        self.remaining_seconds = max(1, remaining_seconds)
+        super().__init__(f"Vui lòng đợi {self.remaining_seconds} giây trước khi yêu cầu mã OTP mới.")
+
+
+class OtpHourlyLimitError(OtpRateLimitError):
+    """Bị chặn do chạm giới hạn gửi OTP trong một giờ."""
+    def __init__(self, limit: int = OTP_HOURLY_SEND_LIMIT):
+        self.limit = limit
+        super().__init__(f"Đã vượt giới hạn {limit} lần gửi OTP trong giờ này.")
 
 
 # ---------------------------------------------------------------------------
@@ -116,17 +150,18 @@ class MockOtpProvider(OtpProvider):
     """
 
     def send_otp(self, contact: str, otp_code: str) -> OtpSendResult:
-        # In ra console cho giám khảo xem trong demo — KHÔNG làm trong production
-        logger.info(
-            f"[MockOTP] ═══════════════════════════════════════\n"
-            f"[MockOTP] Liên hệ: {contact}\n"
-            f"[MockOTP] Mã OTP: {otp_code}  ← (giả lập, không gửi thật)\n"
-            f"[MockOTP] Hết hạn: {OTP_EXPIRE_MINUTES} phút\n"
-            f"[MockOTP] ═══════════════════════════════════════"
-        )
+        is_dev = is_dev_env()
+        if is_dev:
+            logger.info(
+                f"[MockOTP] ═══════════════════════════════════════\n"
+                f"[MockOTP] Liên hệ: {mask_email(contact) if _is_email(contact) else '***'}\n"
+                f"[MockOTP] Mã OTP: {otp_code}  ← (giả lập, không gửi thật)\n"
+                f"[MockOTP] Hết hạn: {OTP_EXPIRE_MINUTES} phút\n"
+                f"[MockOTP] ═══════════════════════════════════════"
+            )
         return OtpSendResult(
             success=True,
-            message=f"[DEMO] OTP đã được gửi (giả lập). Mã: {otp_code}",
+            message=f"[DEMO] OTP đã được gửi (giả lập). Mã: {otp_code}" if is_dev else "Mã OTP đã được gửi.",
         )
 
     def provider_name(self) -> str:
@@ -172,7 +207,7 @@ class EmailOtpProvider(OtpProvider):
         
         self.from_name = os.getenv("SMTP_FROM_NAME", "Sentrix")
         
-        logger.info(f"[EmailOTP] INITIALIZED. Transport={self.transport}, API_URL={self.api_url}, FROM={self.api_from}, HAS_API_KEY={bool(self.api_key)}")
+        logger.info(f"[EmailOTP] INITIALIZED. Transport={self.transport}, HAS_API_KEY={bool(self.api_key)}")
 
     def send_otp(self, contact: str, otp_code: str) -> OtpSendResult:
         logger.info(f"[EmailOTP] send_otp called. Effective transport={self.transport}")
@@ -242,13 +277,13 @@ class EmailOtpProvider(OtpProvider):
                             error=f"Email API error: {resp.status_code}",
                             message="Gửi email thất bại. Vui lòng thử lại sau.",
                         )
-                logger.info(f"[EmailOTP] Đã gửi OTP qua HTTP API tới: {contact[:3]}***{contact.split('@')[-1]}")
+                logger.info(f"[EmailOTP] Đã gửi OTP qua HTTP API tới: {mask_email(contact)}")
                 return OtpSendResult(
                     success=True,
-                    message=f"Mã OTP đã được gửi tới {contact}. Kiểm tra hộp thư (và spam).",
+                    message=f"Mã OTP đã được gửi tới {mask_email(contact)}. Kiểm tra hộp thư (và spam).",
                 )
             except Exception as e:
-                logger.error(f"[EmailOTP] Lỗi gửi email HTTP API: {str(e)}")
+                logger.error(f"[EmailOTP] Lỗi gửi email HTTP API: {type(e).__name__}")
                 return OtpSendResult(
                     success=False,
                     error=str(e),
@@ -268,10 +303,10 @@ class EmailOtpProvider(OtpProvider):
                     server.starttls()
                     server.login(self.user, self.password)
                     server.sendmail(self.user, [contact], msg.as_string())
-                logger.info(f"[EmailOTP] Đã gửi OTP qua SMTP tới: {contact[:3]}***{contact.split('@')[-1]}")
+                logger.info(f"[EmailOTP] Đã gửi OTP qua SMTP tới: {mask_email(contact)}")
                 return OtpSendResult(
                     success=True,
-                    message=f"Mã OTP đã được gửi tới {contact}. Kiểm tra hộp thư (và spam).",
+                    message=f"Mã OTP đã được gửi tới {mask_email(contact)}. Kiểm tra hộp thư (và spam).",
                 )
             except smtplib.SMTPAuthenticationError:
                 logger.error("[EmailOTP] Xác thực SMTP thất bại. Kiểm tra SMTP_USER/PASSWORD.")
@@ -281,7 +316,7 @@ class EmailOtpProvider(OtpProvider):
                     message="Không thể gửi OTP qua email.",
                 )
             except Exception as e:
-                logger.error(f"[EmailOTP] Lỗi gửi email: {e}")
+                logger.error(f"[EmailOTP] Lỗi gửi email SMTP: {type(e).__name__}")
                 return OtpSendResult(
                     success=False,
                     error=str(e),
@@ -423,8 +458,6 @@ def _hash_phone_for_otp(phone: str) -> str:
     return _hash_contact_for_otp(phone)
 
 
-
-
 def _generate_otp_code() -> str:
     """Tạo mã OTP ngẫu nhiên 6 chữ số (sử dụng secrets cho bảo mật)."""
     return "".join(secrets.choice(string.digits) for _ in range(OTP_CODE_LENGTH))
@@ -443,18 +476,148 @@ def _hash_otp_code(code: str) -> str:
 _memory_sessions: dict = {}
 
 
+def check_otp_cooldown(contact: str) -> tuple[bool, int]:
+    """
+    Kiểm tra xem contact này có đang trong thời gian chờ (cooldown 60s) giữa 2 lần gửi OTP không.
+    Returns:
+        (allowed, remaining_seconds)
+    Raises:
+        RuntimeError: nếu ở production và Firestore không thể truy xuất.
+    """
+    session_key = _hash_contact_for_otp(contact)
+    now = datetime.now(timezone.utc)
+    is_dev = is_dev_env()
+
+    session_data = None
+    try:
+        from backend.db.firestore_client import get_firestore_client
+        db = get_firestore_client()
+        snap = db.collection("otp_sessions").document(session_key).get()
+        if snap.exists:
+            session_data = snap.to_dict()
+    except Exception as e:
+        if not is_dev:
+            logger.error(f"[OTP] Production không thể kiểm tra cooldown do lỗi Firestore: {type(e).__name__}")
+            raise RuntimeError(f"Lỗi cơ sở dữ liệu khi kiểm tra cooldown OTP: {type(e).__name__}") from e
+        session_data = _memory_sessions.get(session_key)
+
+    if not session_data and is_dev:
+        session_data = _memory_sessions.get(session_key)
+
+    if session_data:
+        created_at = session_data.get("created_at")
+        if created_at:
+            if hasattr(created_at, "timestamp"):
+                created_at = datetime.fromtimestamp(created_at.timestamp(), tz=timezone.utc)
+            elif isinstance(created_at, str):
+                created_at = datetime.fromisoformat(created_at)
+
+            elapsed = (now - created_at).total_seconds()
+            if elapsed < OTP_RESEND_COOLDOWN_SECONDS:
+                remaining = int(OTP_RESEND_COOLDOWN_SECONDS - elapsed)
+                return False, max(1, remaining)
+
+    return True, 0
+
+
+def check_otp_hourly_rate_limit(contact: str) -> tuple[bool, int]:
+    """
+    Kiểm tra giới hạn 5 lần gửi OTP/giờ/contact (bền vững qua restart).
+
+    Ghi send_count và send_hour vào otp_sessions document.
+    Nếu send_count >= OTP_HOURLY_SEND_LIMIT trong cùng giờ UTC → từ chối.
+
+    Returns:
+        (allowed, sends_this_hour)
+    Raises:
+        RuntimeError: nếu ở production và Firestore không thể truy xuất.
+    """
+    session_key = _hash_contact_for_otp(contact)
+    now = datetime.now(timezone.utc)
+    current_hour = now.strftime("%Y-%m-%dT%H")
+    is_dev = is_dev_env()
+
+    session_data = None
+    try:
+        from backend.db.firestore_client import get_firestore_client
+        db = get_firestore_client()
+        snap = db.collection("otp_sessions").document(session_key).get()
+        if snap.exists:
+            session_data = snap.to_dict()
+    except Exception as e:
+        if not is_dev:
+            logger.error(f"[OTP] Production không thể kiểm tra hourly rate limit do lỗi Firestore: {type(e).__name__}")
+            raise RuntimeError(f"Lỗi cơ sở dữ liệu khi kiểm tra giới hạn gửi OTP: {type(e).__name__}") from e
+        session_data = _memory_sessions.get(session_key)
+
+    if not session_data and is_dev:
+        session_data = _memory_sessions.get(session_key)
+
+    if session_data:
+        stored_hour = session_data.get("send_hour", "")
+        send_count = session_data.get("send_count", 0)
+        if stored_hour == current_hour and send_count >= OTP_HOURLY_SEND_LIMIT:
+            return False, send_count
+
+    return True, 0
+
+
+def delete_otp_session_on_send_failure(contact: str) -> None:
+    """
+    Xóa/rollback OTP session khi provider gửi thất bại hoặc gặp exception.
+    Đảm bảo provider failure không tạo trạng thái giả là đã gửi thành công —
+    client có thể thử lại mà không bị chặn bởi cooldown của session lỗi.
+
+    Bảo toàn send_count và send_hour để hourly rate limit vẫn enforce (chống lạm dụng).
+    Chỉ xóa created_at và otp_code_hash để reset cooldown và vô hiệu hoá mã OTP.
+    """
+    session_key = _hash_contact_for_otp(contact)
+    is_dev = is_dev_env()
+    reset_data = {
+        "created_at": None,          # Reset cooldown — cho phép gửi lại ngay
+        "otp_code_hash": None,       # Vô hiệu hoá code cũ (không thể verify session lỗi)
+        "verified": False,
+        "send_failed": True,         # Đánh dấu để debug
+    }
+
+    # Thử update Firestore
+    try:
+        from backend.db.firestore_client import get_firestore_client
+        db = get_firestore_client()
+        ref = db.collection("otp_sessions").document(session_key)
+        snap = ref.get()
+        if snap.exists:
+            ref.update(reset_data)
+            logger.debug(f"[OTP] Rolled back failed send session in Firestore: {session_key}")
+            if is_dev and session_key in _memory_sessions:
+                _memory_sessions[session_key].update(reset_data)
+            return
+        elif not is_dev:
+            logger.error(f"[OTP] Rollback Firestore thất bại: session không tồn tại: {session_key}")
+            raise RuntimeError("Session không tồn tại trên Firestore để rollback")
+    except Exception as e:
+        logger.error(f"[OTP] Không rollback được Firestore session sau provider fail: {type(e).__name__}")
+        if not is_dev:
+            raise RuntimeError(f"Lỗi rollback OTP session trên Firestore: {type(e).__name__}") from e
+
+    # Fallback in-memory (dev/test)
+    if is_dev and session_key in _memory_sessions:
+        _memory_sessions[session_key].update(reset_data)
+
+
 def create_otp_session(contact: str) -> str:
     """
-    Tạo session OTP mới, lưu vào Firestore (hoặc in-memory fallback).
+    Tạo session OTP mới, lưu vào Firestore (hoặc in-memory fallback trong dev/test).
 
     Args:
         contact: SĐT hoặc địa chỉ email của khách hàng.
 
     Returns:
         otp_code: Mã OTP plaintext (chỉ dùng để gửi cho user, KHÔNG lưu lại).
+    Raises:
+        RuntimeError: nếu ở production và không thể lưu session vào Firestore.
     """
-    env = os.getenv("ENVIRONMENT", "").strip().lower()
-    is_dev = env in {"development", "dev", "test"}
+    is_dev = is_dev_env()
     is_mock = os.getenv("OTP_PROVIDER", "mock").strip().lower() == "mock"
 
     # Cho phép override code tĩnh trong môi trường mock (tiện demo)
@@ -465,33 +628,137 @@ def create_otp_session(contact: str) -> str:
         otp_code = _generate_otp_code()
 
     session_key = _hash_contact_for_otp(contact)
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=OTP_EXPIRE_MINUTES)
-    
-    # [FIX] Tự động verified=True cho Phone Demo để frontend không bị lỗi 403 
-    # khi frontend bỏ qua bước verify. (KHÔNG CHO PHÉP TRÊN PRODUCTION)
+    now = datetime.now(timezone.utc)
+    expires_at = now + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    current_hour = now.strftime("%Y-%m-%dT%H")
+
+    # Tự động verified=True cho Phone Demo (chỉ dev)
     accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").strip().lower() == "true"
     is_phone_demo = is_dev and not _is_email(contact) and is_mock and accept_all
 
-    session_data = {
-        "otp_code_hash": _hash_otp_code(otp_code),
-        "expires_at": expires_at,
-        "verified": is_phone_demo,
-        "attempts": 0,
-        "created_at": datetime.now(timezone.utc),
-    }
+    # Đọc send_count hiện tại để ghi tăng dần (hourly rate limit)
+    prev_send_count = 0
+    prev_send_hour = ""
 
-    # Thử lưu vào Firestore
     try:
         from backend.db.firestore_client import get_firestore_client
         db = get_firestore_client()
-        db.collection("otp_sessions").document(session_key).set(session_data)
-        logger.debug(f"[OTP] Session created in Firestore: {session_key}")
-    except Exception as e:
-        # Fallback in-memory cho dev/test không có Firestore
-        logger.warning(f"[OTP] Firestore unavailable, dùng in-memory fallback: {e}")
-        _memory_sessions[session_key] = session_data
+        session_ref = db.collection("otp_sessions").document(session_key)
 
-    return otp_code
+        from firebase_admin import firestore
+
+        @firestore.transactional
+        def _atomic_create_txn(transaction, ref):
+            snap = ref.get(transaction=transaction)
+            prev_send_count = 0
+            prev_send_hour = ""
+            if snap.exists:
+                _prev = snap.to_dict() or {}
+
+                # 1. Atomic check: Cooldown 60 giây trong cùng transaction!
+                prev_created_at = _prev.get("created_at")
+                if prev_created_at is not None:
+                    if hasattr(prev_created_at, "timestamp"):
+                        prev_created_at_dt = datetime.fromtimestamp(prev_created_at.timestamp(), tz=timezone.utc)
+                    elif isinstance(prev_created_at, str):
+                        try:
+                            prev_created_at_dt = datetime.fromisoformat(prev_created_at)
+                        except ValueError:
+                            prev_created_at_dt = None
+                    else:
+                        prev_created_at_dt = None
+
+                    if prev_created_at_dt:
+                        if prev_created_at_dt.tzinfo is None:
+                            prev_created_at_dt = prev_created_at_dt.replace(tzinfo=timezone.utc)
+                        elapsed = (now - prev_created_at_dt).total_seconds()
+                        if elapsed < OTP_RESEND_COOLDOWN_SECONDS:
+                            remaining = max(1, int(OTP_RESEND_COOLDOWN_SECONDS - elapsed))
+                            logger.info(f"[OTP] Cooldown còn hiệu lực trong transaction: {remaining}s | {session_key}")
+                            raise OtpCooldownError(remaining_seconds=remaining)
+
+                # 2. Atomic check: Hourly limit 5 lần/giờ trong cùng transaction!
+                prev_send_hour = _prev.get("send_hour", "")
+                if prev_send_hour == current_hour:
+                    prev_send_count = _prev.get("send_count", 0)
+
+            if prev_send_hour == current_hour and prev_send_count >= OTP_HOURLY_SEND_LIMIT:
+                logger.warning(f"[OTP] Hourly rate limit chạm ngưỡng khi tạo session: {session_key}")
+                raise OtpHourlyLimitError(limit=OTP_HOURLY_SEND_LIMIT)
+
+            new_session_data = {
+                "otp_code_hash": _hash_otp_code(otp_code),
+                "expires_at": expires_at,
+                "verified": is_phone_demo,
+                "attempts": 0,
+                "created_at": now,
+                "send_hour": current_hour,
+                "send_count": prev_send_count + 1,
+                "send_failed": False,
+            }
+            transaction.set(ref, new_session_data)
+            return new_session_data
+
+        txn = db.transaction()
+        session_data = _atomic_create_txn(txn, session_ref)
+        logger.debug(f"[OTP] Session created in Firestore atomically: {session_key}")
+        if is_dev:
+            _memory_sessions[session_key] = session_data
+        return otp_code
+
+    except (OtpCooldownError, OtpHourlyLimitError, ValueError):
+        # Re-raise rate limit / cooldown errors so caller returns 429
+        raise
+    except Exception as e:
+        if not is_dev:
+            # Production: KHÔNG cho phép in-memory fallback!
+            logger.error(f"[OTP] Production không thể lưu OTP session vào Firestore: {type(e).__name__}")
+            raise RuntimeError(f"Không thể lưu OTP session vào cơ sở dữ liệu: {type(e).__name__}") from e
+
+        # Fallback in-memory cho dev/test không có Firestore
+        logger.warning(f"[OTP] Dùng in-memory fallback (Firestore lỗi): {type(e).__name__}")
+        _prev_mem = _memory_sessions.get(session_key, {})
+
+        mem_created_at = _prev_mem.get("created_at")
+        if mem_created_at is not None:
+            if hasattr(mem_created_at, "timestamp"):
+                mem_created_at_dt = datetime.fromtimestamp(mem_created_at.timestamp(), tz=timezone.utc)
+            elif isinstance(mem_created_at, str):
+                try:
+                    mem_created_at_dt = datetime.fromisoformat(mem_created_at)
+                except ValueError:
+                    mem_created_at_dt = None
+            else:
+                mem_created_at_dt = None
+
+            if mem_created_at_dt:
+                if mem_created_at_dt.tzinfo is None:
+                    mem_created_at_dt = mem_created_at_dt.replace(tzinfo=timezone.utc)
+                elapsed = (now - mem_created_at_dt).total_seconds()
+                if elapsed < OTP_RESEND_COOLDOWN_SECONDS:
+                    remaining = max(1, int(OTP_RESEND_COOLDOWN_SECONDS - elapsed))
+                    logger.info(f"[OTP] Cooldown còn hiệu lực trong RAM: {remaining}s | {session_key}")
+                    raise OtpCooldownError(remaining_seconds=remaining)
+
+        prev_send_hour = _prev_mem.get("send_hour", "")
+        prev_send_count = _prev_mem.get("send_count", 0) if prev_send_hour == current_hour else 0
+
+        if prev_send_hour == current_hour and prev_send_count >= OTP_HOURLY_SEND_LIMIT:
+            logger.warning(f"[OTP] Hourly rate limit chạm ngưỡng khi tạo session (RAM): {session_key}")
+            raise OtpHourlyLimitError(limit=OTP_HOURLY_SEND_LIMIT)
+
+        session_data = {
+            "otp_code_hash": _hash_otp_code(otp_code),
+            "expires_at": expires_at,
+            "verified": is_phone_demo,
+            "attempts": 0,
+            "created_at": now,
+            "send_hour": current_hour,
+            "send_count": prev_send_count + 1,
+            "send_failed": False,
+        }
+        _memory_sessions[session_key] = session_data
+        return otp_code
 
 
 def verify_otp_session(contact: str, code_input: str) -> OtpVerifyResult:
@@ -499,19 +766,18 @@ def verify_otp_session(contact: str, code_input: str) -> OtpVerifyResult:
     Xác thực OTP do user nhập.
 
     Kiểm tra:
-      1. Session tồn tại.
-      2. Chưa hết hạn.
-      3. Chưa verified (tránh reuse).
-      4. Số lần thử chưa vượt OTP_MAX_ATTEMPTS.
-      5. Code đúng (so sánh hash).
+      1. Session tồn tại (Firestore trên prod, RAM fallback trên dev).
+      2. Chưa hết hạn (OTP_EXPIRE_MINUTES).
+      3. Chưa verified (tránh reuse — mỗi OTP chỉ dùng được 1 lần).
+      4. Session không bị đánh dấu send_failed.
+      5. Số lần thử chưa vượt OTP_MAX_ATTEMPTS.
+      6. Code đúng (so sánh hash).
+      7. Cập nhật verified=True và verified_at vào persistent storage.
 
     Returns:
         OtpVerifyResult với success=True nếu hợp lệ.
     """
-    # Trong mock mode và OTP_MOCK_ACCEPT_ALL=true → chấp nhận mọi code (chỉ áp dụng cho SĐT khi dùng mock)
-    # KHÔNG CHO PHÉP bypass trên production
-    env = os.getenv("ENVIRONMENT", "").strip().lower()
-    is_dev = env in {"development", "dev", "test"}
+    is_dev = is_dev_env()
     is_mock = os.getenv("OTP_PROVIDER", "mock").strip().lower() == "mock"
     accept_all = os.getenv("OTP_MOCK_ACCEPT_ALL", "").strip().lower() == "true"
     if is_dev and not _is_email(contact) and is_mock and accept_all:
@@ -521,7 +787,6 @@ def verify_otp_session(contact: str, code_input: str) -> OtpVerifyResult:
     session_key = _hash_contact_for_otp(contact)
     now = datetime.now(timezone.utc)
 
-    # Đọc session từ Firestore hoặc in-memory
     session_data = None
     use_firestore = False
     session_ref = None
@@ -530,74 +795,262 @@ def verify_otp_session(contact: str, code_input: str) -> OtpVerifyResult:
         from backend.db.firestore_client import get_firestore_client
         db = get_firestore_client()
         session_ref = db.collection("otp_sessions").document(session_key)
-        snap = session_ref.get()
+
+        from firebase_admin import firestore
+
+        @firestore.transactional
+        def _atomic_verify_txn(txn, ref):
+            snap = ref.get(transaction=txn)
+            if not snap.exists:
+                return None  # Không có trong Firestore
+
+            data = snap.to_dict() or {}
+
+            # Kiểm tra session bị đánh dấu send_failed
+            if data.get("send_failed"):
+                return OtpVerifyResult(
+                    success=False,
+                    message="Mã OTP trước đó gửi thất bại. Vui lòng yêu cầu mã mới.",
+                )
+
+            # Kiểm tra hết hạn
+            expires_at = data.get("expires_at")
+            if expires_at is None:
+                return OtpVerifyResult(
+                    success=False,
+                    message="Mã OTP không hợp lệ. Vui lòng yêu cầu mã mới.",
+                )
+            if hasattr(expires_at, "timestamp"):
+                expires_at = datetime.fromtimestamp(expires_at.timestamp(), tz=timezone.utc)
+            if now > expires_at:
+                return OtpVerifyResult(
+                    success=False,
+                    message=f"Mã OTP đã hết hạn ({OTP_EXPIRE_MINUTES} phút). Vui lòng yêu cầu mã mới.",
+                )
+
+            # Kiểm tra đã verified rồi (ngăn chặn race condition xác thực đồng thời 2 lần)
+            if data.get("verified"):
+                return OtpVerifyResult(
+                    success=False,
+                    message="Mã OTP này đã được sử dụng. Vui lòng yêu cầu mã mới.",
+                )
+
+            # Kiểm tra số lần thử
+            attempts = data.get("attempts", 0)
+            if attempts >= OTP_MAX_ATTEMPTS:
+                return OtpVerifyResult(
+                    success=False,
+                    message=f"Đã nhập sai quá {OTP_MAX_ATTEMPTS} lần. Vui lòng yêu cầu mã mới.",
+                    attempts_remaining=0,
+                )
+
+            stored_hash = data.get("otp_code_hash")
+            if not stored_hash:
+                return OtpVerifyResult(
+                    success=False,
+                    message="Mã OTP không hợp lệ. Vui lòng yêu cầu mã mới.",
+                )
+
+            input_hash = _hash_otp_code(code_input.strip())
+            if input_hash != stored_hash:
+                new_attempts = attempts + 1
+                remaining = max(0, OTP_MAX_ATTEMPTS - new_attempts)
+                txn.update(ref, {"attempts": new_attempts})
+                return OtpVerifyResult(
+                    success=False,
+                    message=f"Mã OTP không đúng. Còn {remaining} lần thử.",
+                    attempts_remaining=remaining,
+                )
+
+            # Mã đúng -> Cập nhật verified=True và verified_at ngay trong transaction
+            txn.update(ref, {"verified": True, "verified_at": now})
+            return OtpVerifyResult(success=True, message="Xác thực thông tin liên hệ thành công.")
+
+        txn = db.transaction()
+        result = _atomic_verify_txn(txn, session_ref)
+        if result is not None:
+            if result.success:
+                logger.info(f"[OTP] Xác thực thành công: {session_key}")
+                if is_dev and session_key in _memory_sessions:
+                    _memory_sessions[session_key]["verified"] = True
+                    _memory_sessions[session_key]["verified_at"] = now
+            return result
+
+        # result is None nghĩa là doc không tồn tại trong Firestore
+        if not is_dev:
+            # Production: doc không có trên Firestore -> từ chối an toàn, KHÔNG đọc RAM
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.",
+            )
+
+    except Exception as e:
+        if not is_dev:
+            logger.error(f"[OTP] Production lỗi Firestore khi verify: {type(e).__name__}")
+            return OtpVerifyResult(
+                success=False,
+                message="Dịch vụ xác thực tạm thời không khả dụng. Vui lòng thử lại sau.",
+            )
+        logger.warning(f"[OTP] Dùng in-memory fallback (Firestore lỗi): {type(e).__name__}")
+
+    # Fallback in-memory cho dev/test
+    if is_dev:
+        session_data = _memory_sessions.get(session_key)
+        if not session_data:
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.",
+            )
+
+        # Kiểm tra session bị đánh dấu send_failed
+        if session_data.get("send_failed"):
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP trước đó gửi thất bại. Vui lòng yêu cầu mã mới.",
+            )
+
+        # Kiểm tra hết hạn
+        expires_at = session_data.get("expires_at")
+        if expires_at is None:
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP không hợp lệ. Vui lòng yêu cầu mã mới.",
+            )
+        if hasattr(expires_at, "timestamp"):
+            expires_at = datetime.fromtimestamp(expires_at.timestamp(), tz=timezone.utc)
+        if now > expires_at:
+            return OtpVerifyResult(
+                success=False,
+                message=f"Mã OTP đã hết hạn ({OTP_EXPIRE_MINUTES} phút). Vui lòng yêu cầu mã mới.",
+            )
+
+        # Kiểm tra đã verified rồi
+        if session_data.get("verified"):
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP này đã được sử dụng. Vui lòng yêu cầu mã mới.",
+            )
+
+        # Kiểm tra số lần thử
+        attempts = session_data.get("attempts", 0)
+        if attempts >= OTP_MAX_ATTEMPTS:
+            return OtpVerifyResult(
+                success=False,
+                message=f"Đã nhập sai quá {OTP_MAX_ATTEMPTS} lần. Vui lòng yêu cầu mã mới.",
+                attempts_remaining=0,
+            )
+
+        stored_hash = session_data.get("otp_code_hash")
+        if not stored_hash:
+            return OtpVerifyResult(
+                success=False,
+                message="Mã OTP không hợp lệ. Vui lòng yêu cầu mã mới.",
+            )
+
+        input_hash = _hash_otp_code(code_input.strip())
+        if input_hash != stored_hash:
+            new_attempts = attempts + 1
+            session_data["attempts"] = new_attempts
+            remaining = max(0, OTP_MAX_ATTEMPTS - new_attempts)
+            return OtpVerifyResult(
+                success=False,
+                message=f"Mã OTP không đúng. Còn {remaining} lần thử.",
+                attempts_remaining=remaining,
+            )
+
+        # Đánh dấu đã verified
+        session_data["verified"] = True
+        session_data["verified_at"] = now
+        logger.info(f"[OTP] Xác thực thành công (RAM): {session_key}")
+        return OtpVerifyResult(success=True, message="Xác thực thông tin liên hệ thành công.")
+
+    return OtpVerifyResult(
+        success=False,
+        message="Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.",
+    )
+
+
+def check_verified_session_valid(contact: str) -> tuple[bool, str]:
+    """
+    Kiểm tra session OTP đã verified còn hiệu lực không (dùng trong /feedback).
+
+    Phân biệt với verify_otp_session (nhận code input) —
+    hàm này chỉ đọc trạng thái session đã được verify trước đó.
+
+    TTL riêng sau xác thực: OTP_VERIFIED_SESSION_TTL_MINUTES (30 phút).
+    Session cũ thiếu verified_at → từ chối an toàn (không mặc định hợp lệ).
+
+    Returns:
+        (is_valid, reason): reason là "" nếu hợp lệ, hoặc mã lỗi nếu không.
+    Raises:
+        RuntimeError: nếu Firestore không thể đọc được (caller phải bắt và trả 503).
+    """
+    session_key = _hash_contact_for_otp(contact)
+    now = datetime.now(timezone.utc)
+    is_dev = is_dev_env()
+
+    # Đọc session — KHÔNG fallback im lặng khi Firestore lỗi
+    session_data = None
+    try:
+        from backend.db.firestore_client import get_firestore_client
+        db = get_firestore_client()
+        snap = db.collection("otp_sessions").document(session_key).get()
         if snap.exists:
             session_data = snap.to_dict()
-            use_firestore = True
+        else:
+            session_data = None
     except Exception as e:
-        logger.warning(f"[OTP] Dùng in-memory session (Firestore lỗi): {e}")
-        session_data = _memory_sessions.get(session_key)
+        # Firestore lỗi → raise để caller trả 503, không coi là verified
+        logger.error(f"[OTP] Firestore lỗi khi đọc verified session: {type(e).__name__}")
+        raise RuntimeError(f"Firestore không khả dụng khi kiểm tra OTP session: {type(e).__name__}") from e
 
+    # Session không tồn tại trong Firestore
     if not session_data:
-        return OtpVerifyResult(
-            success=False,
-            message="Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.",
-        )
+        if is_dev:
+            # Thử in-memory (chỉ cho dev/test fallback)
+            session_data = _memory_sessions.get(session_key)
+        if not session_data:
+            return False, "session_not_found"
 
-    # Kiểm tra hết hạn
-    expires_at = session_data["expires_at"]
-    if hasattr(expires_at, "timestamp"):
-        expires_at = datetime.fromtimestamp(expires_at.timestamp(), tz=timezone.utc)
-    if now > expires_at:
-        return OtpVerifyResult(
-            success=False,
-            message=f"Mã OTP đã hết hạn ({OTP_EXPIRE_MINUTES} phút). Vui lòng yêu cầu mã mới.",
-        )
+    # Chưa verified
+    if not session_data.get("verified", False):
+        return False, "not_verified"
 
-    # Kiểm tra đã verified rồi
-    if session_data.get("verified"):
-        return OtpVerifyResult(
-            success=False,
-            message="Mã OTP này đã được sử dụng. Vui lòng yêu cầu mã mới.",
-        )
+    # Kiểm tra verified_at + TTL riêng
+    verified_at = session_data.get("verified_at")
+    if verified_at is None:
+        logger.warning(f"[OTP] Session {session_key} thiếu verified_at — từ chối (backward safe)")
+        return False, "missing_verified_at"
+    if hasattr(verified_at, "timestamp"):
+        verified_at = datetime.fromtimestamp(verified_at.timestamp(), tz=timezone.utc)
+    elif isinstance(verified_at, str):
+        try:
+            verified_at = datetime.fromisoformat(verified_at)
+        except ValueError:
+            return False, "invalid_verified_at"
 
-    # Kiểm tra số lần thử
-    attempts = session_data.get("attempts", 0)
-    if attempts >= OTP_MAX_ATTEMPTS:
-        return OtpVerifyResult(
-            success=False,
-            message=f"Đã nhập sai quá {OTP_MAX_ATTEMPTS} lần. Vui lòng yêu cầu mã mới.",
-            attempts_remaining=0,
-        )
+    session_age_seconds = (now - verified_at).total_seconds()
+    ttl_seconds = OTP_VERIFIED_SESSION_TTL_MINUTES * 60
+    if session_age_seconds > ttl_seconds:
+        logger.info(f"[OTP] Session {session_key} đã hết hạn ({session_age_seconds:.0f}s > {ttl_seconds}s)")
+        return False, "session_expired"
 
-    # So sánh hash code
-    input_hash = _hash_otp_code(code_input.strip())
-    if input_hash != session_data["otp_code_hash"]:
-        new_attempts = attempts + 1
-        remaining = OTP_MAX_ATTEMPTS - new_attempts
-        # Cập nhật attempts
-        _update_session(session_key, {"attempts": new_attempts}, session_ref, use_firestore)
-        return OtpVerifyResult(
-            success=False,
-            message=f"Mã OTP không đúng. Còn {remaining} lần thử.",
-            attempts_remaining=remaining,
-        )
-
-    # Đánh dấu đã verified
-    _update_session(session_key, {"verified": True, "verified_at": now}, session_ref, use_firestore)
-    logger.info(f"[OTP] Xác thực thành công: {session_key}")
-    return OtpVerifyResult(success=True, message="Xác thực thông tin liên hệ thành công.")
+    return True, ""
 
 
 def _update_session(session_key: str, update_data: dict, session_ref, use_firestore: bool) -> None:
     """Helper cập nhật session (Firestore hoặc in-memory)."""
+    is_dev = is_dev_env()
     if use_firestore and session_ref:
         try:
             session_ref.update(update_data)
+            if is_dev and session_key in _memory_sessions:
+                _memory_sessions[session_key].update(update_data)
             return
         except Exception as e:
-            logger.warning(f"[OTP] Không update được Firestore session: {e}")
-    # Fallback in-memory
-    if session_key in _memory_sessions:
+            logger.warning(f"[OTP] Không update được Firestore session: {type(e).__name__}")
+            if not is_dev:
+                raise RuntimeError(f"Không thể cập nhật Firestore session: {type(e).__name__}") from e
+    if is_dev and session_key in _memory_sessions:
         _memory_sessions[session_key].update(update_data)
 

@@ -13,12 +13,16 @@
 
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 // Guard: chỉ khởi tạo nếu có env vars — không crash nếu thiếu
 const hasConfig = import.meta.env.VITE_FIREBASE_API_KEY &&
                   import.meta.env.VITE_FIREBASE_PROJECT_ID
 
+let app = null
 let db = null
+let auth = null
+let googleProvider = null
 
 if (hasConfig) {
   const firebaseConfig = {
@@ -31,13 +35,16 @@ if (hasConfig) {
   }
 
   // Tránh khởi tạo 2 lần khi Vite HMR reload
-  const app = getApps().length === 0
+  app = getApps().length === 0
     ? initializeApp(firebaseConfig, 'web-client')
     : getApps().find(a => a.name === 'web-client') || getApps()[0]
 
   db = getFirestore(app)
+  auth = getAuth(app)
+  googleProvider = new GoogleAuthProvider()
+  googleProvider.setCustomParameters({ prompt: 'select_account' })
 } else {
-  console.warn('[Sentrix web-client] Thiếu VITE_FIREBASE_* — Firestore update sẽ bị bỏ qua.')
+  console.warn('[Sentrix web-client] Thiếu VITE_FIREBASE_* — Firebase Auth và Firestore sẽ bị bỏ qua.')
 }
 
-export { db }
+export { app, db, auth, googleProvider }

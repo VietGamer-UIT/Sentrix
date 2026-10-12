@@ -50,9 +50,11 @@ def _hash_phone(phone_number: str) -> str:
     Ẩn danh hoá một chiều: không thể khôi phục SĐT gốc từ customer_id.
     SĐT gốc KHÔNG được lưu trong Firestore.
     """
-    # Chuẩn hoá SĐT về dạng +84...
+    # Chuẩn hoá SĐT về dạng +84... hoặc lowercase email
     phone = phone_number.strip().replace(" ", "").replace("-", "")
-    if "@" not in phone:
+    if "@" in phone:
+        phone = phone.lower()
+    else:
         if phone.startswith("0"):
             phone = "+84" + phone[1:]
         elif not phone.startswith("+"):
@@ -71,6 +73,7 @@ def _mask_phone(phone_number: str) -> str:
     """
     contact = phone_number.strip().replace(" ", "")
     if "@" in contact:
+        contact = contact.lower()
         parts = contact.split("@")
         name = parts[0]
         domain = parts[1] if len(parts) > 1 else ""

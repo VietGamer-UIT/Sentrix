@@ -78,7 +78,7 @@ from backend.db.firestore_ops import (
 from backend.services.audio_quality_service import analyze_audio_quality
 from backend.services.semantic_validity_service import check_semantic_validity
 from backend.services.rate_limit_service import check_rate_limit, record_submission
-from backend.services.otp_service import verify_otp_session
+from backend.services.otp_service import verify_otp_session, check_verified_session_valid
 # ── Module 3: Intent Classification ────────────────────────────────────────
 from backend.services.intent_service import classify_intent
 
@@ -319,6 +319,10 @@ async def submit_feedback(
         default=None,
         description="UUID tự sinh từ frontend phục vụ Fire-and-Forget",
     ),
+    firebase_id_token: str | None = Form(
+        default=None,
+        description="Firebase Auth ID Token (Google Sign-In). Backend xác thực qua Firebase Admin SDK.",
+    ),
 ) -> JSONResponse:
     """
     Pipeline đầy đủ Giai đoạn 8 + Module 1 Anti-Fraud:
@@ -373,50 +377,137 @@ async def submit_feedback(
         audio_bytes_count = len(audio_content)
 
     # -----------------------------------------------------------------------
-    # ANTI-FRAUD LỚP 1 — Rate Limiting + OTP (chỉ áp dụng khi voucher_eligible)
+    # ANTI-FRAUD LỚP 1 — Rate Limiting + Xác thực danh tính (Google / OTP)
     # -----------------------------------------------------------------------
-    # Phản hồi ẩn danh (voucher_eligible=False): bỏ qua OTP và rate limit.
-    # Lý do: ưu tiên thu thập dữ liệu; ẩn danh → không nhận voucher → ít động cơ gian lận.
     validity_status: str = "valid"          # Track qua toàn bộ pipeline
     fraud_layer_rejected_at: Optional[int] = None
-    effective_voucher_eligible: bool = voucher_eligible and bool(customer_phone)
+    effective_voucher_eligible: bool = False
 
-    if effective_voucher_eligible:
-        # 1a. Kiem tra OTP da verified chua
-        # Su dung _hash_contact_for_otp de ho tro ca SDT lan email
+    from backend.services.email_validation_service import (
+        is_disposable_email,
+        FRIENDLY_DISPOSABLE_ERROR_MESSAGE,
+        normalize_email,
+        mask_email,
+    )
+
+    # 1. Luồng Google Sign-In (BẮT BUỘC xác minh khi có Firebase ID token)
+    if firebase_id_token and firebase_id_token.strip():
         try:
-            from backend.db.firestore_client import get_firestore_client as _get_fs
-            from backend.services.otp_service import _hash_contact_for_otp as _hco
-            _db = _get_fs()
-            _session_key = _hco(customer_phone)
-            _otp_snap = _db.collection("otp_sessions").document(_session_key).get()
-            _otp_verified = _otp_snap.exists and (_otp_snap.to_dict() or {}).get("verified", False)
-        except Exception:
-            _otp_verified = True  # Firestore loi -> cho qua (khong chan do loi ha tang)
-
-        if not _otp_verified:
+            from firebase_admin import auth as _admin_auth
+            _decoded = _admin_auth.verify_id_token(firebase_id_token.strip())
+        except Exception as _auth_err:
             _cleanup_temp_audio(temp_audio_path)
-            _contact_hint = customer_phone[-4:] if len(customer_phone) > 4 else "***"
-            logger.warning(f"[Feedback] Chan Lop 1: OTP chua verified | contact=****{_contact_hint}")
+            logger.warning(
+                f"[Feedback] Tu choi do Firebase ID token khong hop le: {type(_auth_err).__name__}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token xác thực Google không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
+            )
+
+        if not _decoded.get("email_verified", False):
+            _cleanup_temp_audio(temp_audio_path)
+            logger.warning(
+                f"[Feedback] Tu choi do Google email chua verified: {mask_email(_decoded.get('email'))}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email Google chưa được xác minh. Vui lòng xác minh email trước khi nhận voucher.",
+            )
+
+        _verified_email = normalize_email(_decoded.get("email", ""))
+        if not _verified_email or "@" not in _verified_email:
+            _cleanup_temp_audio(temp_audio_path)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token không chứa địa chỉ email hợp lệ.",
+            )
+
+        if is_disposable_email(_verified_email):
+            _cleanup_temp_audio(temp_audio_path)
+            logger.warning(
+                f"[Feedback] Tu choi do email disposable trong Google token: {mask_email(_verified_email)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=FRIENDLY_DISPOSABLE_ERROR_MESSAGE,
+            )
+
+        # Ghi đè customer_phone bằng email đã xác thực từ Google ID token.
+        # Không tin email do client tự khai báo.
+        customer_phone = _verified_email
+        effective_voucher_eligible = True
+
+    # 2. Luồng Email/Phone OTP thông thường (yêu cầu xác thực nếu khai báo danh tính hoặc xin voucher)
+    elif voucher_eligible or (customer_phone and customer_phone.strip()):
+        if not customer_phone or not customer_phone.strip():
+            _cleanup_temp_audio(temp_audio_path)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Vui long xac thuc so dien thoai hoac email qua OTP truoc khi nhan voucher.",
+            )
+
+        customer_phone = customer_phone.strip()
+        if "@" in customer_phone:
+            customer_phone = normalize_email(customer_phone)
+            if is_disposable_email(customer_phone):
+                _cleanup_temp_audio(temp_audio_path)
+                logger.warning(
+                    f"[Feedback] Tu choi do email OTP disposable: {mask_email(customer_phone)}"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=FRIENDLY_DISPOSABLE_ERROR_MESSAGE,
+                )
+
+        # P0 FIX: Fail-closed OTP verification — không được cho qua khi Firestore lỗi.
+        # check_verified_session_valid raises RuntimeError nếu Firestore không khả dụng.
+        try:
+            _otp_valid, _otp_reason = check_verified_session_valid(customer_phone)
+        except RuntimeError as _fs_err:
+            # Firestore không khả dụng → trả 503, KHÔNG coi là verified
+            _cleanup_temp_audio(temp_audio_path)
+            logger.error(f"[Feedback] Firestore lỗi khi kiểm tra OTP session — từ chối an toàn: {type(_fs_err).__name__}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Dịch vụ xác thực tạm thời không khả dụng. Vui lòng thử lại sau.",
+            )
+
+        if not _otp_valid:
+            _cleanup_temp_audio(temp_audio_path)
+            _masked_contact = mask_email(customer_phone) if "@" in customer_phone else _mask_phone(customer_phone)
+            logger.warning(
+                f"[Feedback] Chan Lop 1: OTP session invalid ({_otp_reason}) | contact={_masked_contact}"
+            )
+            if _otp_reason == "session_expired":
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Phiên xác thực đã hết hạn. Vui lòng xác thực lại qua OTP.",
+                )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Vui long xac thuc so dien thoai hoac email qua OTP truoc khi nhan voucher.",
             )
 
-        # 1b. Kiểm tra rate limit (1 lượt hợp lệ / 24h / SĐT)
-        _ip = None  # FastAPI không expose IP trực tiếp ở đây; thêm Request nếu cần
+        effective_voucher_eligible = voucher_eligible
+
+    # 3. Phản hồi hoàn toàn ẩn danh (không token, không phone/email, voucher_eligible=False)
+    else:
+        customer_phone = None
+        effective_voucher_eligible = False
+
+    # 4. Kiểm tra rate limit (1 lượt hợp lệ / 24h / Contact) nếu có danh tính xác thực
+    if effective_voucher_eligible and customer_phone:
         rate_result = check_rate_limit(
             phone_number=customer_phone,
             tenant_id=tenant_id,
         )
         if not rate_result.allowed:
-            # Rate limit KHÔNG phải gian lận — chỉ giới hạn hợp lệ
-            # Vẫn cho lưu feedback nhưng không nhận voucher
             validity_status = "rate_limited"
             fraud_layer_rejected_at = 1
             effective_voucher_eligible = False
             logger.info(
-                f"[Feedback] Rate limited (Lớp 1): phone=****{customer_phone[-4:]} "
+                f"[Feedback] Rate limited (Lớp 1): contact={_mask_phone(customer_phone)} "
                 f"— vẫn lưu feedback, không phát voucher"
             )
 
